@@ -244,17 +244,138 @@
   border-radius: var(--border-radius-sm);
 }
 
-/* Map placeholder sub-tab */
-.portfolio-map-placeholder {
-  background: var(--bg-card);
+/* Map sub-tab — full container */
+.portfolio-map-full {
+  width: 100%;
+  height: 100%;
+  min-height: 460px;
   border-radius: var(--border-radius-md);
-  padding: 40px;
+  overflow: hidden;
+  position: relative;
+}
+
+.portfolio-tab-content[data-content="map"] {
+  flex: 1;
+  min-height: 0;
+}
+
+/* Legend overlay */
+.portfolio-map-legend {
+  position: absolute;
+  bottom: 24px;
+  right: 12px;
+  background: rgba(15,23,42,0.85);
+  backdrop-filter: blur(8px);
+  border-radius: 8px;
+  padding: 12px 14px;
   display: flex;
   flex-direction: column;
+  gap: 4px;
+  font-family: 'Outfit', sans-serif;
+  border: 1px solid rgba(255,255,255,0.08);
+  min-width: 120px;
+}
+
+.portfolio-legend-title {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.portfolio-legend-item {
+  display: flex;
   align-items: center;
-  justify-content: center;
   gap: 8px;
-  min-height: 200px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.85);
+}
+
+.portfolio-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.portfolio-legend-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.1);
+  margin: 4px 0;
+}
+
+.portfolio-legend-count {
+  font-size: 10px;
+  color: rgba(255,255,255,0.5);
+  margin-top: 2px;
+}
+
+/* Popup styles */
+.portfolio-map-popup {
+  font-family: 'Outfit', sans-serif;
+}
+
+.portfolio-popup-header {
+  margin-bottom: 8px;
+}
+
+.portfolio-popup-addr {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.portfolio-popup-client {
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.portfolio-popup-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.portfolio-popup-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: #475569;
+}
+
+.portfolio-popup-score {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.portfolio-popup-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+/* MapLibre overrides for dark map */
+.maplibregl-popup-content {
+  border-radius: 10px !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3) !important;
+  padding: 14px 16px !important;
+  font-family: 'Outfit', sans-serif;
+}
+
+.maplibregl-popup-close-button {
+  font-size: 16px !important;
+  color: #94a3b8 !important;
+  padding: 4px 8px !important;
+}
+
+.maplibregl-popup-tip {
+  border-top-color: #fff !important;
 }
 
 /* Trends sub-tab */

@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
+
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
@@ -14,7 +14,7 @@ import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 let scene: THREE.Scene | null = null;
 let camera: THREE.PerspectiveCamera | null = null;
 let renderer: THREE.WebGLRenderer | null = null;
-let labelRenderer: CSS2DRenderer | null = null;
+
 let composer: EffectComposer | null = null;
 let controls: OrbitControls | null = null;
 let animationId: number | null = null;
@@ -25,7 +25,7 @@ interface InteractivePart {
   originalColor: THREE.Color;
   data: HousePartData;
   isFloating: boolean;
-  label: CSS2DObject | null;
+
 }
 
 interface PartMap {
@@ -146,23 +146,9 @@ function computeFallbackPositionsFromBox(box: THREE.Box3): Record<string, THREE.
 
 // ====== Part registration ======
 
-function registerPart(id: string, mesh: THREE.Mesh, color: number, labelText?: string) {
+function registerPart(id: string, mesh: THREE.Mesh, color: number) {
   const pos = mesh.position.clone();
   const data = housePartData[id];
-  const riskColor = data?.risk === 'high' ? '#ef4444' : data?.risk === 'medium' ? '#f59e0b' : '#10b981';
-
-  // Create floating HTML label
-  const labelDiv = document.createElement('div');
-  labelDiv.className = `house-label ${data?.risk || 'low'}`;
-  labelDiv.innerHTML = `
-    <div class="house-label-dot" style="background:${riskColor};"></div>
-    <div class="house-label-text">
-      <span class="house-label-name">${labelText || data?.label || id}</span>
-      <span class="house-label-score">${data?.score || '—'}</span>
-    </div>
-  `;
-  const label = new CSS2DObject(labelDiv);
-  label.position.set(pos.x, pos.y + 0.5, pos.z);
 
   parts[id] = {
     mesh,
@@ -170,7 +156,7 @@ function registerPart(id: string, mesh: THREE.Mesh, color: number, labelText?: s
     originalColor: new THREE.Color(color),
     data: data || housePartData.roof,
     isFloating: false,
-    label,
+
   };
 }
 
@@ -198,14 +184,7 @@ function getInteractiveMeshes(): THREE.Mesh[] {
   return [...sceneMeshes, ...fallbackHitMeshes];
 }
 
-// ====== Label visibility toggle ======
 
-function updateLabelVisibility() {
-  const visible = !!modelGroup;
-  Object.values(parts).forEach(p => {
-    if (p.label) p.label.visible = visible;
-  });
-}
 
 // ====== Public callback setter ======
 
@@ -279,14 +258,7 @@ export function initHouse(containerId: string): void {
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   containerEl.appendChild(renderer.domElement);
 
-  // --- Label Renderer (CSS2D) ---
-  labelRenderer = new CSS2DRenderer();
-  labelRenderer.setSize(w, h);
-  labelRenderer.domElement.style.position = 'absolute';
-  labelRenderer.domElement.style.top = '0';
-  labelRenderer.domElement.style.left = '0';
-  labelRenderer.domElement.style.pointerEvents = 'none'; // Let clicks pass through
-  containerEl.appendChild(labelRenderer.domElement);
+
 
   // --- Post-processing ---
   composer = new EffectComposer(renderer);
@@ -390,13 +362,12 @@ export function initHouse(containerId: string): void {
 
   // --- Resize ---
   new ResizeObserver(() => {
-    if (!containerEl || !camera || !renderer || !composer || !labelRenderer) return;
+    if (!containerEl || !camera || !renderer || !composer) return;
     const r = containerEl.getBoundingClientRect();
     camera.aspect = r.width / r.height;
     camera.updateProjectionMatrix();
     renderer.setSize(r.width, r.height);
     composer.setSize(r.width, r.height);
-    labelRenderer.setSize(r.width, r.height);
   }).observe(containerEl);
 
   // Load Cottage (OBJ)
@@ -418,7 +389,7 @@ function onUserInteract() {
 // ====== Cottage (OBJ) Loading ======
 
 function loadCottageModel(): void {
-  if (!scene || !labelRenderer) return;
+  if (!scene) return;
 
   const mtlLoader = new MTLLoader();
   mtlLoader.load('/Cottage_FREE.mtl', (materials) => {
@@ -486,13 +457,7 @@ function loadCottageModel(): void {
           registerPart(pid, hitMesh, col);
         }
 
-        // Add labels to modelGroup
-        Object.values(parts).forEach(p => {
-          if (p.label) modelGroup!.add(p.label);
-        });
-
         console.log('🏠 Cottage model loaded with 5 interactive zones');
-        updateLabelVisibility();
       },
       undefined,
       (error) => {
@@ -554,9 +519,7 @@ function loadCottageModel(): void {
           registerPart(pid, hitMesh, 0xcccccc);
         }
 
-        Object.values(parts).forEach(p => { if (p.label) modelGroup!.add(p.label); });
         console.log('🏠 Cottage loaded (no materials) with 5 interactive zones');
-        updateLabelVisibility();
       },
       undefined,
       (error) => {
@@ -584,8 +547,7 @@ function createFallbackModel(): void {
   }
   scene.add(fg);
   modelGroup = fg;
-  Object.values(parts).forEach(p => { if (p.label) modelGroup!.add(p.label); });
-  updateLabelVisibility();
+
 }
 
 // ====== Interaction ======
@@ -695,21 +657,13 @@ function animate() {
       mat.emissiveIntensity = 0.2 + Math.sin(animationTime * 3) * 0.08;
     }
 
-    // Update label position to follow mesh
-    if (p.label) {
-      p.label.position.set(
-        p.mesh.position.x,
-        p.mesh.position.y + 0.5,
-        p.mesh.position.z
-      );
-    }
+
   });
 
   // Render via composer (post-processing)
   composer.render();
 
-  // Render labels on top
-  if (labelRenderer) labelRenderer.render(scene, camera);
+
 }
 
 // ====== Cleanup ======
@@ -727,13 +681,10 @@ export function destroyHouse(): void {
   }
 
   const domEl = renderer?.domElement;
-  const labelDom = labelRenderer?.domElement;
-
   if (containerEl) {
     containerEl.removeEventListener('mousemove', onMouseMove);
     containerEl.removeEventListener('click', onMouseClick);
     if (domEl) containerEl.removeChild(domEl);
-    if (labelDom && labelDom.parentNode === containerEl) containerEl.removeChild(labelDom);
   }
 
   if (composer) {
@@ -757,17 +708,11 @@ export function destroyHouse(): void {
   scene = null;
   camera = null;
   renderer = null;
-  labelRenderer = null;
   modelGroup = null;
   groundMesh = null;
   fallbackHitMeshes = [];
   computedFallbackPositions = {};
-  Object.keys(parts).forEach(k => {
-    if (parts[k].label && parts[k].label.parent) {
-      parts[k].label.parent.remove(parts[k].label);
-    }
-    delete parts[k];
-  });
+  Object.keys(parts).forEach(k => delete parts[k]);
   selectedPartId = null;
   onPartSelectCallback = null;
   containerEl = null;

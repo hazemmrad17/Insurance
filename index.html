@@ -8,8 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0..1,0" rel="stylesheet">
-    <!-- MapLibre GL CSS -->
-    <link href="https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.css" rel="stylesheet" />
+    <!-- Mapbox GL CSS -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.9.4/mapbox-gl.css" rel="stylesheet" />
   </head>
   <body>
     <div class="dashboard-container">
@@ -34,24 +34,14 @@
             <span class="nav-label">Overview</span>
             <md-ripple></md-ripple>
           </button>
-          <button class="nav-item" data-view="map" aria-label="Map">
-            <span class="material-symbols-outlined">map</span>
-            <span class="nav-label">Map</span>
-            <md-ripple></md-ripple>
-          </button>
-          <button class="nav-item" data-view="property" aria-label="Property">
-            <span class="material-symbols-outlined">home</span>
-            <span class="nav-label">Property</span>
+          <button class="nav-item" data-view="property-risk" aria-label="Risk Hub">
+            <span class="material-symbols-outlined">gps_fixed</span>
+            <span class="nav-label">Risk Hub</span>
             <md-ripple></md-ripple>
           </button>
           <button class="nav-item" data-view="portfolio" aria-label="Portfolio">
             <span class="material-symbols-outlined">folder_open</span>
             <span class="nav-label">Portfolio</span>
-            <md-ripple></md-ripple>
-          </button>
-          <button class="nav-item" data-view="assessments" aria-label="Assessments">
-            <span class="material-symbols-outlined">history</span>
-            <span class="nav-label">Assessments</span>
             <md-ripple></md-ripple>
           </button>
           <button class="nav-item" data-view="clients" aria-label="Clients">
@@ -138,15 +128,22 @@
           <!-- Banner section -->
           <section class="banner-section">
             <div class="banner-card">
+              <!-- Fading carousel of French architecture (very subtle background) -->
+              <div class="banner-gallery">
+                <img class="banner-gallery-slide" src="https://images.unsplash.com/photo-1550340499-a6c60fc8287c?w=1200&q=50" alt="" loading="lazy" />
+                <img class="banner-gallery-slide" src="https://images.unsplash.com/photo-1598965402089-897ce52e8355?w=1200&q=50" alt="" loading="lazy" />
+                <img class="banner-gallery-slide" src="https://images.unsplash.com/photo-1589394815801-7cedad5d2cdc?w=1200&q=50" alt="" loading="lazy" />
+                <img class="banner-gallery-slide" src="https://images.unsplash.com/photo-1485081669829-bacb8c7bb1f3?w=1200&q=50" alt="" loading="lazy" />
+              </div>
               <!-- Left Info -->
               <div class="banner-info">
-                <h1>Smart<br>Construction</h1>
-                <p>Smart construction uses technology like AI and IoT to improve efficiency, safety and sustainability</p>
+                <h1>Analyse des<br>Risques Climatiques</h1>
+                <p>Evaluez et gerez les risques climatiques de votre portefeuille immobilier avec les donnees BDNB, Georisques et projections DRIAS.</p>
                 <div class="team-avatars">
-                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&q=80" alt="Team member" />
-                  <img src="https://images.unsplash.com/photo-1628157582853-a796fa650a6a?auto=format&fit=crop&w=80&q=80" alt="Team member" />
-                  <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=80&q=80" alt="Team member" />
-                  <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=80&q=80" alt="Team member" />
+                  <span class="team-avatar-svg" style="background:#c56a3d;">JD</span>
+                  <span class="team-avatar-svg" style="background:#10b981;">MB</span>
+                  <span class="team-avatar-svg" style="background:#3b82f6;">PL</span>
+                  <span class="team-avatar-svg" style="background:#8b5cf6;">SN</span>
                 </div>
               </div>
 
@@ -154,13 +151,13 @@
               <div class="floating-task-card">
                 <div class="floating-task-header">
                   <div>
-                    <h3>Komatsu</h3>
-                    <span class="task-date">10 - 14 Jan. 2025</span>
+                    <h3>Paris 2e</h3>
+                    <span class="task-date">Evaluation en cours</span>
                   </div>
                   <span class="material-symbols-outlined arrow-icon">arrow_forward</span>
                 </div>
                 <div class="floating-task-progress">
-                  <span class="progress-val">32%</span>
+                  <span class="progress-val">66%</span>
                   <span class="progress-indicator-dot"></span>
                 </div>
               </div>
@@ -169,7 +166,7 @@
               <div class="banner-completion-card">
                 <div class="completion-header">
                   <div>
-                    <span class="completion-label">Overall Completion</span>
+                    <span class="completion-label">Score de risque global</span>
                     <h2>66%</h2>
                   </div>
                   <span class="trend-indicator positive">+2.4% ▲</span>
@@ -192,7 +189,7 @@
 
                 <div class="completion-footer">
                   <div class="footer-stat">
-                    <span class="footer-stat-label">15.837 cu yd</span>
+                    <span class="footer-stat-label">15 biens</span>
                   </div>
                   <div class="segmented-progress">
                     <span class="seg active"></span>
@@ -202,7 +199,7 @@
                     <span class="seg"></span>
                   </div>
                   <div class="footer-stat align-right">
-                    <span class="footer-stat-label">75.484 cu yd</span>
+                    <span class="footer-stat-label">24 biens</span>
                   </div>
                 </div>
               </div>
@@ -215,7 +212,7 @@
               <!-- 2D Cross Section Card -->
               <div class="dashboard-card cross-section-card">
                 <div class="card-header">
-                  <h3>2D Cross Section Z (ft)</h3>
+                  <h3>Repartition des risques</h3>
                   <span class="material-symbols-outlined action-icon">north_east</span>
                 </div>
                 <div class="card-body">
@@ -263,15 +260,15 @@
                 </div>
               </div>
 
-              <!-- Distance Card -->
+              <!-- Haut risque Card -->
               <div class="dashboard-card distance-card">
                 <div class="distance-metric">
                   <h2>24% <span class="trend negative">-1.9% ▼</span></h2>
                   <div class="distance-progress-group">
-                    <span class="date-label">17 Dec</span>
+                    <span class="date-label">Biens a risque</span>
                     <md-linear-progress value="0.24" class="progress-bar-custom"></md-linear-progress>
                   </div>
-                  <span class="legend-indicator">Distance</span>
+                  <span class="legend-indicator">Haut risque</span>
                 </div>
               </div>
             </div>
@@ -281,7 +278,7 @@
               <div class="circular-cards-row">
                 <div class="dashboard-card circ-widget">
                   <div class="widget-header">
-                    <h3>Details</h3>
+                    <h3>Risque inondation</h3>
                     <span class="material-symbols-outlined action-icon">north_east</span>
                   </div>
                   <div class="circ-body">
@@ -300,7 +297,7 @@
 
                 <div class="dashboard-card circ-widget">
                   <div class="widget-header">
-                    <h3>Notes</h3>
+                    <h3>Retrait argile</h3>
                     <span class="material-symbols-outlined action-icon">north_east</span>
                   </div>
                   <div class="circ-body">
@@ -319,7 +316,7 @@
 
                 <div class="dashboard-card circ-widget">
                   <div class="widget-header">
-                    <h3>Material</h3>
+                    <h3>Risque sismique</h3>
                     <span class="material-symbols-outlined action-icon">north_east</span>
                   </div>
                   <div class="circ-body">
@@ -337,12 +334,12 @@
                 </div>
               </div>
 
-              <!-- Cut and Fill Card -->
+              <!-- Indicateurs cles Card -->
               <div class="dashboard-card cut-fill-card">
                 <div class="card-header">
                   <div>
-                    <h3>Cut and Fill</h3>
-                    <span class="date-subtitle">Date: 17 Dec, 2025 11:59 PM</span>
+                    <h3>Indicateurs cles</h3>
+                    <span class="date-subtitle">Portefeuille - Juillet 2026</span>
                   </div>
                   <span class="material-symbols-outlined arrow-down">keyboard_arrow_down</span>
                 </div>
@@ -396,18 +393,18 @@
                     <div class="indicators-row">
                       <div class="indicator-item">
                         <span class="dot cut"></span>
-                        <span class="name">Cut:</span>
-                        <span class="value">250,395 cu yd</span>
+                        <span class="name">Inondation:</span>
+                        <span class="value">8 biens</span>
                       </div>
                       <div class="indicator-item">
                         <span class="dot net"></span>
-                        <span class="name">Net:</span>
-                        <span class="value">226,400 cu yd</span>
+                        <span class="name">Secheresse:</span>
+                        <span class="value">6 biens</span>
                       </div>
                       <div class="indicator-item">
                         <span class="dot fill"></span>
-                        <span class="name">Fill:</span>
-                        <span class="value">23,995 cu yd</span>
+                        <span class="name">Sismique:</span>
+                        <span class="value">4 biens</span>
                       </div>
                     </div>
                   </div>
@@ -417,802 +414,216 @@
           </section>
         </section>
 
-        <!-- ====== VIEW: Map (BDNB Building Map) ====== -->
-        <section class="view-panel" id="view-map">
-          <!-- Search Bar -->
-          <div class="bdnb-search-bar">
-            <div class="bdnb-search-input-group">
-              <span class="material-symbols-outlined bdnb-search-icon">search</span>
-              <input
-                type="text"
-                id="bdnbSearchInput"
-                class="bdnb-search-input"
-                placeholder="Search an address in France... (e.g. 8 Rue de la Paix, Paris)"
-                autocomplete="off"
-              />
-              <button class="bdnb-search-clear hidden" id="bdnbSearchClear" aria-label="Clear search">
-                <span class="material-symbols-outlined">close</span>
-              </button>
-              <button class="bdnb-search-btn" id="bdnbSearchBtn">
-                <span class="material-symbols-outlined">travel_explore</span>
-                Search
-              </button>
+        <!-- ====== VIEW: Property Risk Hub (unified) ====== -->
+        <section class="view-panel" id="view-property-risk">
+          <!-- Step indicator -->
+          <div class="risk-steps">
+            <div class="risk-step active" data-step="locate">
+              <span class="risk-step-circle">1</span>
+              <div class="risk-step-text">
+                <span class="risk-step-name">Locate</span>
+                <span class="risk-step-desc">Chercher un bien sur la carte</span>
+              </div>
             </div>
-          </div>
-
-          <!-- Map + Panel Split -->
-          <div class="bdnb-map-layout">
-            <!-- Status badge (inside map area) -->
-            <div class="bdnb-status" id="bdnbStatus"></div>
-            <!-- Leaflet map container -->
-            <div id="climateMapContainer" class="bdnb-map-container"></div>
-            <!-- Side panel -->
-            <div class="bdnb-side-panel" id="bdnbPanel">
-              <div class="bdnb-panel-empty">
-                <span class="material-symbols-outlined" style="font-size:32px;color:var(--text-muted);">search</span>
-                <p style="font-size:13px;color:var(--text-muted);margin-top:8px;">
-                  Search for an address to load BDNB building data
-                </p>
+            <div class="risk-step-line" style="margin-left:12px;"></div>
+            <div class="risk-step" data-step="inspect">
+              <span class="risk-step-circle">2</span>
+              <div class="risk-step-text">
+                <span class="risk-step-name">Inspect</span>
+                <span class="risk-step-desc">Analyser les composants 3D</span>
+              </div>
+            </div>
+            <div class="risk-step-line"></div>
+            <div class="risk-step" data-step="evaluate">
+              <span class="risk-step-circle">3</span>
+              <div class="risk-step-text">
+                <span class="risk-step-name">Evaluate</span>
+                <span class="risk-step-desc">Score + actuariat + avenant</span>
               </div>
             </div>
           </div>
-        </section>
 
-        <!-- ====== VIEW: Property Detail ====== -->
-        <section class="view-panel" id="view-property">
-          <!-- Property header banner (simplified) -->
-          <section class="banner-section">
-            <div class="banner-card" style="padding:20px 28px;min-height:auto;">
-              <div class="banner-info" style="max-width:100%;flex-direction:row;align-items:center;gap:20px;">
-                <div>
-                  <h1 style="font-size:20px;font-weight:400;">8 Rue de la Paix<br>75002 Paris</h1>
-                </div>
-                <div class="risk-badges" style="margin-top:0;">
-                  <span class="risk-badge high">Flood: High</span>
-                  <span class="risk-badge medium">Heat: Medium</span>
-                  <span class="risk-badge low">Seismic: Low</span>
-                </div>
-                <div style="display:flex;gap:16px;margin-left:auto;">
-                  <div style="text-align:right;">
-                    <span style="font-size:10px;opacity:0.7;display:block;">Risk Score</span>
-                    <span style="font-size:22px;font-weight:300;">66</span>
-                    <span style="font-size:10px;opacity:0.5;">/100</span>
-                  </div>
-                  <div style="text-align:right;">
-                    <span style="font-size:10px;opacity:0.7;display:block;">Premium Impact</span>
-                    <span style="font-size:22px;font-weight:300;">-100€</span>
-                    <span style="font-size:10px;opacity:0.5;">/yr</span>
-                  </div>
-                </div>
+          <!-- STEP 1: Locate (BDNB Map) -->
+          <div class="risk-tab-content active" data-content="locate">
+            <div class="bdnb-search-bar">
+              <div class="bdnb-search-input-group">
+                <span class="material-symbols-outlined bdnb-search-icon">search</span>
+                <input type="text" id="bdnbSearchInput" class="bdnb-search-input" placeholder="Search an address in France... (e.g. 8 Rue de la Paix, Paris)" autocomplete="off" />
+                <button class="bdnb-search-clear hidden" id="bdnbSearchClear"><span class="material-symbols-outlined">close</span></button>
+                <button class="bdnb-search-btn" id="bdnbSearchBtn"><span class="material-symbols-outlined">travel_explore</span> Search</button>
               </div>
             </div>
-          </section>
-
-          <!-- ====== Sub-tab content panels ====== -->
-
-          <!-- DATA sub-tab (default active) -->
-          <div class="prop-tab-content active" data-content="data">
-            <!-- Split layout: 3D House + Data Panel -->
-            <div class="property-split">
-              <!-- Left: 3D House Viewer -->
-              <div class="prop-3d-viewer">
-                <div id="houseContainer" class="house-3d-container"></div>
-                <!-- Part selector legend -->
-                <div class="part-legend">
-                  <span style="font-size:11px;color:var(--text-muted);padding:8px 12px;display:block;">
-                    <span class="material-symbols-outlined" style="font-size:14px!important;vertical-align:middle;">touch_app</span>
-                    Cliquez sur une partie de la maison pour voir ses risques
-                  </span>
-                </div>
+            <div class="risk-locate-layout">
+              <div class="risk-locate-map">
+                <div class="bdnb-status" id="bdnbStatus"></div>
+                <div id="climateMapContainer" style="width:100%;height:100%;min-height:400px;"></div>
               </div>
-
-              <!-- Right: Data Panel -->
-              <div class="prop-data-panel">
-                <!-- Selected part info (updated by JS) -->
-                <div id="housePartInfo" class="prop-part-card">
-                  <div class="prop-part-header">
-                    <div class="prop-part-title-row">
-                      <span id="partLabel" style="font-size:16px;font-weight:500;color:var(--text-primary);">Sélectionnez une partie</span>
-                      <span id="partBadge" class="risk-badge" style="display:none;"></span>
-                    </div>
-                    <span id="partScore" style="font-size:32px;font-weight:300;color:var(--text-primary);">—</span>
-                  </div>
-                  <p id="partDescription" style="font-size:13px;color:var(--text-secondary);line-height:1.5;margin:8px 0 16px;">
-                    Passez la souris sur les éléments de la maison pour les survoler, puis cliquez pour afficher les données de risque détaillées.
+              <div class="risk-locate-panel" id="riskLocatePanel">
+                <div class="risk-locate-card">
+                  <h4><span class="material-symbols-outlined">search</span>Adresse</h4>
+                  <p style="font-size:12px;color:var(--text-muted);line-height:1.5;">
+                    Cherchez une adresse dans la barre de recherche ci-dessus. Les données du bâtiment BDNB s'afficheront ici automatiquement.
                   </p>
-                  <div id="partActions" style="display:none;gap:4px;flex-direction:column;">
-                    <div style="display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid var(--border-color);">
-                      <span style="font-size:12px;color:var(--text-muted);">Coût estimé des travaux</span>
-                      <span id="partCost" style="font-size:14px;font-weight:600;color:var(--text-primary);"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 2: Inspect (3D House + Components) -->
+          <div class="risk-tab-content" data-content="inspect">
+            <div class="risk-inspect-layout">
+              <div class="risk-inspect-3d">
+                <div id="riskHouseContainer" class="house-3d-container"></div>
+              </div>
+              <div class="risk-inspect-panel">
+                <div class="risk-inspect-card" id="riskInspectInfo">
+                  <h4><span class="material-symbols-outlined">touch_app</span>Composant</h4>
+                  <p style="font-size:12px;color:var(--text-muted);line-height:1.5;">
+                    Cliquez sur un composant ci-dessous pour voir ses risques et recommandations.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <!-- Components grid full-width below the 3D/info split -->
+            <div class="risk-inspect-card risk-inspect-card-full">
+              <h4>
+                <span class="material-symbols-outlined" style="color:var(--color-primary);">home</span>
+                Composants du bâtiment
+                <span class="risk-inspect-card-subtitle">Cliquez sur un composant pour inspecter, cochez pour inclure dans les travaux</span>
+              </h4>
+              <div class="risk-inspect-components" id="riskComponentGrid"></div>
+            </div>
+          </div>
+
+          <!-- STEP 3: Evaluate (Score + Actuarial + Avenant) -->
+          <div class="risk-tab-content" data-content="evaluate">
+            <div class="risk-evaluate-layout">
+              <div class="risk-evaluate-main">
+                <!-- Score comparison gauges -->
+                <div class="risk-score-row">
+                  <div class="risk-score-card">
+                    <span class="risk-score-label">Score actuel</span>
+                    <div class="risk-score-gauge">
+                      <svg viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="40" fill="none" stroke="var(--bg-panel)" stroke-width="10" stroke-linecap="round"/>
+                        <circle id="riskGaugeArcCurrent" cx="50" cy="50" r="40" fill="none" stroke="#ef4444" stroke-width="10" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="0" transform="rotate(180 50 50)"/>
+                      </svg>
+                      <span class="risk-score-gauge-val" id="riskGaugeValCurrent">—</span>
                     </div>
-                    <div style="display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid var(--border-color);">
-                      <span style="font-size:12px;color:var(--text-muted);">Économie annuelle sur prime</span>
-                      <span id="partSavings" style="font-size:14px;font-weight:600;color:#10b981;"></span>
+                    <span class="risk-badge high" id="riskBadgeCurrent">—</span>
+                  </div>
+                  <span class="risk-score-arrow"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  <div class="risk-score-card">
+                    <span class="risk-score-label">Score projeté</span>
+                    <div class="risk-score-gauge">
+                      <svg viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="40" fill="none" stroke="var(--bg-panel)" stroke-width="10" stroke-linecap="round"/>
+                        <circle id="riskGaugeArcProjected" cx="50" cy="50" r="40" fill="none" stroke="#10b981" stroke-width="10" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="0" transform="rotate(180 50 50)"/>
+                      </svg>
+                      <span class="risk-score-gauge-val" id="riskGaugeValProjected">—</span>
                     </div>
-                    <button style="margin-top:12px;width:100%;padding:10px;border:none;border-radius:var(--border-radius-sm);background:var(--color-primary);color:var(--text-light);font-family:var(--font-primary);font-size:13px;font-weight:500;cursor:pointer;">
-                      Voir les recommandations détaillées
-                      <span class="material-symbols-outlined" style="font-size:16px!important;vertical-align:middle;margin-left:4px;">arrow_forward</span>
+                    <span class="risk-badge low" id="riskBadgeProjected">—</span>
+                  </div>
+                  <div class="risk-score-improve">
+                    <span class="risk-score-improve-label">Amélioration</span>
+                    <span class="risk-score-improve-val" id="riskImproveVal">—</span>
+                  </div>
+                </div>
+
+                <!-- KPI row -->
+                <div class="risk-kpi-row">
+                  <div class="risk-kpi-card">
+                    <span class="risk-kpi-label">Prime pure actuelle</span>
+                    <span class="risk-kpi-val" id="riskPrimePure">—</span>
+                    <span class="risk-kpi-sub">Loading 28% inclus</span>
+                  </div>
+                  <div class="risk-kpi-card accent">
+                    <span class="risk-kpi-label">Prime pure projetée</span>
+                    <span class="risk-kpi-val" id="riskPrimeProj">—</span>
+                    <span class="risk-kpi-sub">Après travaux</span>
+                  </div>
+                  <div class="risk-kpi-card">
+                    <span class="risk-kpi-label">Ratio S/P actuel</span>
+                    <span class="risk-kpi-val" id="riskSPCurrent">—</span>
+                    <span class="risk-kpi-sub">Sinistres / Primes</span>
+                  </div>
+                  <div class="risk-kpi-card accent">
+                    <span class="risk-kpi-label">Ratio S/P projeté</span>
+                    <span class="risk-kpi-val" id="riskSPProj">—</span>
+                    <span class="risk-kpi-sub">Amélioration attendue</span>
+                  </div>
+                </div>
+
+                <!-- Premium evolution bar -->
+                <div class="risk-premium-bar" id="riskPremiumBarFill">
+                  <h4>Évolution de la prime annuelle</h4>
+                  <div class="risk-premium-bar-track" style="display:flex;gap:2px;">
+                    <div class="risk-premium-bar-fill" style="width:62%;background:#ef4444;">1 240 €</div>
+                    <div class="risk-premium-bar-fill" style="width:30%;background:#10b981;">890 €</div>
+                  </div>
+                  <div class="risk-premium-bar-labels">
+                    <span style="color:#ef4444;">Prime actuelle</span>
+                    <span style="color:#10b981;">Nouvelle prime</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Side: savings recap + avenant -->
+              <div class="risk-evaluate-side">
+                <div class="risk-avenant-card">
+                  <h4><span class="material-symbols-outlined" style="font-size:16px!important;color:#10b981;">savings</span>Économies</h4>
+                  <div class="risk-avenant-row">
+                    <span>Économie annuelle</span>
+                    <span class="risk-avenant-val" style="color:#10b981;" id="riskSavingsTotal">—</span>
+                  </div>
+                  <div class="risk-avenant-row">
+                    <span>Coût total travaux</span>
+                    <span class="risk-avenant-val" id="riskCostTotal">—</span>
+                  </div>
+                  <div class="risk-avenant-row">
+                    <span>Réduction prime</span>
+                    <span class="risk-avenant-val" style="color:#10b981;" id="riskReductionPct">—</span>
+                  </div>
+                </div>
+
+                <div class="risk-avenant-card">
+                  <h4><span class="material-symbols-outlined" style="font-size:16px!important;">description</span>Avenant</h4>
+                  <div class="risk-avenant-row">
+                    <span>Nouvelle prime</span>
+                    <span class="risk-avenant-val" id="riskAvenantPremium">—</span>
+                  </div>
+                  <div class="risk-avenant-row">
+                    <span>Nouvelle franchise</span>
+                    <span class="risk-avenant-val" id="riskAvenantFranchise">—</span>
+                  </div>
+                  <div class="risk-avenant-row">
+                    <span>Économie</span>
+                    <span class="risk-avenant-val" style="color:#10b981;" id="riskAvenantSavings">—</span>
+                  </div>
+                  <div class="risk-avenant-actions">
+                    <button class="risk-btn" id="riskGenAvenant" style="flex:1;">
+                      <span class="material-symbols-outlined" style="font-size:16px!important;">description</span>
+                      Générer
+                    </button>
+                    <button class="risk-btn secondary" id="riskPrintAvenant">
+                      <span class="material-symbols-outlined" style="font-size:16px!important;">visibility</span>
                     </button>
                   </div>
-                </div>
-
-                <!-- Quick stats cards -->
-                <div class="prop-stats-row">
-                  <div class="prop-stat-mini">
-                    <span class="material-symbols-outlined" style="font-size:18px!important;color:var(--color-primary);">construction</span>
-                    <span style="font-size:13px;font-weight:500;">Annexes</span>
-                    <span style="font-size:10px;color:var(--text-muted);">Garage, Cave, Grenier</span>
-                  </div>
-                  <div class="prop-stat-mini">
-                    <span class="material-symbols-outlined" style="font-size:18px!important;color:var(--color-primary);">calendar_month</span>
-                    <span style="font-size:13px;font-weight:500;">Construit en</span>
-                    <span style="font-size:10px;color:var(--text-muted);">1978 · 46 ans</span>
-                  </div>
-                  <div class="prop-stat-mini">
-                    <span class="material-symbols-outlined" style="font-size:18px!important;color:var(--color-primary);">energy_usage</span>
-                    <span style="font-size:13px;font-weight:500;">Classe DPE</span>
-                    <span style="font-size:10px;color:var(--text-muted);">D · 178 kWh/m²</span>
-                  </div>
-                </div>
-              </div>
+                </div>              </div>
             </div>
-
-            <!-- Part Cards Grid: clickable risk cards for each house component -->
-            <div class="part-cards-grid" id="partCardsGrid">
-              <div class="part-card" data-part="roof">
-                <div class="part-card-icon" style="background:#fef2f2;"><span class="material-symbols-outlined" style="color:#ef4444;">roofing</span></div>
-                <div class="part-card-body">
-                  <span class="part-card-name">Toiture</span>
-                  <div class="part-card-stats">
-                    <span class="risk-badge high">High</span>
-                    <span class="part-card-score">72</span>
-                  </div>
-                  <span class="part-card-savings">−100€/an</span>
-                </div>
-              </div>
-              <div class="part-card" data-part="walls">
-                <div class="part-card-icon" style="background:#fffbeb;"><span class="material-symbols-outlined" style="color:#f59e0b;">foundation</span></div>
-                <div class="part-card-body">
-                  <span class="part-card-name">Façade</span>
-                  <div class="part-card-stats">
-                    <span class="risk-badge medium">Medium</span>
-                    <span class="part-card-score">48</span>
-                  </div>
-                  <span class="part-card-savings">−60€/an</span>
-                </div>
-              </div>
-              <div class="part-card" data-part="ground">
-                <div class="part-card-icon" style="background:#fef2f2;"><span class="material-symbols-outlined" style="color:#ef4444;">landslide</span></div>
-                <div class="part-card-body">
-                  <span class="part-card-name">Fondations</span>
-                  <div class="part-card-stats">
-                    <span class="risk-badge high">High</span>
-                    <span class="part-card-score">78</span>
-                  </div>
-                  <span class="part-card-savings">−200€/an</span>
-                </div>
-              </div>
-              <div class="part-card" data-part="windows">
-                <div class="part-card-icon" style="background:#ecfdf5;"><span class="material-symbols-outlined" style="color:#10b981;">window</span></div>
-                <div class="part-card-body">
-                  <span class="part-card-name">Menuiseries</span>
-                  <div class="part-card-stats">
-                    <span class="risk-badge low">Low</span>
-                    <span class="part-card-score">22</span>
-                  </div>
-                  <span class="part-card-savings">−150€/an</span>
-                </div>
-              </div>
-              <div class="part-card" data-part="chimney">
-                <div class="part-card-icon" style="background:#fffbeb;"><span class="material-symbols-outlined" style="color:#f59e0b;">chimney</span></div>
-                <div class="part-card-body">
-                  <span class="part-card-name">Cheminée</span>
-                  <div class="part-card-stats">
-                    <span class="risk-badge medium">Medium</span>
-                    <span class="part-card-score">45</span>
-                  </div>
-                  <span class="part-card-savings">−40€/an</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- RISKS sub-tab -->
-          <div class="prop-tab-content" data-content="risks">
-            <div class="risks-header">
-              <h3>Analyse des risques climatiques</h3>
-              <p>Évaluation multi-risque basée sur les projections DRIAS 2030-2100 et les données géographiques locales</p>
-            </div>
-            <div class="risks-grid">
-              <!-- Inondation -->
-              <div class="risk-card high">
-                <div class="risk-card-visual">
-                  <div class="risk-card-icon" style="background:rgba(59,130,246,0.15);color:#3b82f6;">
-                    <span class="material-symbols-outlined">flood</span>
-                  </div>
-                  <span class="risk-card-level">HIGH</span>
-                </div>
-                <div class="risk-card-body">
-                  <h4>Inondation</h4>
-                  <p>Risque majeur de débordement de la Seine. La propriété est située en zone inondable (PPRI). En cas de crue centennale, le niveau d'eau pourrait atteindre 1,5 mètre au rez-de-chaussée.</p>
-                  <div class="risk-card-meta">
-                    <span class="risk-meta-item">
-                      <span class="risk-meta-label">Probabilité</span>
-                      <span class="risk-meta-value">65%</span>
-                    </span>
-                    <span class="risk-meta-item">
-                      <span class="risk-meta-label">Impact</span>
-                      <span class="risk-meta-value">Critique</span>
-                    </span>
-                    <span class="risk-meta-item">
-                      <span class="risk-meta-label">Échéance</span>
-                      <span class="risk-meta-value">2050</span>
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <!-- Retrait argile -->
-              <div class="risk-card high">
-                <div class="risk-card-visual">
-                  <div class="risk-card-icon" style="background:rgba(245,158,11,0.15);color:#f59e0b;">
-                    <span class="material-symbols-outlined">landslide</span>
-                  </div>
-                  <span class="risk-card-level">HIGH</span>
-                </div>
-                <div class="risk-card-body">
-                  <h4>Retrait-gonflement des argiles</h4>
-                  <p>Zone à risque fort (G2). Les fondations sont vulnérables au retrait-gonflement des argiles, aggravé par les sécheresses récurrentes. Des fissures structurelles sont déjà visibles.</p>
-                  <div class="risk-card-meta">
-                    <span class="risk-meta-item">
-                      <span class="risk-meta-label">Probabilité</span>
-                      <span class="risk-meta-value">78%</span>
-                    </span>
-                    <span class="risk-meta-item">
-                      <span class="risk-meta-label">Impact</span>
-                      <span class="risk-meta-value">Majeur</span>
-                    </span>
-                    <span class="risk-meta-item">
-                      <span class="risk-meta-label">Échéance</span>
-                      <span class="risk-meta-value">2030</span>
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <!-- Canicule -->
-              <div class="risk-card medium">
-                <div class="risk-card-visual">
-                  <div class="risk-card-icon" style="background:rgba(239,68,68,0.15);color:#ef4444;">
-                    <span class="material-symbols-outlined">thermostat</span>
-                  </div>
-                  <span class="risk-card-level">MEDIUM</span>
-                </div>
-                <div class="risk-card-body">
-                  <h4>Canicule</h4>
-                  <p>Augmentation prévue des jours de canicule à Paris : de 14 jours/an (2024) à 30+ jours/an (2050). La toiture sombre et le manque d'isolation aggravent la surchauffe intérieure.</p>
-                  <div class="risk-card-meta">
-                    <span class="risk-meta-item">
-                      <span class="risk-meta-label">Probabilité</span>
-                      <span class="risk-meta-value">60%</span>
-                    </span>
-                    <span class="risk-meta-item">
-                      <span class="risk-meta-label">Impact</span>
-                      <span class="risk-meta-value">Modéré</span>
-                    </span>
-                    <span class="risk-meta-item">
-                      <span class="risk-meta-label">Échéance</span>
-                      <span class="risk-meta-value">2035</span>
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <!-- Tempête -->
-              <div class="risk-card low">
-                <div class="risk-card-visual">
-                  <div class="risk-card-icon" style="background:rgba(16,185,129,0.15);color:#10b981;">
-                    <span class="material-symbols-outlined">thunderstorm</span>
-                  </div>
-                  <span class="risk-card-level">LOW</span>
-                </div>
-                <div class="risk-card-body">
-                  <h4>Tempête</h4>
-                  <p>Risque modéré de vents violents (>100 km/h). La charpente est en bon état général, mais les tuiles en terre cuite sont vulnérables aux projectiles en cas de tempête.</p>
-                  <div class="risk-card-meta">
-                    <span class="risk-meta-item">
-                      <span class="risk-meta-label">Probabilité</span>
-                      <span class="risk-meta-value">35%</span>
-                    </span>
-                    <span class="risk-meta-item">
-                      <span class="risk-meta-label">Impact</span>
-                      <span class="risk-meta-value">Mineur</span>
-                    </span>
-                    <span class="risk-meta-item">
-                      <span class="risk-meta-label">Échéance</span>
-                      <span class="risk-meta-value">N/A</span>
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <!-- Séisme -->
-              <div class="risk-card low">
-                <div class="risk-card-visual">
-                  <div class="risk-card-icon" style="background:rgba(16,185,129,0.15);color:#10b981;">
-                    <span class="material-symbols-outlined">earthquake</span>
-                  </div>
-                  <span class="risk-card-level">LOW</span>
-                </div>
-                <div class="risk-card-body">
-                  <h4>Séisme</h4>
-                  <p>Zone sismique de niveau 1 (très faible). La probabilité d'un séisme dommageable à Paris est négligeable. La structure en béton armé est conforme aux normes parasismiques.</p>
-                  <div class="risk-card-meta">
-                    <span class="risk-meta-item">
-                      <span class="risk-meta-label">Probabilité</span>
-                      <span class="risk-meta-value">5%</span>
-                    </span>
-                    <span class="risk-meta-item">
-                      <span class="risk-meta-label">Impact</span>
-                      <span class="risk-meta-value">Négligeable</span>
-                    </span>
-                    <span class="risk-meta-item">
-                      <span class="risk-meta-label">Échéance</span>
-                      <span class="risk-meta-value">N/A</span>
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- ROI sub-tab -->
-          <div class="prop-tab-content" data-content="roi">
-            <div class="roi-header">
-              <div>
-                <h3>Retour sur Investissement — Vision long terme</h3>
-                <p>Analyse de la rentabilité des travaux de rénovation sur 10 ans, intégrant les économies de prime et la valorisation du bien</p>
-              </div>
-            </div>
-
-            <!-- KPI row -->
-            <div class="roi-kpi-row">
-              <div class="roi-kpi-card">
-                <span class="material-symbols-outlined" style="color:var(--color-primary);">construction</span>
-                <div class="roi-kpi-body">
-                  <span class="roi-kpi-value">12 900 €</span>
-                  <span class="roi-kpi-label">Investissement total</span>
-                </div>
-              </div>
-              <div class="roi-kpi-card">
-                <span class="material-symbols-outlined" style="color:#10b981;">savings</span>
-                <div class="roi-kpi-body">
-                  <span class="roi-kpi-value roi-positive">−550 €/an</span>
-                  <span class="roi-kpi-label">Économie annuelle sur prime</span>
-                </div>
-              </div>
-              <div class="roi-kpi-card">
-                <span class="material-symbols-outlined" style="color:#3b82f6;">schedule</span>
-                <div class="roi-kpi-body">
-                  <span class="roi-kpi-value">8,2 ans</span>
-                  <span class="roi-kpi-label">Seuil de rentabilité (ROI)</span>
-                </div>
-              </div>
-              <div class="roi-kpi-card">
-                <span class="material-symbols-outlined" style="color:#10b981;">trending_up</span>
-                <div class="roi-kpi-body">
-                  <span class="roi-kpi-value roi-positive">+19 300 €</span>
-                  <span class="roi-kpi-label">Gain net sur 10 ans</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Charts row: stacked bar chart (cumulative) + line chart (premium) -->
-            <div class="roi-charts-row">
-              <!-- Cumulative savings bar chart -->
-              <div class="dashboard-card roi-chart-card">
-                <div class="card-header">
-                  <h3>Économies cumulées sur 10 ans</h3>
-                  <span class="legend-indicator">Cumul prime + énergie</span>
-                </div>
-                <div class="roi-bar-chart" id="roiBarChart">
-                  <div class="roi-bar-col"><div class="roi-bar investment" style="height:62%;"></div><span class="roi-bar-label">0</span></div>
-                  <div class="roi-bar-col"><div class="roi-bar gain" style="height:6%;"></div><span class="roi-bar-label">1</span></div>
-                  <div class="roi-bar-col"><div class="roi-bar gain" style="height:14%;"></div><span class="roi-bar-label">2</span></div>
-                  <div class="roi-bar-col"><div class="roi-bar gain" style="height:22%;"></div><span class="roi-bar-label">3</span></div>
-                  <div class="roi-bar-col"><div class="roi-bar gain" style="height:30%;"></div><span class="roi-bar-label">4</span></div>
-                  <div class="roi-bar-col"><div class="roi-bar gain" style="height:38%;"></div><span class="roi-bar-label">5</span></div>
-                  <div class="roi-bar-col"><div class="roi-bar gain" style="height:46%;"></div><span class="roi-bar-label">6</span></div>
-                  <div class="roi-bar-col"><div class="roi-bar gain" style="height:54%;"></div><span class="roi-bar-label">7</span></div>
-                  <div class="roi-bar-col"><div class="roi-bar gain" style="height:64%;"></div><span class="roi-bar-label">8</span></div>
-                  <div class="roi-bar-col"><div class="roi-bar gain" style="height:76%;"></div><span class="roi-bar-label">9</span></div>
-                  <div class="roi-bar-col"><div class="roi-bar gain" style="height:90%;"></div><span class="roi-bar-label">10</span></div>
-                </div>
-                <div class="roi-chart-footer">
-                  <span>Année</span>
-                  <span class="roi-positive">+19 300 € net après 10 ans</span>
-                </div>
-              </div>
-
-              <!-- Premium reduction line chart -->
-              <div class="dashboard-card roi-chart-card">
-                <div class="card-header">
-                  <h3>Évolution de la prime annuelle</h3>
-                  <span class="legend-indicator">Avec vs. sans travaux</span>
-                </div>
-                <div class="roi-line-chart" id="roiLineChart">
-                  <svg class="roi-line-svg" viewBox="0 0 300 130" preserveAspectRatio="none">
-                    <!-- Grid lines -->
-                    <line x1="0" y1="20" x2="300" y2="20" stroke="#f1f5f9" stroke-width="1"/>
-                    <line x1="0" y1="55" x2="300" y2="55" stroke="#f1f5f9" stroke-width="1"/>
-                    <line x1="0" y1="90" x2="300" y2="90" stroke="#f1f5f9" stroke-width="1"/>
-                    <line x1="0" y1="125" x2="300" y2="125" stroke="#f1f5f9" stroke-width="1"/>
-                    <!-- Without renovations (red) - climbing premium -->
-                    <path d="M 10,60 L 36,58 L 63,62 L 90,68 L 117,75 L 144,83 L 171,90 L 198,98 L 225,105 L 252,112 L 279,120" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round"/>
-                    <circle cx="10" cy="60" r="3" fill="#ef4444"/>
-                    <circle cx="279" cy="120" r="3" fill="#ef4444"/>
-                    <!-- With renovations (terracotta) - decreasing premium -->
-                    <path d="M 10,60 L 36,55 L 63,48 L 90,40 L 117,32 L 144,25 L 171,20 L 198,17 L 225,15 L 252,14 L 279,12" fill="none" stroke="#c56a3d" stroke-width="2.5" stroke-linecap="round"/>
-                    <circle cx="10" cy="60" r="3" fill="#c56a3d"/>
-                    <circle cx="279" cy="12" r="3" fill="#c56a3d"/>
-                    <!-- Year labels -->
-                    <text x="10" y="130" font-size="8" fill="#94a3b8" text-anchor="start">0</text>
-                    <text x="279" y="130" font-size="8" fill="#94a3b8" text-anchor="end">10</text>
-                  </svg>
-                </div>
-                <div class="roi-chart-footer">
-                  <div style="display:flex;align-items:center;gap:8px;">
-                    <span class="legend-swatch" style="background:var(--color-danger);width:8px;height:8px;border-radius:50%;display:inline-block;"></span>
-                    <span style="font-size:10px;color:var(--text-muted);">Sans travaux</span>
-                    <span class="legend-swatch" style="background:var(--color-primary);width:8px;height:8px;border-radius:50%;display:inline-block;margin-left:4px;"></span>
-                    <span style="font-size:10px;color:var(--text-muted);">Avec travaux</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Category breakdown + comparison -->
-            <div class="roi-breakdown-row">
-              <!-- Breakdown by renovation category -->
-              <div class="dashboard-card roi-breakdown-card">
-                <div class="card-header">
-                  <h3>Répartition par catégorie de travaux</h3>
-                </div>
-                <div class="roi-breakdown-list" id="roiBreakdown">
-                  <div class="roi-breakdown-item">
-                    <div class="roi-bd-head">
-                      <span class="roi-bd-name">Fondations (micro-pieux)</span>
-                      <span class="roi-bd-value">8 000 €</span>
-                    </div>
-                    <div class="roi-bd-bar"><div class="roi-bd-fill" style="width:62%;background:#dc2626;"></div></div>
-                    <span class="roi-bd-roi">ROI : −200 €/an · 8,2 ans</span>
-                  </div>
-                  <div class="roi-breakdown-item">
-                    <div class="roi-bd-head">
-                      <span class="roi-bd-name">Isolation toiture + réfection</span>
-                      <span class="roi-bd-value">1 000 €</span>
-                    </div>
-                    <div class="roi-bd-bar"><div class="roi-bd-fill" style="width:18%;background:#f59e0b;"></div></div>
-                    <span class="roi-bd-roi">ROI : −100 €/an · 8,2 ans</span>
-                  </div>
-                  <div class="roi-breakdown-item">
-                    <div class="roi-bd-head">
-                      <span class="roi-bd-name">ITE + rebouchage façade</span>
-                      <span class="roi-bd-value">2 500 €</span>
-                    </div>
-                    <div class="roi-bd-bar"><div class="roi-bd-fill" style="width:25%;background:#3b82f6;"></div></div>
-                    <span class="roi-bd-roi">ROI : −60 €/an · 8,2 ans</span>
-                  </div>
-                  <div class="roi-breakdown-item">
-                    <div class="roi-bd-head">
-                      <span class="roi-bd-name">Survitrage anti-tempête</span>
-                      <span class="roi-bd-value">800 €</span>
-                    </div>
-                    <div class="roi-bd-bar"><div class="roi-bd-fill" style="width:8%;background:#10b981;"></div></div>
-                    <span class="roi-bd-roi">ROI : −150 €/an · 8,2 ans</span>
-                  </div>
-                  <div class="roi-breakdown-item">
-                    <div class="roi-bd-head">
-                      <span class="roi-bd-name">Ramonage + extracteur</span>
-                      <span class="roi-bd-value">600 €</span>
-                    </div>
-                    <div class="roi-bd-bar"><div class="roi-bd-fill" style="width:6%;background:#8b5cf6;"></div></div>
-                    <span class="roi-bd-roi">ROI : −40 €/an · 8,2 ans</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- 10-year comparison: without vs with renovations -->
-              <div class="dashboard-card roi-compare-card">
-                <div class="card-header">
-                  <h3>Comparatif 10 ans</h3>
-                </div>
-                <div class="roi-compare">
-                  <div class="roi-compare-col">
-                    <span class="roi-compare-label">Sans rénovation</span>
-                    <span class="roi-compare-amount" style="color:var(--color-danger);">−24 200 €</span>
-                    <div class="roi-compare-items">
-                      <span>Primes cumulées : −8 250 €</span>
-                      <span>Énergie (DPE D) : −7 800 €</span>
-                      <span>Risque sinistre : −8 150 €</span>
-                    </div>
-                  </div>
-                  <div class="roi-compare-vs">
-                    <span class="roi-compare-vs-badge">VS</span>
-                  </div>
-                  <div class="roi-compare-col roi-compare-winner">
-                    <span class="roi-compare-label">Avec rénovation</span>
-                    <span class="roi-compare-amount roi-positive">+19 300 €</span>
-                    <div class="roi-compare-items">
-                      <span>Primes cumulées : −2 750 €</span>
-                      <span>Énergie (DPE B) : −4 200 €</span>
-                      <span>Risque sinistre : −1 600 €</span>
-                      <span style="color:var(--color-primary);font-weight:500;margin-top:4px;">Valorisation bien : +15 000 €</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="roi-compare-summary">
-                  <span class="material-symbols-outlined" style="color:var(--color-accent);font-size:16px!important;">lightbulb</span>
-                  <span>En 10 ans, les travaux génèrent un gain net de <strong>43 500 €</strong> par rapport au scénario « sans rénovation ». Le bien gagne une classe DPE (D → B), réduit son exposition aux risques et se valorise sur le marché.</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- RECOMMENDATIONS sub-tab -->
-          <div class="prop-tab-content" data-content="recommendations">
-            <div class="reco-header">
-              <div>
-                <h3>Recommandations IA — Plan d'action priorisé</h3>
-                <p>Généré par Prévia AI sur la base de l'analyse multi-risque du bien et des données DRIAS 2030-2100</p>
-              </div>
-              <button class="reco-export-btn" id="exportRecommendations">
-                <span class="material-symbols-outlined">download</span>
-                Exporter le rapport (PDF)
-              </button>
-            </div>
-            <div class="reco-list" id="recommendationsList">
-              <div class="reco-item critical" data-reco-id="foundation">
-                <label class="reco-toggle">
-                  <input type="checkbox" class="reco-checkbox" checked>
-                  <span class="reco-checkmark"><span class="material-symbols-outlined">check</span></span>
-                </label>
-                <div class="reco-priority">P1</div>
-                <div class="reco-body">
-                  <div class="reco-head">
-                    <span class="reco-tag critical">Critique</span>
-                    <span class="reco-title">Reprise des fondations — Micro-pieux</span>
-                  </div>
-                  <p class="reco-desc">Face au risque élevé de retrait-gonflement des argiles (score 78), il est impératif de consolider les fondations par micro-pieux ancrés dans le substrat calcaire stable à 8 mètres de profondeur. Cette intervention préventive réduit de 90% le risque de sinistre structurel.</p>
-                  <div class="reco-details">
-                    <span class="reco-cost">Coût estimé : 8 000 €</span>
-                    <span class="reco-roi">ROI : -200 €/an sur la prime</span>
-                    <span class="reco-deadline">Délai recommandé : 6 mois</span>
-                  </div>
-                </div>
-              </div>
-              <div class="reco-item high" data-reco-id="roof">
-                <label class="reco-toggle">
-                  <input type="checkbox" class="reco-checkbox" checked>
-                  <span class="reco-checkmark"><span class="material-symbols-outlined">check</span></span>
-                </label>
-                <div class="reco-priority">P2</div>
-                <div class="reco-body">
-                  <div class="reco-head">
-                    <span class="reco-tag high">Urgent</span>
-                    <span class="reco-title">Remplacement de l'isolation de toiture</span>
-                  </div>
-                  <p class="reco-desc">La toiture fissurée et mal isolée (score 72) provoque des déperditions calorifiques de 35%. L'installation de laine de roche (R ≥ 7) et la réfection des tuiles réduisent les risques de fuite et améliorent la résistance aux tempêtes.</p>
-                  <div class="reco-details">
-                    <span class="reco-cost">Coût estimé : 1 000 €</span>
-                    <span class="reco-roi">ROI : -100 €/an sur la prime</span>
-                    <span class="reco-deadline">Délai recommandé : 12 mois</span>
-                  </div>
-                </div>
-              </div>
-              <div class="reco-item medium" data-reco-id="facade">
-                <label class="reco-toggle">
-                  <input type="checkbox" class="reco-checkbox" checked>
-                  <span class="reco-checkmark"><span class="material-symbols-outlined">check</span></span>
-                </label>
-                <div class="reco-priority">P3</div>
-                <div class="reco-body">
-                  <div class="reco-head">
-                    <span class="reco-tag medium">Recommandé</span>
-                    <span class="reco-title">Rebouchage des fissures + ITE</span>
-                  </div>
-                  <p class="reco-desc">Les fissures capillaires sur la façade exposée sud (score 48) s'aggravent avec les cycles gel-dégel. L'isolation thermique par extérieur (ITE) avec un revêtement hydrofuge traite à la fois le problème esthétique et l'efficacité énergétique.</p>
-                  <div class="reco-details">
-                    <span class="reco-cost">Coût estimé : 2 500 €</span>
-                    <span class="reco-roi">ROI : -60 €/an sur la prime</span>
-                    <span class="reco-deadline">Délai recommandé : 18 mois</span>
-                  </div>
-                </div>
-              </div>
-              <div class="reco-item low" data-reco-id="windows">
-                <label class="reco-toggle">
-                  <input type="checkbox" class="reco-checkbox" checked>
-                  <span class="reco-checkmark"><span class="material-symbols-outlined">check</span></span>
-                </label>
-                <div class="reco-priority">P4</div>
-                <div class="reco-body">
-                  <div class="reco-head">
-                    <span class="reco-tag low">Optionnel</span>
-                    <span class="reco-title">Survitrage anti-tempête + joints</span>
-                  </div>
-                  <p class="reco-desc">Les menuiseries sont récentes (2022) mais le remplacement des joints d'étanchéité et l'installation d'un survitrage anti-tempête offrent une protection supplémentaire à coût modéré.</p>
-                  <div class="reco-details">
-                    <span class="reco-cost">Coût estimé : 800 €</span>
-                    <span class="reco-roi">ROI : -150 €/an sur la prime</span>
-                    <span class="reco-deadline">Délai recommandé : 24 mois</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- DOCUMENTS sub-tab -->
-          <div class="prop-tab-content" data-content="documents">
-            <div class="docs-header">
-              <h3>Documents de la propriété</h3>
-              <p>Plans, permis, diagnostics et assurances — tous les documents liés au 8 Rue de la Paix, 75002 Paris</p>
-            </div>
-            <div class="docs-grid">
-              <div class="doc-card">
-                <div class="doc-type-icon" style="background:#fdf2ed;">
-                  <span class="material-symbols-outlined" style="color:var(--color-primary);">floorplan</span>
-                </div>
-                <div class="doc-body">
-                  <span class="doc-name">Plan de la maison — Rez-de-chaussée</span>
-                  <span class="doc-meta">Architecte DPLG · Mis à jour le 15/03/2024</span>
-                  <span class="doc-size">PDF · 2.4 Mo</span>
-                </div>
-                <button class="doc-dl-btn">
-                  <span class="material-symbols-outlined">download</span>
-                </button>
-              </div>
-              <div class="doc-card">
-                <div class="doc-type-icon" style="background:#fffbeb;">
-                  <span class="material-symbols-outlined" style="color:#f59e0b;">floorplan</span>
-                </div>
-                <div class="doc-body">
-                  <span class="doc-name">Plan de la maison — Étage</span>
-                  <span class="doc-meta">Architecte DPLG · Mis à jour le 15/03/2024</span>
-                  <span class="doc-size">PDF · 1.8 Mo</span>
-                </div>
-                <button class="doc-dl-btn">
-                  <span class="material-symbols-outlined">download</span>
-                </button>
-              </div>
-              <div class="doc-card">
-                <div class="doc-type-icon" style="background:#fef2f2;">
-                  <span class="material-symbols-outlined" style="color:#ef4444;">gavel</span>
-                </div>
-                <div class="doc-body">
-                  <span class="doc-name">Permis de construire — Extension</span>
-                  <span class="doc-meta">Mairie de Paris · Délivré le 02/06/2023</span>
-                  <span class="doc-size">PDF · 4.1 Mo</span>
-                </div>
-                <button class="doc-dl-btn">
-                  <span class="material-symbols-outlined">download</span>
-                </button>
-              </div>
-              <div class="doc-card">
-                <div class="doc-type-icon" style="background:#ecfdf5;">
-                  <span class="material-symbols-outlined" style="color:#10b981;">energy_usage</span>
-                </div>
-                <div class="doc-body">
-                  <span class="doc-name">Diagnostic de Performance Énergétique</span>
-                  <span class="doc-meta">Diagnostiqueur certifié · Valable jusqu'au 12/09/2034</span>
-                  <span class="doc-size">PDF · 1.2 Mo</span>
-                </div>
-                <button class="doc-dl-btn">
-                  <span class="material-symbols-outlined">download</span>
-                </button>
-              </div>
-              <div class="doc-card">
-                <div class="doc-type-icon" style="background:#fef2f2;">
-                  <span class="material-symbols-outlined" style="color:#ef4444;">description</span>
-                </div>
-                <div class="doc-body">
-                  <span class="doc-name">État des Risques et Pollutions (ERP)</span>
-                  <span class="doc-meta">Mairie de Paris · Valable jusqu'au 15/01/2026</span>
-                  <span class="doc-size">PDF · 3.5 Mo</span>
-                </div>
-                <button class="doc-dl-btn">
-                  <span class="material-symbols-outlined">download</span>
-                </button>
-              </div>
-              <div class="doc-card">
-                <div class="doc-type-icon" style="background:#fffbeb;">
-                  <span class="material-symbols-outlined" style="color:#f59e0b;">policy</span>
-                </div>
-                <div class="doc-body">
-                  <span class="doc-name">Contrat d'assurance habitation</span>
-                  <span class="doc-meta">AXA France · Police n°2023-45821 · Échéance 31/12/2025</span>
-                  <span class="doc-size">PDF · 5.7 Mo</span>
-                </div>
-                <button class="doc-dl-btn">
-                  <span class="material-symbols-outlined">download</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- ====== PDF VIEWER MODAL ====== -->
-          <div class="modal-overlay" id="pdfViewer">
-            <div class="modal-content" style="max-width:680px;width:90%;">
-              <div class="modal-header">
-                <span id="pdfViewerIcon" class="material-symbols-outlined" style="color:var(--color-primary);">description</span>
-                <div class="modal-header-info">
-                  <span id="pdfViewerTitle" class="modal-header-title">Document</span>
-                  <span id="pdfViewerMeta" class="modal-header-meta"></span>
-                </div>
-                <button class="modal-close-btn" id="pdfViewerClose">
-                  <span class="material-symbols-outlined" style="font-size:18px!important;">close</span>
-                </button>
-              </div>
-              <div class="modal-body" style="padding:0;">
-                <div class="pdf-preview" id="pdfPreview">
-                  <div class="pdf-doc-pages">
-                    <div class="pdf-page">
-                      <div class="pdf-page-header">
-                        <div class="pdf-page-meta">
-                          <span class="pdf-page-label">Document</span>
-                          <span class="pdf-page-number" id="pdfCurrentPage">Page 1 / 1</span>
-                        </div>
-                        <div class="pdf-page-badge">CONFIDENTIEL</div>
-                      </div>
-                      <div class="pdf-page-body">
-                        <div class="pdf-page-icon">
-                          <span class="material-symbols-outlined" style="font-size:48px!important;color:var(--color-primary);">description</span>
-                        </div>
-                        <div class="pdf-page-info">
-                          <span class="pdf-page-title" id="pdfPreviewTitle">Aperçu du document</span>
-                          <span class="pdf-page-desc" id="pdfPreviewSize"></span>
-                        </div>
-                        <div class="pdf-page-actions">
-                          <button class="pdf-page-btn" id="pdfViewerDownload">
-                            <span class="material-symbols-outlined" style="font-size:18px!important;">download</span>
-                            Télécharger
-                          </button>
-                        </div>
-                      </div>
-                      <div class="pdf-page-footer">
-                        <span class="pdf-page-footer-text">Document généré par Prévia · Tous droits réservés</span>
-                        <span class="pdf-page-footer-date" id="pdfViewerDate"></span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- ====== REPORT GENERATION MODAL ====== -->
-          <div class="modal-overlay" id="reportModal">
-            <div class="modal-container report-modal-container">
-              <div class="modal-header">
-                <div class="modal-header-info">
-                  <span class="material-symbols-outlined modal-header-icon" style="color:var(--color-primary);">summarize</span>
-                  <div>
-                    <span class="modal-header-title">Rapport Prévia — Synthèse des recommandations</span>
-                    <span class="modal-header-meta" id="reportDate"></span>
-                  </div>
-                </div>
-                <div style="display:flex;gap:6px;">
-                  <button class="reco-export-btn" id="reportPrintBtn" style="padding:6px 14px;font-size:12px;">
-                    <span class="material-symbols-outlined" style="font-size:16px!important;">print</span>
-                    Imprimer / PDF
-                  </button>
-                  <button class="modal-close" id="reportModalClose">
-                    <span class="material-symbols-outlined">close</span>
-                  </button>
-                </div>
-              </div>
-              <div class="modal-body report-body" id="reportBody">
-                <!-- Populated by JS -->
-              </div>
+            <!-- Components grid full-width below the evaluate layout (synced with Inspect) -->
+            <div class="risk-inspect-card risk-inspect-card-full risk-evaluate-components">
+              <h4>
+                <span class="material-symbols-outlined" style="color:var(--color-primary);">home</span>
+                Composants du bâtiment
+                <span class="risk-inspect-card-subtitle">Cliquez sur un composant pour inclure/exclure des travaux</span>
+              </h4>
+              <div class="risk-inspect-components" id="riskEvaluateComponents"></div>
             </div>
           </div>
         </section>
 
+        
         <!-- ====== VIEW: Portfolio ====== -->
         <section class="view-panel" id="view-portfolio">
           <!-- Summary sub-tab -->
@@ -1258,11 +669,7 @@
 
           <!-- Map sub-tab -->
           <div class="portfolio-tab-content" data-content="map">
-            <div class="portfolio-map-placeholder">
-              <span class="material-symbols-outlined" style="font-size:48px!important;color:#cbd5e1;">map</span>
-              <span style="font-size:14px;color:var(--text-muted);">Carte du portefeuille — 24 propriétés</span>
-              <span style="font-size:12px;color:var(--text-muted);">Visualisation géographique de l'ensemble des biens avec leurs niveaux de risque</span>
-            </div>
+            <div class="portfolio-map-full" id="portfolioMapContainer"></div>
           </div>
 
           <!-- Trends sub-tab -->
@@ -1456,134 +863,6 @@
                       <span style="color:#10b981;">40%</span>
                     </div>
                   </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- ====== VIEW: Assessments ====== -->
-        <section class="view-panel" id="view-assessments">
-          <div class="assess-header">
-            <h3>Rapports d'évaluation</h3>
-            <p>Historique complet des diagnostics de risque réalisés sur votre portefeuille</p>
-          </div>
-
-          <!-- All sub-tab (default active, shows all) -->
-          <div class="assess-tab-content active" data-content="all">
-            <div class="assess-list">
-              <div class="assess-item completed" data-addr="8 Rue de la Paix, 75002 Paris">
-                <div class="assess-status"><span class="assess-status-dot" style="background:#10b981;"></span></div>
-                <div class="assess-body">
-                  <div class="assess-head"><span class="assess-addr">8 Rue de la Paix, 75002 Paris</span><span class="assess-date">17 déc. 2025</span></div>
-                  <div class="assess-client-badge"><span class="clients-selector-avatar" style="width:20px;height:20px;font-size:8px;">JD</span><span>Jean Dupont</span><span class="assess-view-client" data-client="Jean Dupont">Voir client</span></div>
-                  <div class="assess-meta"><span class="risk-badge high">Score: 66</span><span>Inondation: Haut · Argile: Haut · Canicule: Moyen</span></div>
-                  <div class="assess-footer"><span>Rapport complet · 12 pages</span><span class="assess-view" data-addr="8 Rue de la Paix, 75002 Paris">Voir le rapport <span class="material-symbols-outlined" style="font-size:14px!important;">arrow_forward</span></span></div>
-                </div>
-              </div>
-              <div class="assess-item pending" data-addr="34 Rue de Rivoli, 75004 Paris">
-                <div class="assess-status"><span class="assess-status-dot" style="background:#f59e0b;"></span></div>
-                <div class="assess-body">
-                  <div class="assess-head"><span class="assess-addr">34 Rue de Rivoli, 75004 Paris</span><span class="assess-date">22 janv. 2026</span></div>
-                  <div class="assess-client-badge"><span class="clients-selector-avatar" style="width:20px;height:20px;font-size:8px;">PL</span><span>Pierre Lefèvre</span><span class="assess-view-client" data-client="Pierre Lefèvre">Voir client</span></div>
-                  <div class="assess-meta"><span class="risk-badge high">Score: 81</span><span>Inondation: Très élevé · DPE: E</span></div>
-                  <div class="assess-footer"><span>En attente de validation</span><span class="assess-view" style="color:var(--text-muted);">Rapport en cours</span></div>
-                </div>
-              </div>
-              <div class="assess-item completed" data-addr="15 Bd Haussmann, 75009 Paris">
-                <div class="assess-status"><span class="assess-status-dot" style="background:#10b981;"></span></div>
-                <div class="assess-body">
-                  <div class="assess-head"><span class="assess-addr">15 Bd Haussmann, 75009 Paris</span><span class="assess-date">14 déc. 2025</span></div>
-                  <div class="assess-client-badge"><span class="clients-selector-avatar" style="width:20px;height:20px;font-size:8px;">MB</span><span>Marie Bernard</span><span class="assess-view-client" data-client="Marie Bernard">Voir client</span></div>
-                  <div class="assess-meta"><span class="risk-badge medium">Score: 48</span><span>Canicule: Moyen · DPE: C</span></div>
-                  <div class="assess-footer"><span>Rapport simplifié · 8 pages</span><span class="assess-view" data-addr="15 Bd Haussmann, 75009 Paris">Voir le rapport <span class="material-symbols-outlined" style="font-size:14px!important;">arrow_forward</span></span></div>
-                </div>
-              </div>
-              <div class="assess-item pending" data-addr="12 Av. Champs-Élysées, 75008 Paris">
-                <div class="assess-status"><span class="assess-status-dot" style="background:#f59e0b;"></span></div>
-                <div class="assess-body">
-                  <div class="assess-head"><span class="assess-addr">12 Av. Champs-Élysées, 75008 Paris</span><span class="assess-date">8 févr. 2026</span></div>
-                  <div class="assess-client-badge"><span class="clients-selector-avatar" style="width:20px;height:20px;font-size:8px;">JD</span><span>Jean Dupont</span><span class="assess-view-client" data-client="Jean Dupont">Voir client</span></div>
-                  <div class="assess-meta"><span class="risk-badge high">Score: 72</span><span>Inondation: Haut · Argile: Moyen</span></div>
-                  <div class="assess-footer"><span>Analyse en cours · DRIAS projection</span><span class="assess-view" style="color:var(--text-muted);">Rapport en cours</span></div>
-                </div>
-              </div>
-              <div class="assess-item completed" data-addr="2 Pl. de la Bourse, 69002 Lyon">
-                <div class="assess-status"><span class="assess-status-dot" style="background:#10b981;"></span></div>
-                <div class="assess-body">
-                  <div class="assess-head"><span class="assess-addr">2 Pl. de la Bourse, 69002 Lyon</span><span class="assess-date">10 déc. 2025</span></div>
-                  <div class="assess-client-badge"><span class="clients-selector-avatar" style="width:20px;height:20px;font-size:8px;">PL</span><span>Pierre Lefèvre</span><span class="assess-view-client" data-client="Pierre Lefèvre">Voir client</span></div>
-                  <div class="assess-meta"><span class="risk-badge low">Score: 22</span><span>Sismique: Faible · DPE: A</span></div>
-                  <div class="assess-footer"><span>Rapport complet · 10 pages</span><span class="assess-view" data-addr="2 Pl. de la Bourse, 69002 Lyon">Voir le rapport <span class="material-symbols-outlined" style="font-size:14px!important;">arrow_forward</span></span></div>
-                </div>
-              </div>
-              <div class="assess-item completed" data-addr="18 Rue Lafayette, 75009 Paris">
-                <div class="assess-status"><span class="assess-status-dot" style="background:#10b981;"></span></div>
-                <div class="assess-body">
-                  <div class="assess-head"><span class="assess-addr">18 Rue Lafayette, 75009 Paris</span><span class="assess-date">5 déc. 2025</span></div>
-                  <div class="assess-client-badge"><span class="clients-selector-avatar" style="width:20px;height:20px;font-size:8px;">JD</span><span>Jean Dupont</span><span class="assess-view-client" data-client="Jean Dupont">Voir client</span></div>
-                  <div class="assess-meta"><span class="risk-badge low">Score: 18</span><span>DPE: B · Construction 2019</span></div>
-                  <div class="assess-footer"><span>Rapport simplifié · 6 pages</span><span class="assess-view" data-addr="18 Rue Lafayette, 75009 Paris">Voir le rapport <span class="material-symbols-outlined" style="font-size:14px!important;">arrow_forward</span></span></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Pending sub-tab -->
-          <div class="assess-tab-content" data-content="pending">
-            <div class="assess-list">
-              <div class="assess-item pending">
-                <div class="assess-status"><span class="assess-status-dot" style="background:#f59e0b;"></span></div>
-                <div class="assess-body">
-                  <div class="assess-head"><span class="assess-addr">34 Rue de Rivoli, 75004 Paris</span><span class="assess-date">22 janv. 2026</span></div>
-                  <div class="assess-meta"><span class="risk-badge high">Score: 81</span><span>Inondation: Très élevé · DPE: E</span></div>
-                  <div class="assess-footer"><span>En attente de validation</span><span class="assess-view" style="color:var(--text-muted);">Rapport en cours</span></div>
-                </div>
-              </div>
-              <div class="assess-item pending">
-                <div class="assess-status"><span class="assess-status-dot" style="background:#f59e0b;"></span></div>
-                <div class="assess-body">
-                  <div class="assess-head"><span class="assess-addr">12 Av. Champs-Élysées, 75008 Paris</span><span class="assess-date">8 févr. 2026</span></div>
-                  <div class="assess-meta"><span class="risk-badge high">Score: 72</span><span>Inondation: Haut · Argile: Moyen</span></div>
-                  <div class="assess-footer"><span>Analyse en cours · DRIAS projection</span><span class="assess-view" style="color:var(--text-muted);">Rapport en cours</span></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Completed sub-tab -->
-          <div class="assess-tab-content" data-content="completed">
-            <div class="assess-list">
-              <div class="assess-item completed">
-                <div class="assess-status"><span class="assess-status-dot" style="background:#10b981;"></span></div>
-                <div class="assess-body">
-                  <div class="assess-head"><span class="assess-addr">8 Rue de la Paix, 75002 Paris</span><span class="assess-date">17 déc. 2025</span></div>
-                  <div class="assess-meta"><span class="risk-badge high">Score: 66</span></div>
-                  <div class="assess-footer"><span>Rapport complet · 12 pages</span><span class="assess-view">Voir le rapport</span></div>
-                </div>
-              </div>
-              <div class="assess-item completed">
-                <div class="assess-status"><span class="assess-status-dot" style="background:#10b981;"></span></div>
-                <div class="assess-body">
-                  <div class="assess-head"><span class="assess-addr">15 Bd Haussmann, 75009 Paris</span><span class="assess-date">14 déc. 2025</span></div>
-                  <div class="assess-meta"><span class="risk-badge medium">Score: 48</span></div>
-                  <div class="assess-footer"><span>Rapport simplifié · 8 pages</span><span class="assess-view">Voir le rapport</span></div>
-                </div>
-              </div>
-              <div class="assess-item completed">
-                <div class="assess-status"><span class="assess-status-dot" style="background:#10b981;"></span></div>
-                <div class="assess-body">
-                  <div class="assess-head"><span class="assess-addr">2 Pl. de la Bourse, 69002 Lyon</span><span class="assess-date">10 déc. 2025</span></div>
-                  <div class="assess-meta"><span class="risk-badge low">Score: 22</span></div>
-                  <div class="assess-footer"><span>Rapport complet · 10 pages</span><span class="assess-view">Voir le rapport</span></div>
-                </div>
-              </div>
-              <div class="assess-item completed">
-                <div class="assess-status"><span class="assess-status-dot" style="background:#10b981;"></span></div>
-                <div class="assess-body">
-                  <div class="assess-head"><span class="assess-addr">18 Rue Lafayette, 75009 Paris</span><span class="assess-date">5 déc. 2025</span></div>
-                  <div class="assess-meta"><span class="risk-badge low">Score: 18</span></div>
-                  <div class="assess-footer"><span>Rapport simplifié · 6 pages</span><span class="assess-view">Voir le rapport</span></div>
                 </div>
               </div>
             </div>
@@ -1966,6 +1245,192 @@
             </div>
           </div>
         </section>
+          <!-- ====== CLIENT DETAIL PANEL ====== -->
+          <div class="clients-detail-panel" id="clientsDetailPanel">
+            <!-- Back button -->
+            <div class="cdp-back-row">
+              <button class="cdp-back-btn" id="cdpBackBtn">
+                <span class="material-symbols-outlined" style="font-size:18px!important;">arrow_back</span>
+                Retour à la liste
+              </button>
+            </div>
+
+            <!-- Profile header card -->
+            <div class="cdp-profile-card">
+              <div class="cdp-profile-top">
+                <div class="cdp-profile-left">
+                  <span class="cdp-avatar" id="cdpAvatar">JD</span>
+                  <div class="cdp-profile-info">
+                    <h2 id="cdpName">Jean Dupont</h2>
+                    <div class="cdp-profile-meta">
+                      <span class="cdp-ref" id="cdpRef">CLT-2026-001</span>
+                      <span class="cdp-status active" id="cdpStatus">Actif</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="cdp-profile-actions">
+                  <button class="cdp-btn cdp-btn-outline" id="cdpEditToggle">
+                    <span class="material-symbols-outlined" style="font-size:16px!important;">edit</span>
+                    Modifier
+                  </button>
+                  <button class="cdp-btn cdp-btn-outline" style="color:#ef4444;border-color:rgba(239,68,68,0.3);">
+                    <span class="material-symbols-outlined" style="font-size:16px!important;">more_vert</span>
+                  </button>
+                </div>
+              </div>
+              <!-- Detail tabs inside profile card (full width) -->
+              <div class="cdp-tab-bar">
+                <button class="cdp-tab active" data-cdp-tab="info">
+                  <span class="material-symbols-outlined" style="font-size:16px!important;">person</span>
+                  Info
+                </button>
+                <button class="cdp-tab" data-cdp-tab="history">
+                  <span class="material-symbols-outlined" style="font-size:16px!important;">receipt</span>
+                  Historique
+                </button>
+                <button class="cdp-tab" data-cdp-tab="contracts">
+                  <span class="material-symbols-outlined" style="font-size:16px!important;">description</span>
+                  Contrats
+                </button>
+              </div>
+            </div>
+
+            <!-- Stats row -->
+            <div class="cdp-stats-row">
+              <div class="cdp-stat">
+                <span class="cdp-stat-value" id="cdpStatContracts">—</span>
+                <span class="cdp-stat-label">Contrats</span>
+              </div>
+              <div class="cdp-stat">
+                <span class="cdp-stat-value" id="cdpStatActive">—</span>
+                <span class="cdp-stat-label">Actifs</span>
+              </div>
+              <div class="cdp-stat">
+                <span class="cdp-stat-value" id="cdpStatPending">—</span>
+                <span class="cdp-stat-label">En attente</span>
+              </div>
+              <div class="cdp-stat">
+                <span class="cdp-stat-value" id="cdpStatPremium">—</span>
+                <span class="cdp-stat-label">Primes annuelles</span>
+              </div>
+            </div>
+
+
+
+            <!-- Tab: Info (editable form) -->
+            <div class="cdp-tab-content active" data-cdp-content="info">
+              <div class="cdp-card">
+                <div class="cdp-card-header">
+                  <h4>Informations personnelles</h4>
+                  <span class="cdp-card-hint">Les champs marqués * sont obligatoires</span>
+                </div>
+                <div class="cdp-form-grid" id="cdpInfoForm">
+                  <div class="cdp-field">
+                    <label class="cdp-field-label">Civilité</label>
+                    <select class="cdp-input cdp-select" id="cdpFieldCivility">
+                      <option value="M.">M.</option>
+                      <option value="Mme">Mme</option>
+                    </select>
+                  </div>
+                  <div class="cdp-field">
+                    <label class="cdp-field-label">Date de naissance</label>
+                    <input type="date" class="cdp-input" id="cdpFieldDob" />
+                  </div>
+                  <div class="cdp-field">
+                    <label class="cdp-field-label">Prénom *</label>
+                    <input type="text" class="cdp-input" id="cdpFieldFirstname" placeholder="Prénom" />
+                  </div>
+                  <div class="cdp-field">
+                    <label class="cdp-field-label">Nom *</label>
+                    <input type="text" class="cdp-input" id="cdpFieldLastname" placeholder="Nom" />
+                  </div>
+                  <div class="cdp-field">
+                    <label class="cdp-field-label">Email *</label>
+                    <input type="email" class="cdp-input" id="cdpFieldEmail" placeholder="email@exemple.fr" />
+                  </div>
+                  <div class="cdp-field">
+                    <label class="cdp-field-label">Téléphone *</label>
+                    <input type="tel" class="cdp-input" id="cdpFieldPhone" placeholder="+33 X XX XX XX XX" />
+                  </div>
+                  <div class="cdp-field cdp-field-span-2">
+                    <label class="cdp-field-label">Adresse</label>
+                    <input type="text" class="cdp-input" id="cdpFieldAddress" placeholder="Numéro et rue" />
+                  </div>
+                  <div class="cdp-field">
+                    <label class="cdp-field-label">Code postal</label>
+                    <input type="text" class="cdp-input" id="cdpFieldCp" placeholder="75002" maxlength="5" />
+                  </div>
+                  <div class="cdp-field">
+                    <label class="cdp-field-label">Ville</label>
+                    <input type="text" class="cdp-input" id="cdpFieldCity" placeholder="Ville" />
+                  </div>
+                  <div class="cdp-field">
+                    <label class="cdp-field-label">Nationalité</label>
+                    <select class="cdp-input cdp-select" id="cdpFieldNationality">
+                      <option value="Française">Française</option>
+                      <option value="Belge">Belge</option>
+                      <option value="Suisse">Suisse</option>
+                      <option value="Allemande">Allemande</option>
+                      <option value="Italienne">Italienne</option>
+                      <option value="Espagnole">Espagnole</option>
+                    </select>
+                  </div>
+                  <div class="cdp-field">
+                    <label class="cdp-field-label">Profession</label>
+                    <input type="text" class="cdp-input" id="cdpFieldProfession" placeholder="Profession" />
+                  </div>
+                </div>
+                <div class="cdp-form-actions" id="cdpFormActions" style="display:none;">
+                  <button class="cdp-btn cdp-btn-primary" id="cdpSaveBtn">
+                    <span class="material-symbols-outlined" style="font-size:16px!important;">check</span>
+                    Enregistrer
+                  </button>
+                  <button class="cdp-btn" id="cdpCancelBtn">Annuler</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab: History (invoices & payments) -->
+            <div class="cdp-tab-content" data-cdp-content="history">
+              <div class="cdp-card">
+                <div class="cdp-card-header">
+                  <h4>Historique des paiements</h4>
+                  <span class="cdp-card-hint">Factures et échéances</span>
+                </div>
+                <div class="cdp-table-wrapper">
+                  <table class="cdp-table">
+                    <thead>
+                      <tr>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Contrat</th>
+                        <th>Montant</th>
+                        <th>Statut</th>
+                      </tr>
+                    </thead>
+                    <tbody id="cdpHistoryBody">
+                      <!-- Filled by JS -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab: Contracts -->
+            <div class="cdp-tab-content" data-cdp-content="contracts">
+              <div class="cdp-card">
+                <div class="cdp-card-header">
+                  <h4>Contrats du client</h4>
+                  <span class="cdp-card-hint">Polices d'assurance actives et passées</span>
+                </div>
+                <div class="cdp-contracts-list" id="cdpContractsList">
+                  <!-- Filled by JS -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+
 
         <!-- ====== VIEW: Settings ====== -->
         <section class="view-panel" id="view-settings">
@@ -2833,4 +2298,282 @@
     <!-- Script entry point -->
     <script type="module" src="/src/main.ts"></script>
   </body>
+</html>
+
+    <!-- ═══════════════════════════════════════════════════════
+         AUTH VIEWS — Cover style (outside dashboard shell)
+         ═══════════════════════════════════════════════════════ -->
+
+    <!-- ====== AUTH: Sign In ====== -->
+    <section class="auth-view" id="auth-sign-in">
+      <div class="auth-cover-layout">
+        <div class="auth-cover-panel">
+          <div class="auth-cover-brand">
+            <div class="logo-icon"><span class="material-symbols-outlined">auto_awesome</span></div>
+            <span>Previa</span>
+          </div>
+          <div class="auth-cover-content">
+            <div class="auth-cover-illustration">
+              <div class="ring-1"></div>
+              <div class="ring-2"></div>
+              <span class="material-symbols-outlined">verified</span>
+            </div>
+            <h2>Bienvenue sur Previa</h2>
+            <p>Plateforme d'evaluation des risques climatiques pour l'immobilier. Donnees BDNB, Georisques et projections climatiques.</p>
+          </div>
+        </div>
+        <div class="auth-form-panel">
+          <div class="auth-form-card">
+            <div class="auth-form-header">
+              <div class="auth-badge"><span class="material-symbols-outlined">lock</span> Connexion</div>
+              <h3>Connexion a Previa</h3>
+              <p>Entrez vos identifiants pour acceder a votre tableau de bord</p>
+            </div>
+            <form onsubmit="return false">
+              <div class="auth-input-group">
+                <span class="material-symbols-outlined input-icon">email</span>
+                <input type="email" placeholder="Email professionnel" />
+              </div>
+              <div class="auth-input-group">
+                <span class="material-symbols-outlined input-icon">lock</span>
+                <input type="password" placeholder="Mot de passe" />
+                <button type="button" class="input-toggle"><span class="material-symbols-outlined">visibility_off</span></button>
+              </div>
+              <div class="auth-check-row">
+                <label class="auth-check-label">
+                  <input type="checkbox" checked /> Se souvenir de moi
+                </label>
+                <a class="auth-link" data-auth-target="forgot">Mot de passe oublie ?</a>
+              </div>
+              <button type="submit" class="auth-submit-btn">
+                <span class="material-symbols-outlined">login</span> Se connecter
+              </button>
+            </form>
+            <div class="auth-divider">ou continuer avec</div>
+            <div class="auth-social-row">
+              <button class="auth-social-btn">
+                <svg class="social-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                Google
+              </button>
+              <button class="auth-social-btn">
+                <svg class="social-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.167 6.839 9.49.5.09.682-.217.682-.482 0-.237-.009-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.577.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+                GitHub
+              </button>
+            </div>
+            <div class="auth-footer-text">
+              Pas encore de compte ? <a class="auth-link" data-auth-target="sign-up">Creer un compte</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== AUTH: Sign Up ====== -->
+    <section class="auth-view" id="auth-sign-up">
+      <div class="auth-cover-layout">
+        <div class="auth-cover-panel">
+          <div class="auth-cover-brand">
+            <div class="logo-icon"><span class="material-symbols-outlined">auto_awesome</span></div>
+            <span>Previa</span>
+          </div>
+          <div class="auth-cover-content">
+            <div class="auth-cover-illustration">
+              <div class="ring-1"></div>
+              <div class="ring-2"></div>
+              <span class="material-symbols-outlined">how_to_reg</span>
+            </div>
+            <h2>Rejoignez Previa</h2>
+            <p>Creez votre compte et commencez a evaluer les risques climatiques de votre portefeuille immobilier.</p>
+          </div>
+        </div>
+        <div class="auth-form-panel">
+          <div class="auth-form-card">
+            <div class="auth-form-header">
+              <div class="auth-badge"><span class="material-symbols-outlined">person_add</span> Inscription</div>
+              <h3>Creez votre compte</h3>
+              <p>Remplissez les informations ci-dessous pour creer votre compte</p>
+            </div>
+            <form onsubmit="return false">
+              <div class="auth-input-group">
+                <span class="material-symbols-outlined input-icon">person</span>
+                <input type="text" placeholder="Nom complet" />
+              </div>
+              <div class="auth-input-group">
+                <span class="material-symbols-outlined input-icon">business</span>
+                <input type="text" placeholder="Nom de l'entreprise" />
+              </div>
+              <div class="auth-input-group">
+                <span class="material-symbols-outlined input-icon">email</span>
+                <input type="email" placeholder="Email professionnel" />
+              </div>
+              <div class="auth-input-group">
+                <span class="material-symbols-outlined input-icon">lock</span>
+                <input type="password" placeholder="Mot de passe" />
+                <button type="button" class="input-toggle"><span class="material-symbols-outlined">visibility_off</span></button>
+              </div>
+              <div class="auth-input-group">
+                <span class="material-symbols-outlined input-icon">lock</span>
+                <input type="password" placeholder="Confirmer le mot de passe" />
+                <button type="button" class="input-toggle"><span class="material-symbols-outlined">visibility_off</span></button>
+              </div>
+              <div class="auth-check-row">
+                <label class="auth-check-label">
+                  <input type="checkbox" /> J'accepte les <a class="auth-link" style="font-size:13px;">conditions d'utilisation</a>
+                </label>
+              </div>
+              <button type="submit" class="auth-submit-btn">
+                <span class="material-symbols-outlined">person_add</span> Creer le compte
+              </button>
+            </form>
+            <div class="auth-footer-text">
+              Deja un compte ? <a class="auth-link" data-auth-target="sign-in">Se connecter</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== AUTH: Forgot Password ====== -->
+    <section class="auth-view" id="auth-forgot">
+      <div class="auth-cover-layout">
+        <div class="auth-cover-panel">
+          <div class="auth-cover-brand">
+            <div class="logo-icon"><span class="material-symbols-outlined">auto_awesome</span></div>
+            <span>Previa</span>
+          </div>
+          <div class="auth-cover-content">
+            <div class="auth-cover-illustration">
+              <div class="ring-1"></div>
+              <div class="ring-2"></div>
+              <span class="material-symbols-outlined">lock_reset</span>
+            </div>
+            <h2>Mot de passe oublie ?</h2>
+            <p>Pas d'inquietude. Saisissez votre email et nous vous enverrons un lien de reinitialisation.</p>
+          </div>
+        </div>
+        <div class="auth-form-panel">
+          <div class="auth-form-card">
+            <div class="auth-form-header">
+              <div class="auth-badge"><span class="material-symbols-outlined">help</span> Reinitialisation</div>
+              <h3>Mot de passe oublie ?</h3>
+              <p>Entrez votre email professionnel pour recevoir un lien de reinitialisation</p>
+            </div>
+            <form onsubmit="return false">
+              <div class="auth-input-group">
+                <span class="material-symbols-outlined input-icon">email</span>
+                <input type="email" placeholder="Email professionnel" />
+              </div>
+              <button type="submit" class="auth-submit-btn">
+                <span class="material-symbols-outlined">send</span> Envoyer le lien
+              </button>
+            </form>
+            <div class="auth-footer-text">
+              <a class="auth-link" data-auth-target="sign-in"><span class="material-symbols-outlined" style="font-size:14px!important;vertical-align:middle;">arrow_back</span> Retour a la connexion</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== AUTH: Reset Password ====== -->
+    <section class="auth-view" id="auth-reset">
+      <div class="auth-cover-layout">
+        <div class="auth-cover-panel">
+          <div class="auth-cover-brand">
+            <div class="logo-icon"><span class="material-symbols-outlined">auto_awesome</span></div>
+            <span>Previa</span>
+          </div>
+          <div class="auth-cover-content">
+            <div class="auth-cover-illustration">
+              <div class="ring-1"></div>
+              <div class="ring-2"></div>
+              <span class="material-symbols-outlined">password</span>
+            </div>
+            <h2>Nouveau mot de passe</h2>
+            <p>Choisissez un mot de passe securise pour proteger votre compte Previa.</p>
+          </div>
+        </div>
+        <div class="auth-form-panel">
+          <div class="auth-form-card">
+            <div class="auth-form-header">
+              <div class="auth-badge"><span class="material-symbols-outlined">password</span> Nouveau mot de passe</div>
+              <h3>Reinitialiser le mot de passe</h3>
+              <p>Choisissez un nouveau mot de passe pour votre compte</p>
+            </div>
+            <form onsubmit="return false">
+              <div class="auth-input-group">
+                <span class="material-symbols-outlined input-icon">lock</span>
+                <input type="password" placeholder="Nouveau mot de passe" />
+                <button type="button" class="input-toggle"><span class="material-symbols-outlined">visibility_off</span></button>
+              </div>
+              <div class="auth-strength">
+                <span class="auth-strength-bar active weak"></span>
+                <span class="auth-strength-bar"></span>
+                <span class="auth-strength-bar"></span>
+                <span class="auth-strength-bar"></span>
+              </div>
+              <div class="auth-input-group" style="margin-top:18px;">
+                <span class="material-symbols-outlined input-icon">lock</span>
+                <input type="password" placeholder="Confirmer le nouveau mot de passe" />
+                <button type="button" class="input-toggle"><span class="material-symbols-outlined">visibility_off</span></button>
+              </div>
+              <button type="submit" class="auth-submit-btn">
+                <span class="material-symbols-outlined">check_circle</span> Reinitialiser
+              </button>
+            </form>
+            <div class="auth-footer-text">
+              <a class="auth-link" data-auth-target="sign-in"><span class="material-symbols-outlined" style="font-size:14px!important;vertical-align:middle;">arrow_back</span> Retour a la connexion</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== AUTH: Two-Step Verification ====== -->
+    <section class="auth-view" id="auth-two-step">
+      <div class="auth-cover-layout">
+        <div class="auth-cover-panel">
+          <div class="auth-cover-brand">
+            <div class="logo-icon"><span class="material-symbols-outlined">auto_awesome</span></div>
+            <span>Previa</span>
+          </div>
+          <div class="auth-cover-content">
+            <div class="auth-cover-illustration">
+              <div class="ring-1"></div>
+              <div class="ring-2"></div>
+              <span class="material-symbols-outlined">shield</span>
+            </div>
+            <h2>Verification en deux etapes</h2>
+            <p>Un code de verification a ete envoye a votre email. Saisissez-le pour continuer.</p>
+          </div>
+        </div>
+        <div class="auth-form-panel">
+          <div class="auth-form-card">
+            <div class="auth-form-header">
+              <div class="auth-badge"><span class="material-symbols-outlined">verified_user</span> Verification</div>
+              <h3>Code de verification</h3>
+              <p>Entrez le code a 6 chiffres envoye a jean.dupont@previa.fr</p>
+            </div>
+            <form onsubmit="return false">
+              <div class="auth-code-row">
+                <input type="text" class="auth-code-input" maxlength="1" inputmode="numeric" />
+                <input type="text" class="auth-code-input" maxlength="1" inputmode="numeric" />
+                <input type="text" class="auth-code-input" maxlength="1" inputmode="numeric" />
+                <span style="display:flex;align-items:center;color:var(--text-muted);font-size:20px;font-weight:300;">-</span>
+                <input type="text" class="auth-code-input" maxlength="1" inputmode="numeric" />
+                <input type="text" class="auth-code-input" maxlength="1" inputmode="numeric" />
+                <input type="text" class="auth-code-input" maxlength="1" inputmode="numeric" />
+              </div>
+              <button type="submit" class="auth-submit-btn">
+                <span class="material-symbols-outlined">verified</span> Verifier
+              </button>
+              <div class="auth-footer-text" style="margin-top:16px;">
+                <a class="auth-link" data-auth-target="sign-in"><span class="material-symbols-outlined" style="font-size:14px!important;vertical-align:middle;">arrow_back</span> Retour a la connexion</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+</body>
 </html>

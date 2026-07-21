@@ -22,13 +22,11 @@ import {
   setupModals,
 } from './router.js';
 
-// View modules
-import { initProperty } from './views/property/property.js';
+// View modules (initialization is done lazily by the router's switchView)
 import { initClients } from './views/clients/clients.js';
 import { initSettings } from './views/settings/settings.js';
 import { initOverview } from './views/overview/overview.js';
-import { initPortfolio } from './views/portfolio/portfolio.js';
-import { initAssessments } from './views/assessments/assessments.js';
+import { initAuth } from './views/auth/auth.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   // Core app infrastructure
@@ -39,12 +37,10 @@ document.addEventListener('DOMContentLoaded', () => {
   setupModals();
   initRouter();
 
-  // View-specific interactions
-  initProperty();
+  // View-specific interactions (lightweight event bindings)
   initClients();
   initSettings();
   initOverview();
-  // initClimateMap() is called lazily from switchView() when the user navigates to the Map tab
-  initPortfolio();
-  initAssessments();
+  initAuth();
+  // Risk Hub (property-risk), Portfolio, and Map are initialized lazily by the router
 });

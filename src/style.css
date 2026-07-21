@@ -6,9 +6,9 @@
 /* Base styles are imported via main.ts: import './base.css' */
 
 /* View-specific styles */
-@import './views/property/property.css';
-@import './views/climate-map/climate-map.css';
 @import './views/portfolio/portfolio.css';
-@import './views/assessments/assessments.css';
 @import './views/settings/settings.css';
 @import './views/clients/clients.css';
+@import './views/property-risk/property-risk.css';
+@import './views/climate-map/climate-map.css';
+@import './views/auth/auth.css';

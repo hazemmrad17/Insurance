@@ -3,70 +3,89 @@
  * sidebar navigation, header actions, and cross-view navigation.
  */
 
-import { initClimateMap, destroyClimateMap } from './views/climate-map/climate-map.js';
-import { initHouse, destroyHouse } from './house3d.js';
+import { initPropertyRisk, destroyPropertyRisk, onRiskTabChange } from './views/property-risk/property-risk.js';
+import { initPortfolio, destroyPortfolio, onPortfolioTabChange } from './views/portfolio/portfolio.js';
 
 // ── View Config ────────────────────────────────────────────────
 export const VIEW_TABS: Record<string, string[]> = {
-  overview: ['Summary', 'Progress', 'Timeline', 'Work Areas'],
-  map: ['Overview', 'Comparison'],
-  property: ['Data', 'Risks', 'ROI', 'Recommendations', 'Documents'],
+  overview: ['KPIs', 'Distribution', 'Activity'],
   portfolio: ['Summary', 'Map', 'Trends'],
-  assessments: ['All', 'Pending', 'Completed'],
-  clients: ['Info', 'Contracts', 'Documents'],
+  clients: [],
   settings: ['Account', 'Security', 'Billing & Plans', 'Notifications', 'Connections'],
+  'property-risk': ['Locate', 'Inspect', 'Evaluate'],
 };
 
 // Map view name → base path
 const ROUTES: Record<string, string> = {
-  overview: '/overview',
-  map: '/map',
-  property: '/property',
+  overview: '/',
   portfolio: '/portfolio',
-  assessments: '/assessments',
   clients: '/clients',
   settings: '/settings',
+  'property-risk': '/risk-hub',
 };
 
 // Sub-tab keys per view that support deep-linking
 const SUB_TAB_KEYS: Record<string, string[]> = {
   portfolio: ['summary', 'map', 'trends'],
-  assessments: ['all', 'pending', 'completed'],
-  clients: ['info', 'contracts', 'documents'],
+  clients: [],
   settings: ['account', 'security', 'billing', 'notifications', 'connections'],
+  'property-risk': ['locate', 'inspect', 'evaluate'],
 };
 
 // Maps view+tab-key → content-key for showViewSubTab
 const SUB_TAB_CONTENT: Record<string, Record<string, string>> = {
   portfolio: { summary: 'summary', map: 'map', trends: 'trends' },
-  assessments: { all: 'all', pending: 'pending', completed: 'completed' },
-  clients: { info: 'info', contracts: 'contracts', documents: 'documents' },
+  clients: {},
   settings: { account: 'account', security: 'security', billing: 'billing', notifications: 'notifications', connections: 'connections' },
+  'property-risk': { locate: 'locate', inspect: 'inspect', evaluate: 'evaluate' },
 };
 
 // ── Sub-tab helper: activate sub-tab for a view by tab-key ──
 function activateSubTab(viewName: string, tabKey: string): void {
-  if (viewName === 'property') {
-    showPropertySubTab(tabKey);
+  if (viewName === 'property-risk') {
+    showPropertyRiskSubTab(tabKey);
     return;
   }
   if (SUB_TAB_CONTENT[viewName]?.[tabKey]) {
     showViewSubTab(viewName, tabKey);
   }
+  // Notify portfolio map lifecycle on sub-tab changes
+  if (viewName === 'portfolio') {
+    onPortfolioTabChange(tabKey);
+  }
 }
+
+/* ── Redirect old routes to new canonical routes ──────────── */
+const REDIRECTS: Record<string, { view: string; subTab?: string }> = {
+  map: { view: 'property-risk', subTab: 'locate' },
+  property: { view: 'property-risk', subTab: 'inspect' },
+  assureur: { view: 'property-risk', subTab: 'evaluate' },
+  assessments: { view: 'portfolio', subTab: 'summary' },
+};
 
 /* ── Parse URL path into { view, subTab? } ───────────────── */
 function parseUrl(path: string): { view: string; subTab?: string } {
   // Remove trailing slash
   const clean = path.replace(/\/$/, '');
-  const parts = clean.split('/').filter(Boolean); // ['', 'clients', 'contracts'] → ['clients', 'contracts']
+  const parts = clean.split('/').filter(Boolean);
 
   if (parts.length === 0) return { view: 'overview' };
 
   const viewName = parts[0];
   const subTab = parts.length > 1 ? parts[1] : undefined;
 
-  // Validate view name
+  // Auth routes
+  if (viewName === 'auth' && subTab) {
+    return { view: 'auth-' + subTab };
+  }
+
+  // Check redirects for old routes
+  if (REDIRECTS[viewName]) {
+    console.log(`[Router] Redirecting /${viewName} → /${REDIRECTS[viewName].view}/${REDIRECTS[viewName].subTab || ''}`);
+    return REDIRECTS[viewName];
+  }
+
+  // Validate view name (prevent 404 on unknown routes)
   if (!ROUTES[viewName]) return { view: 'overview' };
 
   // Validate sub-tab for this view
@@ -161,22 +180,43 @@ export function setupSidebarNavigation(): void {
 
 // ── View Switching ─────────────────────────────────────────────
 export function switchView(viewName: string, subTab?: string): void {
+  // Auth views are outside the dashboard shell
+  if (viewName && viewName.startsWith('auth-')) {
+    import('./views/auth/auth.js').then(({ showAuthPage }) => {
+      showAuthPage(viewName.replace('auth-', ''));
+    });
+    return;
+  }
+
+  // Restore dashboard shell when leaving auth pages
+  const dashboard = document.querySelector('.dashboard-container') as HTMLElement | null;
+  if (dashboard) dashboard.style.display = '';
+  document.querySelectorAll('.auth-view').forEach(el => el.classList.remove('active'));
+
   document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
   const targetView = document.getElementById(`view-${viewName}`);
   if (targetView) targetView.classList.add('active');
   updateHeaderTabs(viewName, subTab);
 
-  // Lifecycle for view-specific modules
-  if (viewName === 'map') {
-    requestAnimationFrame(() => initClimateMap());
-  } else {
-    destroyClimateMap();
+  // Ensure client detail panel is closed when leaving the clients view
+  const clientsPanel = document.getElementById('clientsDetailPanel');
+  if (clientsPanel?.classList.contains('active') && viewName !== 'clients') {
+    clientsPanel.classList.remove('active');
+    // Restore the default info tab content
+    document.querySelector('.clients-tab-content[data-content="info"]')?.classList.add('active');
   }
 
-  if (viewName === 'property') {
-    requestAnimationFrame(() => initHouse('houseContainer'));
+  // Lifecycle for view-specific modules
+  if (viewName === 'property-risk') {
+    requestAnimationFrame(() => initPropertyRisk());
   } else {
-    destroyHouse();
+    destroyPropertyRisk();
+  }
+
+  if (viewName === 'portfolio') {
+    requestAnimationFrame(() => initPortfolio());
+  } else {
+    destroyPortfolio();
   }
 }
 
@@ -187,10 +227,13 @@ export function updateHeaderTabs(viewName: string, activeTabKey?: string): void 
 
   const tabNames = VIEW_TABS[viewName] || VIEW_TABS.property;
   const subTabKeys = SUB_TAB_KEYS[viewName] || [];
-  const settingsIcons: Record<string, string> = {
-    account: 'person', security: 'lock', 'billing & plans': 'credit_card',
-    notifications: 'notifications', connections: 'link',
-  };
+
+  // Hide the entire header tabs row when there are no tabs
+  if (tabNames.length === 0) {
+    headerTabs.style.display = 'none';
+    return;
+  }
+  headerTabs.style.display = '';
 
   // Active key: use provided, or default to first sub-tab key
   const activeKey = activeTabKey || subTabKeys[0] || '';
@@ -199,8 +242,8 @@ export function updateHeaderTabs(viewName: string, activeTabKey?: string): void 
     const rawKey = name.toLowerCase();
     // Use canonical key from SUB_TAB_KEYS when available (handles 'billing & plans' → 'billing')
     const tabKey = subTabKeys[i] || rawKey;
-    const icon = viewName === 'settings' && settingsIcons[rawKey]
-      ? `<span class="material-symbols-outlined tab-icon">${settingsIcons[rawKey]}</span>`
+    const icon = viewName === 'settings'
+      ? `<span class="material-symbols-outlined tab-icon">${subTabKeys[i] === 'account' ? 'person' : subTabKeys[i] === 'security' ? 'lock' : subTabKeys[i] === 'billing' ? 'credit_card' : subTabKeys[i] === 'notifications' ? 'notifications' : 'link'}</span>`
       : '';
     const isActive = tabKey === activeKey;
     return `<button class="tab-btn ${isActive ? 'active' : ''}" data-tab="${tabKey}">${icon}${name}</button>`;
@@ -234,23 +277,23 @@ export function setupHeaderTabs(): void {
 }
 
 // ── Sub-Tab Content Switching ──────────────────────────────────
-export function showPropertySubTab(tabName: string): void {
-  const panels = document.querySelectorAll('.prop-tab-content');
+export function showPropertyRiskSubTab(tabName: string): void {
+  const panels = document.querySelectorAll('.risk-tab-content');
   if (!panels.length) return;
-  const map: Record<string, string> = {
-    data: 'data', risks: 'risks', roi: 'roi',
-    recommendations: 'recommendations', documents: 'documents',
-  };
-  const contentKey = map[tabName];
+  const contentKey = SUB_TAB_CONTENT['property-risk']?.[tabName];
   if (!contentKey) return;
   panels.forEach(el => el.classList.remove('active'));
-  const target = document.querySelector(`.prop-tab-content[data-content="${contentKey}"]`);
+  const target = document.querySelector(`.risk-tab-content[data-content="${contentKey}"]`);
   if (target) target.classList.add('active');
+
+  // Notify the view module to manage map/house lifecycle + step updates
+  onRiskTabChange(tabName);
 }
 
 export function showViewSubTab(viewName: string, tabName: string): void {
-  const prefix = viewName === 'map' ? 'map' : viewName === 'portfolio' ? 'portfolio'
-    : viewName === 'assessments' ? 'assess' : viewName === 'clients' ? 'clients' : 'settings';
+  const prefix = viewName === 'portfolio' ? 'portfolio'
+    : viewName === 'clients' ? 'clients'
+    : viewName === 'property-risk' ? 'risk' : 'settings';
   const selector = `.${prefix}-tab-content`;
   const panels = document.querySelectorAll(selector);
   if (!panels.length) return;
@@ -282,15 +325,6 @@ export function closeModal(id: string): void {
 }
 
 export function setupModals(): void {
-  const pdfClose = document.getElementById('pdfViewerClose');
-  if (pdfClose) pdfClose.addEventListener('click', () => closeModal('pdfViewer'));
-
-  const reportClose = document.getElementById('reportModalClose');
-  if (reportClose) reportClose.addEventListener('click', () => closeModal('reportModal'));
-
-  const printBtn = document.getElementById('reportPrintBtn');
-  if (printBtn) printBtn.addEventListener('click', () => window.print());
-
   document.querySelectorAll('.modal-overlay').forEach(overlay => {
     overlay.addEventListener('click', (e) => {
       if (e.target === overlay) overlay.classList.remove('open');
@@ -370,7 +404,6 @@ export function setupHeaderActions(): void {
 
 // ── Cross-View Navigation ──────────────────────────────────────
 export function setupCrossNavigation(): void {
-  // Portfolio → Property or Clients
   document.querySelectorAll('.portfolio-prop').forEach(card => {
     card.addEventListener('click', (e) => {
       const target = e.target as HTMLElement;
@@ -378,21 +411,7 @@ export function setupCrossNavigation(): void {
         navigateTo('clients');
         return;
       }
-      navigateTo('property');
-    });
-  });
-
-  // Assessments → Property
-  document.querySelectorAll('.assess-view[data-addr]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      navigateTo('property');
-    });
-  });
-
-  // Assessments → Clients
-  document.querySelectorAll('.assess-view-client').forEach(btn => {
-    btn.addEventListener('click', () => {
-      navigateTo('clients');
+      navigateTo('property-risk', 'inspect');
     });
   });
 }

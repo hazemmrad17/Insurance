@@ -176,10 +176,30 @@
 .settings-form-input:focus,
 .settings-form-select:focus {
   border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(197,106,61,0.08);
 }
 
+/* Custom select arrow */
 .settings-form-select {
   cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px;
+  padding-right: 30px;
+}
+
+.settings-form-select:hover {
+  border-color: var(--color-primary);
+}
+
+.settings-form-select option {
+  padding: 6px 10px;
+  background: var(--bg-card);
+  color: var(--text-primary);
 }
 
 .settings-input-phone {
@@ -749,6 +769,7 @@
 }
 
 /* ====== CONNECTIONS TAB ====== */
+/* Source data grid */
 .settings-source-grid {
   display: flex;
   flex-direction: column;
@@ -778,5 +799,173 @@
 
 .settings-source-info .material-symbols-outlined {
   flex-shrink: 0;
+}
+
+.settings-source-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: block;
+}
+
+.settings-source-desc {
+  font-size: 10px;
+  color: var(--text-muted);
+  display: block;
+}
+
+.settings-source-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.settings-source-status {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.settings-source-status.connected {
+  background: rgba(16,185,129,0.1);
+  color: #10b981;
+}
+
+.settings-source-status.error {
+  background: rgba(239,68,68,0.1);
+  color: #ef4444;
+}
+
+.settings-source-test {
+  padding: 4px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-primary);
+  font-size: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: auto;
+}
+
+.settings-source-test:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.settings-source-test.reconnect {
+  color: #ef4444;
+  border-color: rgba(239,68,68,0.3);
+}
+
+.settings-source-test.reconnect:hover {
+  border-color: #ef4444;
+  background: rgba(239,68,68,0.06);
+}
+
+/* API key card */
+.settings-api-key-card {
+  background: var(--bg-panel);
+  border-radius: var(--border-radius-sm);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.settings-api-key-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.settings-api-key-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.settings-api-key-tag {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--bg-card);
+  color: var(--text-muted);
+  margin-left: 6px;
+}
+
+.settings-api-key-tag.active {
+  background: rgba(16,185,129,0.1);
+  color: #10b981;
+}
+
+.settings-api-key-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.settings-api-key-value {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.settings-api-key-code {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 12px;
+  color: var(--text-primary);
+  background: var(--bg-card);
+  padding: 6px 10px;
+  border-radius: 4px;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.settings-api-key-created {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* Webhooks */
+.settings-webhook {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.settings-webhook-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  background: var(--bg-card);
+  border-radius: var(--border-radius-sm);
+}
+
+.settings-webhook-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+  display: block;
+}
+
+.settings-webhook-url {
+  font-size: 10px;
+  color: var(--text-muted);
+  display: block;
+  font-family: 'Roboto Mono', monospace;
+  margin-top: 2px;
 }
 

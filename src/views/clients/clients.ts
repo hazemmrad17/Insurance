@@ -122,23 +122,365 @@ function resetWizard(): void {
   });
 }
 
+/* ═══════════════════════════════════════════════════
+   Mock Client Data
+   ═══════════════════════════════════════════════════ */
+interface ClientPayment {
+  date: string;
+  type: string;
+  contract: string;
+  amount: string;
+  status: 'paid' | 'pending' | 'late' | 'upcoming';
+}
+
+interface ClientContract {
+  name: string;
+  type: string;
+  ref: string;
+  status: string;
+  premium: string;
+  icon: string;
+  color: string;
+}
+
+interface ClientDetail {
+  id: string;
+  initials: string;
+  civility: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  address: string;
+  cp: string;
+  city: string;
+  nationality: string;
+  profession: string;
+  dob: string;
+  status: string;
+  ref: string;
+  statContracts: number;
+  statActive: number;
+  statPending: number;
+  statPremium: string;
+  payments: ClientPayment[];
+  contracts: ClientContract[];
+}
+
+const MOCK_CLIENTS: Record<string, ClientDetail> = {
+  '1': {
+    id: '1', initials: 'JD', civility: 'M.', firstName: 'Jean', lastName: 'Dupont',
+    email: 'jean.dupont@email.fr', phone: '+33 6 12 34 56 78',
+    address: '12 Rue de la Paix', cp: '75002', city: 'Paris',
+    nationality: 'Française', profession: 'Avocat', dob: '1978-03-15',
+    status: 'active', ref: 'CLT-2026-001',
+    statContracts: 3, statActive: 2, statPending: 0, statPremium: '3 720 €',
+    payments: [
+      { date: '15/03/2026', type: 'Prime annuelle', contract: 'Multirisque habitation', amount: '1 240 €', status: 'paid' },
+      { date: '01/02/2026', type: 'Prime', contract: 'Automobile', amount: '680 €', status: 'paid' },
+      { date: '15/03/2025', type: 'Prime annuelle', contract: 'Multirisque habitation', amount: '1 240 €', status: 'paid' },
+      { date: '01/05/2026', type: 'Avenant', contract: 'Multirisque habitation', amount: '350 €', status: 'paid' },
+      { date: '15/09/2026', type: 'Rappel', contract: 'Multirisque habitation', amount: '1 240 €', status: 'upcoming' },
+    ],
+    contracts: [
+      { name: 'Multirisque habitation', type: 'Habitation', ref: 'MRH-2026-001', status: 'Actif', premium: '1 240 €/an', icon: 'home', color: '#c56a3d' },
+      { name: 'Assurance automobile', type: 'Auto', ref: 'AUTO-2026-012', status: 'Actif', premium: '680 €/an', icon: 'directions_car', color: '#3b82f6' },
+      { name: 'Prévoyance décès', type: 'Vie', ref: 'PREV-2025-008', status: 'Résilié', premium: '1 800 €/an', icon: 'favorite', color: '#64748b' },
+    ],
+  },
+  '2': {
+    id: '2', initials: 'MB', civility: 'Mme', firstName: 'Marie', lastName: 'Bernard',
+    email: 'marie.bernard@email.fr', phone: '+33 6 98 76 54 32',
+    address: '15 Rue de la République', cp: '69003', city: 'Lyon',
+    nationality: 'Française', profession: 'Infirmière', dob: '1985-07-22',
+    status: 'active', ref: 'CLT-2026-002',
+    statContracts: 2, statActive: 2, statPending: 0, statPremium: '1 560 €',
+    payments: [
+      { date: '10/01/2026', type: 'Prime annuelle', contract: 'Automobile', amount: '680 €', status: 'paid' },
+      { date: '15/05/2026', type: 'Prime', contract: 'Santé', amount: '880 €', status: 'paid' },
+      { date: '10/01/2025', type: 'Prime annuelle', contract: 'Automobile', amount: '650 €', status: 'paid' },
+      { date: '20/11/2025', type: 'Sinistre', contract: 'Automobile', amount: '2 300 €', status: 'paid' },
+    ],
+    contracts: [
+      { name: 'Assurance automobile', type: 'Auto', ref: 'AUTO-2026-015', status: 'Actif', premium: '680 €/an', icon: 'directions_car', color: '#3b82f6' },
+      { name: 'Mutuelle santé', type: 'Santé', ref: 'SANTE-2026-003', status: 'Actif', premium: '880 €/an', icon: 'local_hospital', color: '#10b981' },
+    ],
+  },
+  '3': {
+    id: '3', initials: 'PL', civility: 'M.', firstName: 'Pierre', lastName: 'Lefèvre',
+    email: 'pierre.lefevre@email.fr', phone: '+33 6 45 67 89 01',
+    address: '8 Rue de Rome', cp: '13006', city: 'Marseille',
+    nationality: 'Française', profession: 'Artisan', dob: '1972-11-03',
+    status: 'pending', ref: 'CLT-2026-003',
+    statContracts: 2, statActive: 1, statPending: 1, statPremium: '3 450 €',
+    payments: [
+      { date: '20/02/2026', type: 'Prime trimestrielle', contract: 'Professionnelle', amount: '612 €', status: 'paid' },
+      { date: '20/05/2026', type: 'Prime trimestrielle', contract: 'Professionnelle', amount: '612 €', status: 'pending' },
+      { date: '01/03/2026', type: 'Prime annuelle', contract: 'Habitation', amount: '1 200 €', status: 'paid' },
+    ],
+    contracts: [
+      { name: 'Assurance professionnelle', type: 'Pro', ref: 'PRO-2026-002', status: 'Actif', premium: '2 450 €/an', icon: 'business', color: '#f59e0b' },
+      { name: 'Assurance habitation', type: 'Habitation', ref: 'MRH-2026-007', status: 'En attente', premium: '1 200 €/an', icon: 'home', color: '#94a3b8' },
+    ],
+  },
+};
+
+// Fill with data for remaining 3 clients using template
+const TEMPLATE_CLIENTS: Array<{ id: string; initials: string; fn: string; ln: string; email: string; phone: string; addr: string; cp: string; city: string; status: string; ref: string; profession: string; dob: string; premium: string }> = [
+  { id: '4', initials: 'SN', fn: 'Sophie', ln: 'Nguyen', email: 'sophie.nguyen@email.fr', phone: '+33 6 23 45 67 89', addr: '5 Rue des Remparts', cp: '33000', city: 'Bordeaux', status: 'active', ref: 'CLT-2026-004', profession: 'Architecte', dob: '1990-04-18', premium: '1 890 €' },
+  { id: '5', initials: 'LR', fn: 'Lucas', ln: 'Richard', email: 'lucas.richard@email.fr', phone: '+33 6 34 56 78 90', addr: '22 Rue Matabiau', cp: '31000', city: 'Toulouse', status: 'suspended', ref: 'CLT-2026-005', profession: 'Commercial', dob: '1988-09-25', premium: '950 €' },
+  { id: '6', initials: 'CP', fn: 'Claire', ln: 'Petit', email: 'claire.petit@email.fr', phone: '+33 6 56 78 90 12', addr: '18 Rue de la Gare', cp: '59000', city: 'Lille', status: 'pending', ref: 'CLT-2026-006', profession: 'Enseignante', dob: '1982-12-10', premium: '3 200 €' },
+];
+
+for (const t of TEMPLATE_CLIENTS) {
+  MOCK_CLIENTS[t.id] = {
+    id: t.id, initials: t.initials, civility: 'M.', firstName: t.fn, lastName: t.ln,
+    email: t.email, phone: t.phone, address: t.addr, cp: t.cp, city: t.city,
+    nationality: 'Française', profession: t.profession, dob: t.dob,
+    status: t.status, ref: t.ref,
+    statContracts: 1, statActive: t.status === 'active' ? 1 : 0, statPending: t.status === 'pending' ? 1 : 0,
+    statPremium: t.premium,
+    payments: [
+      { date: '15/01/2026', type: 'Prime annuelle', contract: t.ref, amount: t.premium, status: t.status === 'pending' ? 'pending' : 'paid' },
+      { date: '15/01/2025', type: 'Prime annuelle', contract: t.ref, amount: t.premium, status: 'paid' },
+    ],
+    contracts: [
+      { name: `Contrat ${t.ref}`, type: 'Multirisque', ref: t.ref, status: t.status === 'active' ? 'Actif' : t.status === 'pending' ? 'En attente' : 'Suspendu', premium: `${t.premium}/an`, icon: t.id === '4' ? 'home' : t.id === '5' ? 'directions_car' : 'favorite', color: t.status === 'active' ? '#10b981' : t.status === 'pending' ? '#f59e0b' : '#ef4444' },
+    ],
+  };
+}
+
+// ── Client Detail Panel ──────────────────────────────
+let currentClientId: string | null = null;
+let isEditing = false;
+
+function openClientDetail(clientId: string): void {
+  const data = MOCK_CLIENTS[clientId];
+  if (!data) return;
+
+  currentClientId = clientId;
+  isEditing = false;
+
+  // Hide tab-content panels, show detail panel
+  document.querySelectorAll('.clients-tab-content').forEach(el => el.classList.remove('active'));
+  const panel = document.getElementById('clientsDetailPanel');
+  if (panel) panel.classList.add('active');
+
+  // Populate profile header
+  document.getElementById('cdpAvatar')!.textContent = data.initials;
+  document.getElementById('cdpName')!.textContent = `${data.firstName} ${data.lastName}`;
+  (document.getElementById('cdpRef') as HTMLElement)!.textContent = data.ref;
+
+  const statusEl = document.getElementById('cdpStatus') as HTMLElement;
+  statusEl.textContent = data.status === 'active' ? 'Actif' : data.status === 'pending' ? 'En attente' : 'Suspendu';
+  statusEl.className = 'cdp-status ' + data.status;
+
+  // Populate stats
+  document.getElementById('cdpStatContracts')!.textContent = String(data.statContracts);
+  document.getElementById('cdpStatActive')!.textContent = String(data.statActive);
+  document.getElementById('cdpStatPending')!.textContent = String(data.statPending);
+  document.getElementById('cdpStatPremium')!.textContent = data.statPremium;
+
+  // Populate form fields
+  (document.getElementById('cdpFieldCivility') as HTMLSelectElement)!.value = data.civility;
+  (document.getElementById('cdpFieldFirstname') as HTMLInputElement)!.value = data.firstName;
+  (document.getElementById('cdpFieldLastname') as HTMLInputElement)!.value = data.lastName;
+  (document.getElementById('cdpFieldEmail') as HTMLInputElement)!.value = data.email;
+  (document.getElementById('cdpFieldPhone') as HTMLInputElement)!.value = data.phone;
+  (document.getElementById('cdpFieldAddress') as HTMLInputElement)!.value = data.address;
+  (document.getElementById('cdpFieldCp') as HTMLInputElement)!.value = data.cp;
+  (document.getElementById('cdpFieldCity') as HTMLInputElement)!.value = data.city;
+  (document.getElementById('cdpFieldDob') as HTMLInputElement)!.value = data.dob;
+  (document.getElementById('cdpFieldNationality') as HTMLSelectElement)!.value = data.nationality;
+  (document.getElementById('cdpFieldProfession') as HTMLInputElement)!.value = data.profession;
+
+  // Disable form fields (view mode)
+  setFormFieldsDisabled(true);
+  document.getElementById('cdpFormActions')!.style.display = 'none';
+
+  // Populate payment history
+  const historyBody = document.getElementById('cdpHistoryBody')!;
+  historyBody.innerHTML = data.payments.map(p => {
+    const statusLabel: Record<string, string> = { paid: 'Payé', pending: 'En attente', late: 'En retard', upcoming: 'À venir' };
+    return `<tr>
+      <td>${p.date}</td>
+      <td>${p.type}</td>
+      <td>${p.contract}</td>
+      <td style="font-weight:600;color:var(--text-primary);">${p.amount}</td>
+      <td><span class="cdp-badge ${p.status}">${statusLabel[p.status] || p.status}</span></td>
+    </tr>`;
+  }).join('');
+
+  // Populate contracts
+  const contractsList = document.getElementById('cdpContractsList')!;
+  contractsList.innerHTML = data.contracts.map(c => {
+    return `<div class="cdp-contract-card">
+      <span class="material-symbols-outlined cdp-contract-icon" style="background:${c.color}1a;color:${c.color};">${c.icon}</span>
+      <div class="cdp-contract-body">
+        <span class="cdp-contract-name">${c.name}</span>
+        <span class="cdp-contract-meta">
+          <span>${c.ref}</span>
+          <span>${c.type}</span>
+          <span style="color:${c.status === 'Actif' ? '#059669' : c.status === 'En attente' ? '#d97706' : '#94a3b8'};">${c.status}</span>
+        </span>
+      </div>
+      <span class="cdp-contract-premium">${c.premium}</span>
+    </div>`;
+  }).join('');
+
+  // Reset to info tab
+  document.querySelectorAll('.cdp-tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelector('.cdp-tab-content[data-cdp-content="info"]')?.classList.add('active');
+  document.querySelectorAll('.cdp-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector('.cdp-tab[data-cdp-tab="info"]')?.classList.add('active');
+}
+
+function closeClientDetail(): void {
+  currentClientId = null;
+  isEditing = false;
+  const panel = document.getElementById('clientsDetailPanel');
+  if (panel) panel.classList.remove('active');
+  document.querySelector('.clients-tab-content[data-content="info"]')?.classList.add('active');
+  setFormFieldsDisabled(true);
+  document.getElementById('cdpFormActions')!.style.display = 'none';
+}
+
+function setFormFieldsDisabled(disabled: boolean): void {
+  document.querySelectorAll('.cdp-field input, .cdp-field select').forEach(el => {
+    if (disabled) el.setAttribute('disabled', 'disabled');
+    else el.removeAttribute('disabled');
+  });
+}
+
+function toggleEditMode(): void {
+  isEditing = !isEditing;
+  setFormFieldsDisabled(!isEditing);
+  document.getElementById('cdpFormActions')!.style.display = isEditing ? 'flex' : 'none';
+  const editBtn = document.getElementById('cdpEditToggle')!;
+  if (isEditing) {
+    editBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px!important;">close</span> Annuler';
+  } else {
+    editBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px!important;">edit</span> Modifier';
+  }
+}
+
+function saveClientInfo(): void {
+  if (!currentClientId) return;
+  const data = MOCK_CLIENTS[currentClientId];
+  if (!data) return;
+
+  data.civility = (document.getElementById('cdpFieldCivility') as HTMLSelectElement)!.value;
+  data.firstName = (document.getElementById('cdpFieldFirstname') as HTMLInputElement)!.value.trim() || data.firstName;
+  data.lastName = (document.getElementById('cdpFieldLastname') as HTMLInputElement)!.value.trim() || data.lastName;
+  data.email = (document.getElementById('cdpFieldEmail') as HTMLInputElement)!.value.trim() || data.email;
+  data.phone = (document.getElementById('cdpFieldPhone') as HTMLInputElement)!.value.trim() || data.phone;
+  data.address = (document.getElementById('cdpFieldAddress') as HTMLInputElement)!.value.trim() || data.address;
+  data.cp = (document.getElementById('cdpFieldCp') as HTMLInputElement)!.value.trim() || data.cp;
+  data.city = (document.getElementById('cdpFieldCity') as HTMLInputElement)!.value.trim() || data.city;
+  data.nationality = (document.getElementById('cdpFieldNationality') as HTMLSelectElement)!.value;
+  data.profession = (document.getElementById('cdpFieldProfession') as HTMLInputElement)!.value.trim() || data.profession;
+
+  // Update header
+  document.getElementById('cdpName')!.textContent = `${data.firstName} ${data.lastName}`;
+
+  // Update table row (if exists)
+  const row = document.querySelector(`.clients-table-row[data-client="${currentClientId}"]`);
+  if (row) {
+    row.querySelector('.clients-table-name')!.textContent = `${data.firstName} ${data.lastName}`;
+    row.querySelector('.clients-table-email')!.textContent = data.email;
+  }
+
+  isEditing = false;
+  setFormFieldsDisabled(true);
+  document.getElementById('cdpFormActions')!.style.display = 'none';
+  const editBtn = document.getElementById('cdpEditToggle')!;
+  editBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px!important;">edit</span> Modifier';
+
+  // Flash feedback
+  const saveBtn = document.getElementById('cdpSaveBtn')!;
+  const orig = saveBtn.innerHTML;
+  saveBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px!important;">check</span> Enregistré !';
+  saveBtn.style.background = '#10b981';
+  setTimeout(() => {
+    saveBtn.innerHTML = orig;
+    saveBtn.style.background = '';
+  }, 1200);
+}
+
 // ── Client Table Actions ──────────────────────────────
 function setupClientActions(): void {
-  // View action
+  // View action — opens client detail panel
   document.querySelectorAll('.clients-action-btn[data-action="view"]').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
       const row = (btn as HTMLElement).closest('.clients-table-row');
-      const name = row?.querySelector('.clients-table-name')?.textContent || 'Client';
-      alert(`Fiche détaillée de ${name} — module à implémenter.`);
+      const clientId = row?.getAttribute('data-client');
+      if (clientId) openClientDetail(clientId);
     });
   });
 
-  // Edit action
+  // Click on row also opens detail
+  document.querySelectorAll('.clients-table-row').forEach(row => {
+    row.addEventListener('click', () => {
+      const clientId = row.getAttribute('data-client');
+      if (clientId) openClientDetail(clientId);
+    });
+  });
+
+  // Back button
+  const backBtn = document.getElementById('cdpBackBtn');
+  if (backBtn) backBtn.addEventListener('click', closeClientDetail);
+
+  // Edit toggle
+  const editBtn = document.getElementById('cdpEditToggle');
+  if (editBtn) editBtn.addEventListener('click', toggleEditMode);
+
+  // Save button
+  const saveBtn = document.getElementById('cdpSaveBtn');
+  if (saveBtn) saveBtn.addEventListener('click', saveClientInfo);
+
+  // Cancel button
+  const cancelBtn = document.getElementById('cdpCancelBtn');
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', () => {
+      isEditing = false;
+      setFormFieldsDisabled(true);
+      document.getElementById('cdpFormActions')!.style.display = 'none';
+      const editBtn = document.getElementById('cdpEditToggle')!;
+      editBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px!important;">edit</span> Modifier';
+      // Re-populate to reset fields
+      if (currentClientId) openClientDetail(currentClientId);
+    });
+  }
+
+  // Detail tab switching
+  document.querySelectorAll('.cdp-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const target = (tab as HTMLElement).getAttribute('data-cdp-tab');
+      if (!target) return;
+      document.querySelectorAll('.cdp-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      document.querySelectorAll('.cdp-tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelector(`.cdp-tab-content[data-cdp-content="${target}"]`)?.classList.add('active');
+    });
+  });
+
+  // Edit action — opens detail panel in edit mode
   document.querySelectorAll('.clients-action-btn[data-action="edit"]').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
       const row = (btn as HTMLElement).closest('.clients-table-row');
-      const name = row?.querySelector('.clients-table-name')?.textContent || 'Client';
-      alert(`Modification de ${name} — module à implémenter.`);
+      const clientId = row?.getAttribute('data-client');
+      if (!clientId) return;
+      openClientDetail(clientId);
+      // Switch to edit mode
+      setTimeout(() => {
+        isEditing = true;
+        setFormFieldsDisabled(false);
+        document.getElementById('cdpFormActions')!.style.display = 'flex';
+        const editBtn = document.getElementById('cdpEditToggle')!;
+        editBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px!important;">close</span> Annuler';
+      }, 300);
     });
   });
 

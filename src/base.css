@@ -218,39 +218,90 @@ body {
 
 .profile-menu {
   position: absolute; top: calc(100% + 6px); right: 0;
-  background: var(--bg-card); border-radius: var(--border-radius-md);
-  min-width: 220px; box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+  border-radius: var(--border-radius-md);
+  min-width: 240px; max-width: 280px;
+  padding: 6px 0;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.14), 0 2px 8px rgba(0,0,0,0.06);
   border: 1px solid var(--border-color);
-  display: none; flex-direction: column; overflow: hidden;
+  flex-direction: column;
+  overflow: hidden;
   z-index: 50;
+  /* Hidden state — animatable via visibility/opacity/transform */
+  visibility: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-4px) scale(0.97);
+  transition: opacity 0.2s cubic-bezier(0.2,0,0,1), transform 0.2s cubic-bezier(0.2,0,0,1), visibility 0.2s;
+  transform-origin: top right;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255,255,255,0.96);
 }
-.profile-menu.open { display: flex; }
+.dark-mode .profile-menu {
+  background: rgba(30,41,59,0.96);
+}
+.profile-menu.open {
+  visibility: visible;
+  pointer-events: auto;
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
 
 .profile-menu-header {
   display: flex; align-items: center; gap: 10px;
-  padding: 14px 16px; border-bottom: 1px solid var(--border-color);
+  padding: 12px 16px 10px;
+  border-bottom: 1px solid var(--border-color);
 }
-.profile-menu-header .material-symbols-outlined { font-size: 20px !important; }
-.profile-menu-name { font-size: 13px; font-weight: 600; color: var(--text-primary); display: block; }
+.profile-menu-header .material-symbols-outlined {
+  font-size: 24px !important;
+  width: 36px; height: 36px;
+  background: rgba(197,106,61,0.1);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.profile-menu-name { font-size: 14px; font-weight: 600; color: var(--text-primary); display: block; letter-spacing: -0.2px; }
 .profile-menu-email { font-size: 11px; color: var(--text-muted); display: block; margin-top: 1px; }
 
 .profile-menu-divider { height: 1px; background: var(--border-color); margin: 0; }
 
 .profile-menu-item {
   display: flex; align-items: center; gap: 10px;
-  padding: 10px 16px; border: none; background: transparent;
-  font-family: var(--font-primary); font-size: 12px; color: var(--text-secondary);
+  padding: 9px 16px; border: none; background: transparent;
+  font-family: var(--font-primary); font-size: 13px; font-weight: 450;
+  color: var(--text-secondary);
   cursor: pointer; transition: all 0.15s ease; text-align: left;
+  position: relative;
+  margin: 0 4px;
+  border-radius: var(--border-radius-sm);
 }
-.profile-menu-item:hover { background: #f1f5f9; color: var(--text-primary); }
-.profile-menu-item .material-symbols-outlined { font-size: 18px !important; }
-.profile-menu-item.logout { color: #ef4444; border-top: 1px solid var(--border-color); }
+.profile-menu-item:hover {
+  background: #f1f5f9; color: var(--text-primary);
+}
+.profile-menu-item .material-symbols-outlined {
+  font-size: 18px !important;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.profile-menu-item.logout {
+  color: #ef4444;
+  border-top: 1px solid var(--border-color);
+  margin: 0;
+  padding: 10px 16px;
+  border-radius: 0;
+  margin-top: 4px;
+}
 .profile-menu-item.logout:hover { background: #fef2f2; }
+.dark-mode .profile-menu-item.logout:hover { background: rgba(239,68,68,0.08); }
 
 .dark-mode .profile-trigger:hover { background: #334155; color: var(--text-primary); }
 .dark-mode .header-theme-btn:hover { background: #334155; color: var(--text-primary); }
 .dark-mode .profile-menu { border-color: #334155; }
 .dark-mode .profile-menu-item:hover { background: #0f172a; }
+.dark-mode .profile-menu-header .material-symbols-outlined {
+  background: rgba(197,106,61,0.12);
+}
 
 /* ── View Panels ───────────────────────────────────────── */
 .view-panel { display: none; }
@@ -280,6 +331,13 @@ body {
 .banner-info h1 { font-size: 32px; font-weight: 300; line-height: 1.1; letter-spacing: -0.5px; }
 .banner-info p { font-size: 13px; line-height: 1.4; opacity: 0.85; margin: 12px 0 20px 0; max-width: 300px; }
 .team-avatars { display: flex; align-items: center; }
+.team-avatar-svg {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.8); margin-right: -8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; color: #fff;
+  flex-shrink: 0;
+}
 .team-avatars img {
   width: 32px; height: 32px; border-radius: 50%;
   border: 2px solid rgba(255,255,255,0.8); margin-right: -8px; object-fit: cover;
@@ -501,4 +559,36 @@ body {
 .pdf-page-footer { display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; border-top: 1px solid var(--border-color); font-size: 10px; color: var(--text-muted); background: var(--bg-panel); }
 .pdf-page-footer-date { font-weight: 500; color: var(--text-secondary); }
 
+/* ── Banner Gallery (fading carousel of French architecture background) ── */
+.banner-gallery {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  overflow: hidden; pointer-events: none; z-index: 0;
+}
+.banner-gallery-slide {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  object-fit: cover; display: block;
+  opacity: 0; filter: grayscale(100%) brightness(1.4);
+  animation: bannerGalleryFade 28s ease-in-out infinite;
+}
 
+.banner-gallery-slide:nth-child(1) { animation-delay: 0s; }
+.banner-gallery-slide:nth-child(2) { animation-delay: 7s; }
+.banner-gallery-slide:nth-child(3) { animation-delay: 14s; }
+.banner-gallery-slide:nth-child(4) { animation-delay: 21s; }
+
+@keyframes bannerGalleryFade {
+  0%, 15%   { opacity: 0; }
+  18%, 40%  { opacity: 0.1; }
+  43%, 100% { opacity: 0; }
+}
+
+.dark-mode .banner-gallery-slide {
+  filter: grayscale(100%) brightness(1.6);
+  animation-name: bannerGalleryFadeDark;
+}
+
+@keyframes bannerGalleryFadeDark {
+  0%, 15%   { opacity: 0; }
+  18%, 40%  { opacity: 0.06; }
+  43%, 100% { opacity: 0; }
+}
