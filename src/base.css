@@ -305,7 +305,7 @@ body {
 
 /* ── View Panels ───────────────────────────────────────── */
 .view-panel { display: none; }
-.view-panel.active { display: flex; flex-direction: column; gap: 12px; }
+.view-panel.active { display: flex; flex: 1; min-height: 0; flex-direction: column; gap: 12px; }
 
 /* ── Banner ────────────────────────────────────────────── */
 .banner-section { width: 100%; }

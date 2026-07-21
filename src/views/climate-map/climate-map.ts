@@ -1,19 +1,25 @@
 /**
  * BDNB Building Map — MapLibre GL JS
  *
- * Uses BDNB's own MVT vector tile infrastructure to show
- * building footprints colored by DPE class (when available).
+ * Shows building footprints colored by DPE class via the BDNB REST API
+ * (GeoJSON), overlaid on OSM raster tiles. Supports address search,
+ * building selection with attribute display, and Géorisques WMS risk
+ * overlays (inondation, argiles, séisme, etc.).
  *
  * Providers:
- *   - Map tiles:   OpenStreetMap raster tiles (base)
- *   - Buildings:   BDNB MVT vector tiles (batiment_groupe)
- *   - Geocoding:   BDNB geocoding API → BAN fallback
- *   - Attributes:  BDNB batiment_groupe_complet REST API
+ *   - Base:  OSM raster tiles
+ *   - Buildings: BDNB REST API → GeoJSON on the map
+ *   - Risks: Géorisques WMS overlays
+ *   - Geocoding: BDNB geocoding API → BAN fallback
  */
 
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import proj4 from 'proj4';
+import { loadGeorisques, clearGeorisques, initWmsOnMap } from './georisques-viz.js';
+import { fetchWithTimeout } from './fetch-utils.js';
+import { orchestrate } from '../../risk-assessment/risk-orchestrator.js';
+import { setResultsPanelContainer, renderResults, renderLoadingState } from '../../risk-assessment/results-panel.js';
 
 /* ═══════════════════════════════════════════════════════════════
    Types
@@ -30,23 +36,10 @@ interface GeocodedAddress {
    Constants
    ═══════════════════════════════════════════════════════════════ */
 
-// BDNB MVT vector tile endpoint — the "map viewer" the user wants
-const BDNB_TILE_URL = 'https://api.bdnb.io/v1/bdnb/tuiles/batiment_groupe/{z}/{x}/{y}.pbf';
-
-// DPE color scale (A → G) — used in both tile expression and fallback
+// DPE color scale (A → G)
 const DPE_COLORS: Record<string, string> = {
   A: '#10b981', B: '#34d399', C: '#facc15', D: '#f59e0b', E: '#f97316', F: '#ef4444', G: '#dc2626',
 };
-
-// MapLibre match expression for DPE → color (for vector tile layer)
-function dpeColorExpression(): maplibregl.DataDrivenPropertyValueSpecification<string> {
-  const entries: any[] = ['match', ['get', 'classe_bilan_dpe']];
-  for (const [letter, color] of Object.entries(DPE_COLORS)) {
-    entries.push(letter, color);
-  }
-  entries.push('#c56a3d'); // default (no DPE data) — BDNB brand terracotta
-  return entries as maplibregl.DataDrivenPropertyValueSpecification<string>;
-}
 
 // EPSG:2154 (Lambert-93) → WGS84 projection
 const LAMBERT93 = '+proj=lcc +lat_0=46.5 +lon_0=3 +lat_1=49 +lat_2=44 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs';
@@ -60,6 +53,9 @@ let map: maplibregl.Map | null = null;
 let geocoded: GeocodedAddress | null = null;
 let highlightSourceId: string | null = null;
 let markerInstance: maplibregl.Marker | null = null;
+let mapResizeObserver: ResizeObserver | null = null;
+let lastBuildingFeatures: any[] = []; // raw records from the last fetch, for index lookup
+let labelSourceId: string | null = null;
 
 /* ═══════════════════════════════════════════════════════════════
    Exported API
@@ -69,69 +65,91 @@ export function initClimateMap(): void {
   const container = document.getElementById('climateMapContainer');
   if (!container || map) return;
 
-  // Ensure container has size
-  container.style.width = '100%';
-  container.style.height = '100%';
+  // Force explicit dimensions by measuring the parent
+  const parent = container.parentElement;
+  if (parent) {
+    const rect = parent.getBoundingClientRect();
+    if (rect.width > 0 && rect.height > 0) {
+      container.style.width = rect.width + 'px';
+      container.style.height = rect.height + 'px';
+    } else {
+      container.style.width = '100%';
+      container.style.height = '400px';
+    }
+  } else {
+    container.style.width = '100%';
+    container.style.height = '400px';
+  }
+
+  // Ensure the container is visible with a subtle background
+  container.style.backgroundColor = '#e8ecf0';
 
   map = new maplibregl.Map({
     container: 'climateMapContainer',
     style: {
       version: 8,
       sources: {
+        // OSM raster tiles — visible basemap so the map isn't blank
         'osm-raster': {
           type: 'raster',
-          tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+          tiles: ['/osm-tiles/{z}/{x}/{y}.png'],
           tileSize: 256,
-          attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+          minzoom: 0,
+          maxzoom: 19,
+          attribution: '&copy; <a href="https://openstreetmap.org/copyright">OSM contributors</a>',
         },
-        'bdnb-buildings': {
-          type: 'vector',
-          tiles: [BDNB_TILE_URL],
-          minzoom: 10,
-          maxzoom: 18,
-          attribution: 'BDNB &copy; <a href="https://bdnb.io">bdnb.io</a>',
+
+        // GeoJSON source for BDNB buildings (populated dynamically via REST API)
+        'bdnb-geojson': {
+          type: 'geojson',
+          data: { type: 'FeatureCollection', features: [] },
         },
       },
       layers: [
-        // Base OSM raster
+        // ── OSM Raster Basemap ──
         {
           id: 'osm-raster-layer',
           type: 'raster',
           source: 'osm-raster',
           minzoom: 0,
           maxzoom: 19,
+          paint: {
+            'raster-opacity': 0.85,
+          },
         },
-        // BDNB building footprints — DPE-colored fill
+
+        // ── BDNB building footprints (GeoJSON, filled when data loads) ──
         {
           id: 'bdnb-buildings-fill',
           type: 'fill',
-          source: 'bdnb-buildings',
-          'source-layer': 'batiment_groupe',
+          source: 'bdnb-geojson',
           minzoom: 14,
           maxzoom: 18,
           paint: {
-            'fill-color': dpeColorExpression(),
-            'fill-opacity': 0.35,
-            'fill-outline-color': 'rgba(148, 163, 184, 0.4)',
+            'fill-color': ['match', ['get', 'classe_bilan_dpe'],
+              'A', '#10b981', 'B', '#34d399', 'C', '#facc15',
+              'D', '#f59e0b', 'E', '#f97316', 'F', '#ef4444', 'G', '#dc2626',
+              '#c56a3d'
+            ],
+            'fill-opacity': 0.55,
+            'fill-outline-color': 'rgba(148, 163, 184, 0.6)',
           },
         },
-        // BDNB building outlines (subtle stroke)
         {
           id: 'bdnb-buildings-outline',
           type: 'line',
-          source: 'bdnb-buildings',
-          'source-layer': 'batiment_groupe',
+          source: 'bdnb-geojson',
           minzoom: 14,
           maxzoom: 18,
           paint: {
-            'line-color': 'rgba(148, 163, 184, 0.5)',
-            'line-width': 0.5,
+            'line-color': 'rgba(148, 163, 184, 0.7)',
+            'line-width': 1.2,
           },
         },
       ],
     },
-    center: [2.3522, 48.8566], // Paris
-    zoom: 13,
+    center: [2.3522, 48.8566],
+    zoom: 14,
     minZoom: 3,
     maxZoom: 18,
     attributionControl: { compact: false },
@@ -139,57 +157,192 @@ export function initClimateMap(): void {
 
   // Navigation controls
   map.addControl(new maplibregl.NavigationControl(), 'top-left');
-
-  // Scale control
   map.addControl(new maplibregl.ScaleControl({ unit: 'metric' }), 'bottom-left');
 
-  // Wait for style to load then set up interactions
+  // Force a resize after creation to ensure proper rendering
+  setTimeout(() => {
+    if (map) {
+      map.resize();
+      console.log('[BDNB Map] Resize called');
+    }
+  }, 100);
+
+  // Watch for container size changes and resize the map
+  if (mapResizeObserver) mapResizeObserver.disconnect();
+  mapResizeObserver = new ResizeObserver(() => {
+    if (map) map.resize();
+  });
+  mapResizeObserver.observe(container);
+
+  // Wait for style to load
   map.on('load', () => {
     console.log('[BDNB Map] MapLibre GL initialized with BDNB tiles');
+
+    // Register Géorisques WMS overlays
+    initWmsOnMap(map!);
 
     // Add DPE legend
     addDpeLegend();
 
+    // Add unified layer panel (admin boundaries + BDNB + WMS)
+    addLayerPanel();
+
     // Click on building → show info
-    map!.on('click', 'bdnb-buildings-fill', (e) => {
+    const onBuildingClick = (e: maplibregl.MapMouseEvent & { features?: maplibregl.MapGeoJSONFeature[] | undefined }) => {
       if (e.features && e.features.length > 0) {
         const props = e.features[0].properties || {};
-        showBuildingInfo(props);
+        const idx = props.building_index;
+        if (typeof idx === 'number' && idx >= 1 && idx <= lastBuildingFeatures.length) {
+          selectBuildingByIndex(idx);
+        } else {
+          showBuildingInfo(props);
+        }
       }
-    });
+    };
 
-    // Cursor change on hover
+    map!.on('click', 'bdnb-buildings-fill', onBuildingClick);
+    map!.on('click', 'bdnb-buildings-label', onBuildingClick);
+
     map!.on('mouseenter', 'bdnb-buildings-fill', () => {
+      if (map) map.getCanvas().style.cursor = 'pointer';
+    });
+    map!.on('mouseenter', 'bdnb-buildings-label', () => {
       if (map) map.getCanvas().style.cursor = 'pointer';
     });
     map!.on('mouseleave', 'bdnb-buildings-fill', () => {
       if (map) map.getCanvas().style.cursor = '';
     });
+    map!.on('mouseleave', 'bdnb-buildings-label', () => {
+      if (map) map.getCanvas().style.cursor = '';
+    });
   });
 
-  // Log tile loading errors (CORS issues, etc.)
+  // Log tile loading errors
   map.on('error', (e) => {
     if (e.error && typeof e.error === 'object' && 'status' in e.error) {
       console.warn('[BDNB Map] Tile error:', e.error);
     }
   });
 
-  // Wire up search
   setupSearch();
+
+  // Initialize results panel container
+  const panelEl = document.getElementById('riskResultsPanel');
+  if (panelEl) {
+    setResultsPanelContainer(panelEl);
+  }
 
   console.log('[BDNB Map] Init complete');
 }
 
 export function destroyClimateMap(): void {
   clearHighlight();
+  clearBuildingLabels();
   removeMarker();
+  removeLayerPanel();
+  if (mapResizeObserver) {
+    mapResizeObserver.disconnect();
+    mapResizeObserver = null;
+  }
   if (map) {
     map.remove();
     map = null;
   }
   geocoded = null;
+  lastBuildingFeatures = [];
   const legend = document.getElementById('bdnbDpeLegend');
   if (legend) legend.remove();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Unified Layer Panel — BDNB buildings + Géorisques WMS
+   ═══════════════════════════════════════════════════════════════ */
+
+function addLayerPanel(): void {
+  const container = document.getElementById('climateMapContainer');
+  if (!container) return;
+  const existing = document.getElementById('layerPanel');
+  if (existing) return;
+
+  const div = document.createElement('div');
+  div.id = 'layerPanel';
+  div.className = 'layer-panel';
+  div.innerHTML = `
+    <div class="layer-header">
+      <span class="material-symbols-outlined" style="font-size:16px!important;color:var(--color-primary);">layers</span>
+      Couches
+      <button class="layer-close" id="layerPanelClose"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div class="layer-body" id="layerBody">
+      <!-- ── BDNB ── -->
+      <div class="layer-group">
+        <div class="layer-group-title">
+          <span class="material-symbols-outlined" style="font-size:12px!important;">apartment</span>
+          Bâtiments (BDNB)
+        </div>
+        <label class="layer-item" data-layer="bdnb-buildings">
+          <input type="checkbox" class="layer-toggle" data-layer="bdnb-buildings" checked />
+          <span class="layer-swatch" style="background:rgba(197,106,61,0.4);border:1px solid rgba(197,106,61,0.7);"></span>
+          <span class="layer-label">Empreintes DPE (via API)</span>
+        </label>
+        <div style="font-size:9px;color:var(--text-muted);padding:2px 10px 6px;">
+          Charge les données BDNB automatiquement lors de la recherche
+        </div>
+      </div>
+      <!-- ── WMS sections will be injected here by georisques-wms.ts ── -->
+      <div id="wmsLayerSections"></div>
+    </div>
+    <div class="layer-opacity">
+      <label class="layer-opacity-label">
+        <span class="material-symbols-outlined" style="font-size:12px!important;">opacity</span>
+        Opacité WMS
+        <input type="range" class="layer-opacity-slider" id="layerOpacitySlider" min="10" max="90" value="50" />
+        <span class="layer-opacity-val" id="layerOpacityVal">50%</span>
+      </label>
+    </div>
+  `;
+  container.appendChild(div);
+
+  // Wire BDNB buildings toggle
+  const bdnbToggle = div.querySelector('.layer-toggle[data-layer="bdnb-buildings"]') as HTMLInputElement | null;
+  if (bdnbToggle && map!) {
+    bdnbToggle.checked = true;
+    bdnbToggle.addEventListener('change', () => {
+      const visible = bdnbToggle.checked;
+      for (const sub of ['fill', 'outline', 'label']) {
+        try {
+          map!.setLayoutProperty(`bdnb-buildings-${sub}`, 'visibility', visible ? 'visible' : 'none');
+        } catch (_) { /* ok */ }
+      }
+    });
+  }
+
+  // Wire close button
+  const closeBtn = div.querySelector('#layerPanelClose');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      div.classList.toggle('collapsed');
+      closeBtn.querySelector('.material-symbols-outlined')!.textContent =
+        div.classList.contains('collapsed') ? 'expand_less' : 'close';
+    });
+  }
+
+  // Wire opacity slider
+  const slider = div.querySelector('#layerOpacitySlider') as HTMLInputElement | null;
+  const valSpan = div.querySelector('#layerOpacityVal');
+  if (slider && valSpan) {
+    slider.addEventListener('input', () => {
+      const val = parseInt(slider.value, 10) / 100;
+      valSpan.textContent = `${Math.round(val * 100)}%`;
+      // Dispatch event for WMS layers to pick up
+      window.dispatchEvent(new CustomEvent('wms-opacity-change', { detail: { opacity: val } }));
+    });
+  }
+}
+
+function removeLayerPanel(): void {
+  const el = document.getElementById('layerPanel');
+  if (el) el.remove();
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -229,9 +382,19 @@ function setupSearch(): void {
 
 function clearResults(): void {
   clearHighlight();
+  clearBuildingLabels();
   removeMarker();
   geocoded = null;
+  lastBuildingFeatures = [];
   hideDpeLegend();
+  if (map) {
+    clearGeorisques(map);
+    // Reset GeoJSON source so old footprints disappear
+    try {
+      const src = map.getSource('bdnb-geojson') as maplibregl.GeoJSONSource;
+      if (src) src.setData({ type: 'FeatureCollection', features: [] });
+    } catch (_) { /* ok */ }
+  }
 
   const panel = document.getElementById('bdnbPanel');
   if (panel) {
@@ -249,29 +412,33 @@ function clearResults(): void {
    Search handler
    ═══════════════════════════════════════════════════════════════ */
 
-async function handleSearch(query: string): Promise<void> {
-  if (!map) return;
+/* ═══════════════════════════════════════════════════════════════
+   Geocoding helpers — parallel BDNB + BAN
+   ═══════════════════════════════════════════════════════════════ */
 
-  setStatus('Géocodage...');
-  clearResults();
+interface GeocoderResult {
+  lon: number;
+  lat: number;
+  label: string;
+  banId?: string;
+}
 
+async function geocodeBdnb(query: string): Promise<GeocoderResult | null> {
+  const encoded = encodeURIComponent(query);
   try {
-    const encoded = encodeURIComponent(query);
-    const res = await fetch(
-      `https://api.bdnb.io/v1/bdnb/geocodage?q=${encoded}`,
-      { headers: { Accept: 'application/json' } }
+    const res = await fetchWithTimeout(
+      `/bdnb-api/geocodage?q=${encoded}`,
+      { headers: { Accept: 'application/json' } },
+      4000
     );
-    if (!res.ok) throw new Error(`BDNB geocoding: ${res.status}`);
-
+    if (!res.ok) return null;
     const data = await res.json();
-    console.log('[BDNB Map] Geocoding response:', data);
 
     let lon: number | undefined;
     let lat: number | undefined;
     let label = query;
     let banId: string | undefined;
 
-    // Parse response
     if (data.features?.length > 0) {
       const f = data.features[0];
       if (f.geometry?.coordinates) {
@@ -290,47 +457,115 @@ async function handleSearch(query: string): Promise<void> {
       label = r.adresse || r.label || label;
     }
 
-    // Fallback to BAN API
-    if (lon === undefined || lat === undefined) {
-      setStatus('BDNB géocodage insuffisant, essai BAN...');
-      const banRes = await fetch(
-        `https://api-adresse.data.gouv.fr/search/?q=${encoded}&limit=1`
-      );
-      if (banRes.ok) {
-        const banData = await banRes.json();
-        if (banData.features?.length > 0) {
-          const f = banData.features[0];
-          lon = f.geometry.coordinates[0];
-          lat = f.geometry.coordinates[1];
-          label = f.properties?.label || label;
-        }
-      }
-    }
-
-    if (lon === undefined || lat === undefined) {
-      throw new Error('Impossible de trouver les coordonnées — essayez une adresse plus précise');
-    }
-
-    geocoded = { lon, lat, label, banId };
-
-    // Drop marker
-    addMarker(lat, lon);
-
-    // Fly to location
-    map.flyTo({ center: [lon, lat], zoom: 16, duration: 1500 });
-
-    // Update panel with address
-    updatePanel({ type: 'address', address: geocoded });
-
-    // Fetch building data
-    setStatus('Recherche des données BDNB...');
-    await fetchBuilding(geocoded);
-    setStatus('');
-  } catch (err) {
-    console.error('[BDNB Map] Search error:', err);
-    setStatus(err instanceof Error ? err.message : 'Échec de la recherche');
-    updatePanel({ type: 'error', message: err instanceof Error ? err.message : 'Échec de la recherche' });
+    if (lon === undefined || lat === undefined) return null;
+    return { lon, lat, label, banId };
+  } catch {
+    return null;
   }
+}
+
+async function geocodeBan(query: string): Promise<GeocoderResult | null> {
+  const encoded = encodeURIComponent(query);
+  try {
+    const res = await fetchWithTimeout(`/ban-api/search/?q=${encoded}&limit=1`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!data.features?.length) return null;
+
+    const f = data.features[0];
+    const coords = f.geometry?.coordinates;
+    if (!coords) return null;
+
+    return {
+      lon: coords[0],
+      lat: coords[1],
+      label: f.properties?.label || query,
+      banId: f.properties?.id,
+    };
+  } catch {
+    return null;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Search handler — parallel geocoding
+   ═══════════════════════════════════════════════════════════════ */
+
+async function handleSearch(query: string): Promise<void> {
+  if (!map) return;
+
+  setStatus('Géocodage...');
+  clearResults();
+
+  // Launch BDNB + BAN geocoding IN PARALLEL
+  // Whichever returns first with coordinates wins
+  const [bdnbResult, banResult] = await Promise.allSettled([
+    geocodeBdnb(query),
+    geocodeBan(query),
+  ]);
+
+  // Prefer BAN result (reliable, fast) unless BDNB has better data
+  // BAN returns coordinates + banId, BDNB might be unreachable
+  let result = banResult.status === 'fulfilled' && banResult.value
+    ? banResult.value
+    : null;
+
+  // If BAN failed, try BDNB (unlikely but possible)
+  if (!result && bdnbResult.status === 'fulfilled' && bdnbResult.value) {
+    result = bdnbResult.value;
+  }
+
+  if (!result) {
+    const errMsg = 'Impossible de trouver les coordonnées — essayez une adresse plus précise';
+    console.error('[BDNB Map] Search error:', errMsg);
+    setStatus(errMsg);
+    updatePanel({ type: 'error', message: errMsg });
+    return;
+  }
+
+  // Log which geocoder won
+  const winner = result.banId?.includes('_') ? 'BAN' : 'BDNB';
+  console.log(`[BDNB Map] Geocoded via ${winner}:`, result);
+
+  geocoded = { ...result };
+
+  addMarker(geocoded.lat, geocoded.lon);
+  map.flyTo({ center: [geocoded.lon, geocoded.lat], zoom: 16, duration: 1500 });
+  updatePanel({ type: 'address', address: geocoded });
+
+  // Derive commune code from banId for CATNAT lookup
+  const communeCode = geocoded.banId ? geocoded.banId.slice(0, 5) : undefined;
+
+  // Parse commune name from address label (last word, typically the city name)
+  const labelParts = geocoded.label.split(' ');
+  const lastPart = labelParts[labelParts.length - 1] || '';
+  const communeName = lastPart && !lastPart.match(/^[0-9]/) && lastPart.length > 2 ? lastPart : undefined;
+
+  // Orchestrate ALL providers in parallel
+  setStatus('Chargement des données...');
+
+  const assessment = await orchestrate({
+    lon: geocoded.lon,
+    lat: geocoded.lat,
+    addressLabel: geocoded.label,
+    banId: geocoded.banId,
+    communeCode,
+    communeName,
+  }, (progress) => {
+    renderLoadingState(progress);
+    setStatus(progress.message);
+  });
+
+  // Render full results panel
+  renderResults(assessment);
+
+  // Load Géorisques WMS on the map (visual overlays, separate from data)
+  loadGeorisques(map!, geocoded.lon, geocoded.lat).catch(() => {});
+
+  // Try BDNB building footprints in background (non-blocking)
+  fetchBuilding(geocoded).catch(() => {});
+
+  setStatus('');
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -366,10 +601,10 @@ function clearHighlight(): void {
     try {
       map.removeLayer('bdnb-highlight-fill');
       map.removeLayer('bdnb-highlight-outline');
-    } catch (_) { /* may not exist */ }
+    } catch (_) { /* ok */ }
     try {
       map.removeSource(highlightSourceId);
-    } catch (_) { /* may not exist */ }
+    } catch (_) { /* ok */ }
     highlightSourceId = null;
   }
 }
@@ -398,7 +633,7 @@ function addHighlightPolygon(geom: any, dpeClass: string): void {
     source: id,
     paint: {
       'fill-color': color,
-      'fill-opacity': 0.45,
+      'fill-opacity': 0.65,
       'fill-outline-color': color,
     },
   });
@@ -416,7 +651,96 @@ function addHighlightPolygon(geom: any, dpeClass: string): void {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   BDNB Building Data Fetch
+   Building Number Labels
+   ═══════════════════════════════════════════════════════════════ */
+
+function clearBuildingLabels(): void {
+  if (!map) return;
+  try { map.removeLayer('bdnb-buildings-label'); } catch (_) { /* ok */ }
+  if (labelSourceId) {
+    try { map.removeSource(labelSourceId); } catch (_) { /* ok */ }
+    labelSourceId = null;
+  }
+}
+
+function addBuildingLabels(features: any[]): void {
+  if (!map) return;
+  clearBuildingLabels();
+
+  const srcId = `labels-${Date.now()}`;
+  labelSourceId = srcId;
+
+  map.addSource(srcId, {
+    type: 'geojson',
+    data: { type: 'FeatureCollection', features },
+  });
+
+  map.addLayer({
+    id: 'bdnb-buildings-label',
+    type: 'symbol',
+    source: srcId,
+    minzoom: 14,
+    maxzoom: 18,
+    layout: {
+      'text-field': ['get', 'building_index'],
+      'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+      'text-size': 11,
+      'text-offset': [0, 0],
+      'text-anchor': 'center',
+      'symbol-placement': 'point',
+    },
+    paint: {
+      'text-color': '#ffffff',
+      'text-halo-color': 'rgba(0, 0, 0, 0.75)',
+      'text-halo-width': 2.5,
+    },
+  });
+
+  console.log(`[BDNB Map] Added ${features.length} building number labels`);
+}
+
+/** Highlight and show info for a building by its 1-based index */
+function selectBuildingByIndex(index: number): void {
+  if (!map) return;
+  const record = lastBuildingFeatures[index - 1];
+  if (!record) return;
+
+  const { props, rawGeom, isWgs84 } = normalizeRecord(record);
+  const dpeClass = props.classe_bilan_dpe || '';
+
+  // Highlight this building
+  if (rawGeom?.coordinates) {
+    const geom = isWgs84 ? rawGeom : convertLambertToWgs84(rawGeom);
+    if (geom) {
+      addHighlightPolygon(geom, dpeClass);
+    }
+  }
+
+  // Build attributes from this building's record
+  const attrs: Record<string, string> = {};
+  if (props.annee_construction) attrs['Année construction'] = String(props.annee_construction);
+  if (props.mat_mur_txt && props.mat_mur_txt !== 'INDETERMINE') attrs['Matériau mur'] = String(props.mat_mur_txt);
+  if (props.mat_toit_txt && props.mat_toit_txt !== 'INDETERMINE') attrs['Matériau toit'] = String(props.mat_toit_txt);
+  if (dpeClass) {
+    const c = DPE_COLORS[dpeClass] || 'var(--text-primary)';
+    attrs['DPE'] = `<span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:${c};vertical-align:middle;margin-right:4px;"></span>${dpeClass}`;
+  }
+  if (props.conso_energie) attrs['Conso. énergie'] = `${Number(props.conso_energie).toFixed(0)} kWh/m²/an`;
+  if (props.emission_ges) attrs['Émissions GES'] = `${Number(props.emission_ges).toFixed(1)} kgCO₂/m²/an`;
+  if (props.hauteur_mean) attrs['Hauteur'] = `${Number(props.hauteur_mean).toFixed(1)} m`;
+  if (props.nb_niveau) attrs['Niveaux'] = String(props.nb_niveau);
+  if (props.surface_emprise_sol) attrs['Emprise sol'] = `${Number(props.surface_emprise_sol).toFixed(0)} m²`;
+  if (props.surface_utile_totale) attrs['Surface utile'] = `${Number(props.surface_utile_totale).toFixed(0)} m²`;
+  if (props.nb_logements) attrs['Logements'] = String(props.nb_logements);
+  if (props.usage_principal_bdnb_open) attrs['Usage'] = String(props.usage_principal_bdnb_open);
+  if (props.etat_chauffage_txt && props.etat_chauffage_txt !== 'INDETERMINE') attrs['Chauffage'] = String(props.etat_chauffage_txt);
+  if (props.code_departement_insee) attrs['Département'] = String(props.code_departement_insee);
+
+  updatePanel({ type: 'building', attrs, hasGeometry: !!rawGeom?.coordinates, count: lastBuildingFeatures.length });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BDNB Building Data Fetch — with /adresse endpoint fix
    ═══════════════════════════════════════════════════════════════ */
 
 function normalizeRecord(record: any): { props: any; rawGeom: any; isWgs84: boolean } {
@@ -475,37 +799,60 @@ function showBuildingInfo(props: any): void {
   updatePanel({ type: 'building', attrs, hasGeometry: !!dpeClass, count: 1 });
 }
 
+/**
+ * Fetch building data from BDNB, trying multiple strategies:
+ *   1. Address lookup via rel_batiment_groupe_adresse → batiment_groupe_complet
+ *   2. Commune proximity fallback
+ */
 async function fetchBuilding(addr: GeocodedAddress): Promise<void> {
   if (!map) return;
 
-  try {
-    if (!addr.banId) {
-      // Try to query by spatial proximity regardless of BAN ID
-      setStatus('Aucun identifiant BAN — recherche par proximité...');
-    }
+  // Strategy 1: Address lookup via rel_batiment_groupe_adresse
+  // BDNB uses PostgREST. The cle_interop_adr column exists in rel_batiment_groupe_adresse,
+  // NOT in batiment_groupe_complet directly. So we do a two-step lookup.
+  if (addr.banId) {
+    setStatus('Recherche du bâtiment par adresse...');
+    try {
+      // Step 1: Get batiment_groupe_id(s) for this address
+      const relUrl = `/bdnb-api/donnees/rel_batiment_groupe_adresse?cle_interop_adr=eq.${addr.banId}&select=batiment_groupe_id`;
+      const relRes = await fetchWithTimeout(relUrl, { headers: { Accept: 'application/json' } }, 6000);
+      if (relRes.ok) {
+        const relData = await relRes.json();
+        const groupIds: string[] = (Array.isArray(relData) ? relData : [])
+          .map((r: any) => r.batiment_groupe_id)
+          .filter(Boolean);
 
-    if (addr.banId) {
-      setStatus('Recherche du bâtiment par clé BAN...');
+        if (groupIds.length > 0) {
+          console.log(`[BDNB Map] Found ${groupIds.length} building group(s) for this address`);
 
-      const banUrl = `https://api.bdnb.io/v1/bdnb/donnees/batiment_groupe_complet?cle_interop_adr_principale_ban=eq.${addr.banId}`;
-      const banRes = await fetch(banUrl, { headers: { Accept: 'application/json' } });
-
-      if (banRes.ok) {
-        const data = await banRes.json();
-        const arr = Array.isArray(data) ? data : data?.features || [];
-        if (arr.length > 0) {
-          processBuildingResults(arr, 0);
-          return;
+          // Step 2: Fetch full building data for those IDs
+          // PostgREST supports the `in.(...)` operator for list filtering
+          const idsParam = groupIds.map((id: string) => `"${id}"`).join(',');
+          const bdgUrl = `/bdnb-api/donnees/batiment_groupe_complet?batiment_groupe_id=in.(${idsParam})`;
+          const bdgRes = await fetchWithTimeout(bdgUrl, { headers: { Accept: 'application/json' } }, 6000);
+          if (bdgRes.ok) {
+            const bdgData = await bdgRes.json();
+            const arr = Array.isArray(bdgData) ? bdgData : bdgData?.features || [];
+            if (arr.length > 0) {
+              console.log(`[BDNB Map] Found ${arr.length} buildings via address lookup`);
+              processBuildingResults(arr, 0);
+              return;
+            }
+          }
         }
       }
+    } catch (e) {
+      console.warn('[BDNB Map] Address lookup failed, trying commune proximity:', e);
     }
+  }
 
-    // Fallback: commune filter + spatial proximity
-    const communeCode = addr.banId ? addr.banId.slice(0, 5) : '';
-    if (communeCode) {
-      setStatus('Recherche des bâtiments à proximité...');
-      const commUrl = `https://api.bdnb.io/v1/bdnb/donnees/batiment_groupe_complet?code_commune_insee=eq.${communeCode}&limit=20`;
-      const commRes = await fetch(commUrl, { headers: { Accept: 'application/json' } });
+  // Strategy 2: Commune proximity fallback
+  const communeCode = addr.banId ? addr.banId.slice(0, 5) : '';
+  if (communeCode) {
+    setStatus('Recherche des bâtiments à proximité...');
+    try {
+      const commUrl = `/bdnb-api/donnees/batiment_groupe_complet?code_commune_insee=eq.${communeCode}&limit=20`;
+      const commRes = await fetchWithTimeout(commUrl, { headers: { Accept: 'application/json' } }, 8000);
 
       if (commRes.ok) {
         const data = await commRes.json();
@@ -530,54 +877,98 @@ async function fetchBuilding(addr: GeocodedAddress): Promise<void> {
           }
         }
       }
+    } catch (e) {
+      console.warn('[BDNB Map] Commune lookup failed:', e);
     }
-
-    updatePanel({ type: 'no-building', message: 'Aucun bâtiment BDNB trouvé pour cette adresse' });
-  } catch (err) {
-    console.error('[BDNB Map] Building fetch error:', err);
-    updatePanel({ type: 'error', message: 'Erreur lors du chargement des données BDNB' });
   }
+
+  updatePanel({ type: 'no-building', message: 'Aucun bâtiment BDNB trouvé pour cette adresse' });
 }
 
 function processBuildingResults(arr: any[], selectedIdx: number): void {
-  const record = arr[selectedIdx];
-  const { props, rawGeom, isWgs84 } = normalizeRecord(record);
+  if (!map) return;
 
-  const dpeClass = props.classe_bilan_dpe || '';
+  // Store raw records for index-based lookup
+  lastBuildingFeatures = arr;
 
-  // Highlight the building polygon on the map
-  if (rawGeom?.coordinates) {
+  const selectedRecord = arr[selectedIdx];
+  const { props: selProps, rawGeom: selGeom, isWgs84: selWgs84 } = normalizeRecord(selectedRecord);
+  const selDpeClass = selProps.classe_bilan_dpe || '';
+
+  // Show DPE legend if any building has a DPE class
+  const hasDpe = arr.some((b: any) => b.classe_bilan_dpe || (b.properties?.classe_bilan_dpe));
+  if (hasDpe) showDpeLegend(); else hideDpeLegend();
+
+  // Build GeoJSON FeatureCollection from ALL buildings
+  const features: any[] = [];
+  for (const [i, record] of arr.entries()) {
+    const { props, rawGeom, isWgs84 } = normalizeRecord(record);
+    if (!rawGeom?.coordinates) continue;
     const geom = isWgs84 ? rawGeom : convertLambertToWgs84(rawGeom);
+    if (!geom) continue;
+    features.push({
+      type: 'Feature',
+      geometry: geom,
+      properties: {
+        building_index: i + 1, // 1-based for display
+        classe_bilan_dpe: props.classe_bilan_dpe || null,
+        batiment_groupe_id: props.batiment_groupe_id || '',
+        annee_construction: props.annee_construction || null,
+        hauteur: props.hauteur || props.hauteur_mean || null,
+        nb_niveau: props.nb_niveau || null,
+        surface_emprise_sol: props.surface_emprise_sol || null,
+        mat_mur_txt: props.mat_mur_txt || null,
+        mat_toit_txt: props.mat_toit_txt || null,
+        conso_energie: props.conso_energie || null,
+        emission_ges: props.emission_ges || null,
+        code_departement_insee: props.code_departement_insee || null,
+        usage_principal_bdnb_open: props.usage_principal_bdnb_open || null,
+        adresse: props.libelle_adr_principale_ban || '',
+      },
+    });
+  }
+
+  // Update the GeoJSON source with all buildings
+  try {
+    const src = map.getSource('bdnb-geojson') as maplibregl.GeoJSONSource;
+    if (src) {
+      src.setData({ type: 'FeatureCollection', features });
+      console.log(`[BDNB Map] Added ${features.length} buildings as GeoJSON`);
+    }
+  } catch (_) { /* ok */ }
+
+  // Highlight the selected building
+  if (selGeom?.coordinates) {
+    const geom = selWgs84 ? selGeom : convertLambertToWgs84(selGeom);
     if (geom) {
-      addHighlightPolygon(geom, dpeClass);
+      addHighlightPolygon(geom, selDpeClass);
     }
   }
 
-  // Show attributes in side panel
+  // Add building number labels
+  addBuildingLabels(features);
+
+  // Build attributes for the selected building
   const attrs: Record<string, string> = {};
-  if (props.annee_construction) attrs['Année construction'] = String(props.annee_construction);
-  if (props.mat_mur_txt && props.mat_mur_txt !== 'INDETERMINE') attrs['Matériau mur'] = String(props.mat_mur_txt);
-  if (props.mat_toit_txt && props.mat_toit_txt !== 'INDETERMINE') attrs['Matériau toit'] = String(props.mat_toit_txt);
-  if (dpeClass) {
-    const c = DPE_COLORS[dpeClass] || 'var(--text-primary)';
-    attrs['DPE'] = `<span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:${c};vertical-align:middle;margin-right:4px;"></span>${dpeClass}`;
+  if (selProps.annee_construction) attrs['Année construction'] = String(selProps.annee_construction);
+  if (selProps.mat_mur_txt && selProps.mat_mur_txt !== 'INDETERMINE') attrs['Matériau mur'] = String(selProps.mat_mur_txt);
+  if (selProps.mat_toit_txt && selProps.mat_toit_txt !== 'INDETERMINE') attrs['Matériau toit'] = String(selProps.mat_toit_txt);
+  if (selDpeClass) {
+    const c = DPE_COLORS[selDpeClass] || 'var(--text-primary)';
+    attrs['DPE'] = `<span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:${c};vertical-align:middle;margin-right:4px;"></span>${selDpeClass}`;
   }
-  if (props.conso_energie) attrs['Conso. énergie'] = `${Number(props.conso_energie).toFixed(0)} kWh/m²/an`;
-  if (props.emission_ges) attrs['Émissions GES'] = `${Number(props.emission_ges).toFixed(1)} kgCO₂/m²/an`;
-  if (props.hauteur_mean) attrs['Hauteur'] = `${Number(props.hauteur_mean).toFixed(1)} m`;
-  if (props.nb_niveau) attrs['Niveaux'] = String(props.nb_niveau);
-  if (props.surface_emprise_sol) attrs['Emprise sol'] = `${Number(props.surface_emprise_sol).toFixed(0)} m²`;
-  if (props.surface_utile_totale) attrs['Surface utile'] = `${Number(props.surface_utile_totale).toFixed(0)} m²`;
-  if (props.nb_logements) attrs['Logements'] = String(props.nb_logements);
-  if (props.usage_principal_bdnb_open) attrs['Usage'] = String(props.usage_principal_bdnb_open);
-  if (props.etat_chauffage_txt && props.etat_chauffage_txt !== 'INDETERMINE') attrs['Chauffage'] = String(props.etat_chauffage_txt);
-  if (props.etat_avancement_txt && props.etat_avancement_txt !== 'INDETERMINE') attrs['État'] = String(props.etat_avancement_txt);
-  if (props.code_departement_insee) attrs['Département'] = String(props.code_departement_insee);
+  if (selProps.conso_energie) attrs['Conso. énergie'] = `${Number(selProps.conso_energie).toFixed(0)} kWh/m²/an`;
+  if (selProps.emission_ges) attrs['Émissions GES'] = `${Number(selProps.emission_ges).toFixed(1)} kgCO₂/m²/an`;
+  if (selProps.hauteur_mean) attrs['Hauteur'] = `${Number(selProps.hauteur_mean).toFixed(1)} m`;
+  if (selProps.nb_niveau) attrs['Niveaux'] = String(selProps.nb_niveau);
+  if (selProps.surface_emprise_sol) attrs['Emprise sol'] = `${Number(selProps.surface_emprise_sol).toFixed(0)} m²`;
+  if (selProps.surface_utile_totale) attrs['Surface utile'] = `${Number(selProps.surface_utile_totale).toFixed(0)} m²`;
+  if (selProps.nb_logements) attrs['Logements'] = String(selProps.nb_logements);
+  if (selProps.usage_principal_bdnb_open) attrs['Usage'] = String(selProps.usage_principal_bdnb_open);
+  if (selProps.etat_chauffage_txt && selProps.etat_chauffage_txt !== 'INDETERMINE') attrs['Chauffage'] = String(selProps.etat_chauffage_txt);
+  if (selProps.code_departement_insee) attrs['Département'] = String(selProps.code_departement_insee);
 
-  updatePanel({ type: 'building', attrs, hasGeometry: !!rawGeom?.coordinates, count: arr.length });
-
-  // Show DPE legend if we have DPE data
-  if (dpeClass) showDpeLegend(); else hideDpeLegend();
+  updatePanel({ type: 'building', attrs, hasGeometry: !!selGeom?.coordinates, count: arr.length });
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -662,7 +1053,6 @@ function updatePanel(content: PanelContent): void {
       </div>`;
     }).join('');
 
-    // Remove existing building card if any
     const existingCard = panel.querySelector('.bdnb-building-card');
     if (existingCard) existingCard.remove();
 
@@ -712,7 +1102,7 @@ function setStatus(msg: string): void {
   if (el) el.textContent = msg;
 }
 
-function escapeHtml(str: string): string {
+export function escapeHtml(str: string): string {
   const div = document.createElement('div');
   div.textContent = str;
   return div.innerHTML;

@@ -10,7 +10,7 @@
  */
 
 import { housePartData, selectHousePart, onHousePartSelect } from '../../house3d.js';
-import { initClimateMap, destroyClimateMap } from '../climate-map/climate-map.js';
+import { initClimateMap, destroyClimateMap, escapeHtml } from '../climate-map/climate-map.js';
 import { initHouse, destroyHouse } from '../../house3d.js';
 
 /* ═══════════════════════════════════════════════════════════════
@@ -104,6 +104,7 @@ export function initPropertyRisk(): void {
   state.selectedWorks = new Set(Object.keys(housePartData));
 
   setupStepNav();
+  setupRiskNav();
   setupMapInterop();
   setupInspect();
   setupEvaluate();
@@ -143,7 +144,7 @@ function updateSteps(activeTab: string): void {
   // step states derived from the order array and activeTab
 
   // Mark steps before active as completed
-  const order = ['locate', 'inspect', 'evaluate'];
+  const order = ['locate', 'expert', 'inspect', 'evaluate'];
   const activeIdx = order.indexOf(activeTab);
 
   document.querySelectorAll('.risk-step').forEach(el => {
@@ -158,10 +159,109 @@ function updateSteps(activeTab: string): void {
   });
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   Numbered Navigation (Previous / Next arrows)
+   ═══════════════════════════════════════════════════════════════ */
+
+const TAB_ORDER = ['locate', 'expert', 'inspect', 'evaluate'];
+const TAB_LABELS: Record<string, string> = {
+  locate: 'Locate',
+  expert: 'Expert',
+  inspect: 'Inspect',
+  evaluate: 'Evaluate',
+};
+
+function setupRiskNav(): void {
+  const prevBtn = document.getElementById('riskNavPrev');
+  const nextBtn = document.getElementById('riskNavNext');
+
+  prevBtn?.addEventListener('click', () => {
+    const activeTab = getActiveRiskTab();
+    const idx = TAB_ORDER.indexOf(activeTab);
+    if (idx <= 0) return;
+    navigateToTab(TAB_ORDER[idx - 1]);
+  });
+
+  nextBtn?.addEventListener('click', () => {
+    const activeTab = getActiveRiskTab();
+    const idx = TAB_ORDER.indexOf(activeTab);
+    if (idx < 0 || idx >= TAB_ORDER.length - 1) return;
+    navigateToTab(TAB_ORDER[idx + 1]);
+  });
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    // Only when risk hub is the active view
+    const view = document.getElementById('view-property-risk');
+    if (!view?.classList.contains('active')) return;
+
+    // Don't navigate when user is typing in an input field
+    const tag = (e.target as HTMLElement).tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || (e.target as HTMLElement).isContentEditable) return;
+
+    if (e.key === 'ArrowLeft') {
+      prevBtn?.click();
+      e.preventDefault();
+    }
+    if (e.key === 'ArrowRight') {
+      nextBtn?.click();
+      e.preventDefault();
+    }
+  });
+
+  updateRiskNav();
+}
+
+function getActiveRiskTab(): string {
+  const active = document.querySelector('.risk-tab-content.active');
+  return active?.getAttribute('data-content') || 'locate';
+}
+
+function navigateToTab(tabKey: string): void {
+  const headerTabs = document.getElementById('headerTabs');
+  if (!headerTabs) return;
+  const btn = headerTabs.querySelector(`.tab-btn[data-tab="${tabKey}"]`) as HTMLButtonElement | null;
+  if (btn) btn.click();
+}
+
+function updateRiskNav(): void {
+  const prevBtn = document.getElementById('riskNavPrev');
+  const nextBtn = document.getElementById('riskNavNext');
+  if (!prevBtn || !nextBtn) return;
+
+  const activeTab = getActiveRiskTab();
+  const idx = TAB_ORDER.indexOf(activeTab);
+
+  // Show/hide based on position
+  prevBtn.classList.toggle('visible', idx > 0);
+  nextBtn.classList.toggle('visible', idx < TAB_ORDER.length - 1);
+
+  // Update aria-labels and tooltips
+  if (idx > 0) {
+    const prevTab = TAB_ORDER[idx - 1];
+    prevBtn.setAttribute('aria-label', `Previous: ${TAB_LABELS[prevTab]}`);
+    prevBtn.title = `${TAB_LABELS[prevTab]} (←)`;
+  }
+  if (idx < TAB_ORDER.length - 1) {
+    const nextTab = TAB_ORDER[idx + 1];
+    nextBtn.setAttribute('aria-label', `Next: ${TAB_LABELS[nextTab]}`);
+    nextBtn.title = `${TAB_LABELS[nextTab]} (→)`;
+  }
+
+  // Update step indicator numbers to show nav context
+  document.querySelectorAll('.risk-step').forEach(el => {
+    const tab = el.getAttribute('data-step') || '';
+    const tabIdx = TAB_ORDER.indexOf(tab);
+    // Highlight next/prev steps subtly
+    el.classList.toggle('nav-adjacent', Math.abs(tabIdx - idx) === 1 && tabIdx !== idx);
+  });
+}
+
 /* ── Tab lifecycle interop ────────────────────────────────── */
 
 export function onRiskTabChange(tabKey: string): void {
   updateSteps(tabKey);
+  updateRiskNav();
 
   if (tabKey === 'locate') {
     // Make sure the map container has size before init
@@ -176,10 +276,15 @@ export function onRiskTabChange(tabKey: string): void {
     // Don't destroy map on tab change — keep it alive
   }
 
+  if (tabKey === 'expert') {
+    renderExpertTab();
+  }
+
   if (tabKey === 'inspect') {
     requestAnimationFrame(() => initHouse('riskHouseContainer'));
     renderInspectTab();
-  } else {
+  } else if (tabKey !== 'expert') {
+    // Only destroy house when leaving inspect, not when going to expert
     destroyHouse();
   }
 
@@ -225,69 +330,241 @@ function setupMapInterop(): void {
   observer.observe(document.body, { childList: true, subtree: true });
 }
 
-function renderLocatePanel(): void {
-  const panel = document.getElementById('riskLocatePanel');
-  if (!panel) return;
+/* ── Toast Notification System ────────────────────────────── */
 
+function ensureToastContainer(): HTMLElement {
+  let container = document.getElementById('riskToastContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'riskToastContainer';
+    container.className = 'risk-toast-container';
+    document.body.appendChild(container);
+  }
+  return container;
+}
+
+function showToast(html: string, durationMs: number = 6000): () => void {
+  const container = ensureToastContainer();
+  const toast = document.createElement('div');
+  toast.className = 'risk-toast';
+  toast.innerHTML = html;
+  container.appendChild(toast);
+
+  // Wire close button
+  const closeBtn = toast.querySelector('.risk-toast-close');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => removeToast());
+  }
+
+  const removeToast = () => {
+    if (!toast.parentNode) return;
+    toast.classList.add('removing');
+    setTimeout(() => {
+      if (toast.parentNode) toast.remove();
+    }, 250);
+  };
+
+  // Auto-dismiss
+  const timeoutId = setTimeout(removeToast, durationMs);
+
+  // Allow the toast to persist if user interacts with buttons inside
+  toast.addEventListener('mouseenter', () => clearTimeout(timeoutId));
+  toast.addEventListener('mouseleave', () => setTimeout(removeToast, durationMs));
+
+  return removeToast;
+}
+
+function renderLocatePanel(): void {
+  // Don't show empty-state panel; instead show nothing on the map
   if (!state.selectedBuilding && !state.selectedAddress) {
-    panel.innerHTML = `
-      <div class="risk-locate-card">
-        <h4><span class="material-symbols-outlined">search</span>Adresse</h4>
-        <p style="font-size:12px;color:var(--text-muted);line-height:1.5;">
-          Cherchez une adresse dans la barre de recherche ci-dessus. Les données du bâtiment BDNB s'afficheront ici automatiquement.
-        </p>
-      </div>
-    `;
+    // Hide floating button
+    const floatBtn = document.getElementById('riskLocateFloatBtn');
+    if (floatBtn) floatBtn.classList.remove('visible');
     return;
   }
 
+  // Show toast with building info
   let attrsHtml = '';
   if (state.selectedBuilding) {
-    attrsHtml = Object.entries(state.selectedBuilding).slice(0, 6).map(([k, v]) => `
-      <div class="risk-locate-attr-item">
-        <span class="risk-locate-attr-label">${k}</span>
-        <span class="risk-locate-attr-value">${v}</span>
-      </div>
-    `).join('');
+    const entries = Object.entries(state.selectedBuilding).slice(0, 6);
+    attrsHtml = `
+      <div class="risk-toast-attr-grid">
+        ${entries.map(([k, v]) => `
+          <div class="risk-toast-attr-item">
+            <span class="risk-toast-attr-label">${k}</span>
+            <span class="risk-toast-attr-value">${v}</span>
+          </div>
+        `).join('')}
+      </div>`;
   }
 
-  panel.innerHTML = `
-    <div class="risk-locate-card">
-      <h4><span class="material-symbols-outlined">location_on</span>Adresse sélectionnée</h4>
-      <div class="risk-locate-found">
-        <span class="risk-locate-found-addr">${state.selectedAddress || 'Adresse chargée'}</span>
-        <span class="risk-locate-found-meta">Données BDNB · ${state.selectedBuilding ? Object.keys(state.selectedBuilding).length : 0} attributs</span>
-      </div>
-    </div>
-    ${attrsHtml ? `
-    <div class="risk-locate-card">
-      <h4><span class="material-symbols-outlined">apartment</span>Bâtiment (BDNB)</h4>
-      <div class="risk-locate-attr-grid">${attrsHtml}</div>
-    </div>` : ''}
-    <div class="risk-locate-card">
-      <h4><span class="material-symbols-outlined">arrow_forward</span>Prochaine étape</h4>
-      <div class="risk-locate-actions">
-        <button class="risk-btn secondary" id="riskGoInspect">
-          <span class="material-symbols-outlined">home</span>
-          Inspecter le bâtiment
-        </button>
-      </div>
-    </div>
-  `;
+  const addr = state.selectedAddress || 'Adresse chargée';
+  const attrCount = state.selectedBuilding ? Object.keys(state.selectedBuilding).length : 0;
 
-  const goBtn = document.getElementById('riskGoInspect');
-  if (goBtn) {
-    goBtn.addEventListener('click', () => {
+  showToast(`
+    <div class="risk-toast-header">
+      <span class="material-symbols-outlined" style="color:var(--color-primary);">location_on</span>
+      <span class="risk-toast-title">${escapeHtml(addr)}</span>
+      <button class="risk-toast-close"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div class="risk-toast-body">
+      Données BDNB · ${attrCount} attributs chargés
+    </div>
+    ${attrsHtml}
+    <div class="risk-toast-actions">
+      <button class="risk-toast-btn" id="riskToastInspect">
+        <span class="material-symbols-outlined">home</span>
+        Inspecter le bâtiment
+      </button>
+    </div>
+  `, 8000);
+
+  // Wire the inspect button inside the toast
+  setTimeout(() => {
+    const inspectBtn = document.getElementById('riskToastInspect');
+    if (inspectBtn) {
+      inspectBtn.addEventListener('click', () => {
+        const headerTabs = document.getElementById('headerTabs');
+        if (!headerTabs) return;
+        const btn = headerTabs.querySelector('.tab-btn[data-tab="inspect"]');
+        if (btn) (btn as HTMLButtonElement).click();
+      });
+    }
+  }, 50);
+
+  // Show floating button on map
+  let floatBtn = document.getElementById('riskLocateFloatBtn');
+  if (!floatBtn) {
+    const mapEl = document.getElementById('riskLocateMap');
+    if (!mapEl) return;
+    floatBtn = document.createElement('button');
+    floatBtn.id = 'riskLocateFloatBtn';
+    floatBtn.className = 'risk-locate-float-btn';
+    floatBtn.innerHTML = '<span class="material-symbols-outlined">home</span> Inspecter le bâtiment';
+    mapEl.appendChild(floatBtn);
+    floatBtn.addEventListener('click', () => {
       const headerTabs = document.getElementById('headerTabs');
       if (!headerTabs) return;
       const btn = headerTabs.querySelector('.tab-btn[data-tab="inspect"]');
       if (btn) (btn as HTMLButtonElement).click();
     });
   }
+  floatBtn.classList.add('visible');
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   TAB 2: INSPECT — 3D House + Components + Recommendations
+   TAB 2: EXPERT — Send expert, wait for evaluation
+   ═══════════════════════════════════════════════════════════════ */
+
+function renderExpertTab(): void {
+  // Set the mobilization date
+  const dateEl = document.getElementById('riskExpertDate');
+  if (dateEl) {
+    const now = new Date();
+    dateEl.textContent = now.toLocaleDateString('fr-FR', {
+      day: 'numeric', month: 'long', year: 'numeric',
+      hour: '2-digit', minute: '2-digit',
+    });
+  }
+
+  // Wire simulate button
+  const simulateBtn = document.getElementById('riskExpertSimulate');
+  if (simulateBtn) {
+    simulateBtn.onclick = () => simulateExpertReport();
+  }
+
+  // Wire contact button
+  const contactBtn = document.getElementById('riskExpertContact');
+  if (contactBtn) {
+    contactBtn.onclick = () => {
+      alert('Module de contact expert à implémenter — numéro: +33 6 12 34 56 78');
+    };
+  }
+
+  // Wire resend button
+  const resendBtn = document.getElementById('riskExpertResend');
+  if (resendBtn) {
+    resendBtn.onclick = () => {
+      const badge = document.getElementById('riskExpertBadge');
+      if (badge) {
+        badge.innerHTML = '<span class="risk-status-pulse"></span>Demande relancée ✓';
+        setTimeout(() => {
+          badge.innerHTML = '<span class="risk-status-pulse"></span>En attente du rapport';
+        }, 2000);
+      }
+      alert('Demande d\'expertise relancée. Le prestataire a été notifié.');
+    };
+  }
+}
+
+function simulateExpertReport(): void {
+  const banner = document.getElementById('riskExpertBanner');
+  const badge = document.getElementById('riskExpertBadge');
+  const simulateBtn = document.getElementById('riskExpertSimulate');
+
+  if (!banner || !badge || !simulateBtn) return;
+
+  // Animate through the timeline
+  const items = document.querySelectorAll('.risk-expert-timeline-item');
+
+  (simulateBtn as HTMLButtonElement).disabled = true;
+  simulateBtn.innerHTML = '<span class="material-symbols-outlined">sync</span> Réception en cours...';
+
+  badge.innerHTML = '<span class="risk-status-pulse"></span>Rapport en cours de traitement...';
+
+  // Step through timeline with delays
+  let step = 3; // Start from step 3 (Expert mandaté → Rapport reçu)
+
+  const advance = () => {
+    if (step >= items.length) {
+      // Complete!
+      badge.innerHTML = '✅ Rapport reçu';
+      banner.classList.add('received');
+      simulateBtn.innerHTML = '<span class="material-symbols-outlined">check</span> Rapport reçu ✓';
+      (simulateBtn as HTMLButtonElement).disabled = false;
+
+      // Show toast to navigate to Inspect
+      const toast = document.createElement('div');
+      toast.className = 'risk-expert-toast';
+      toast.innerHTML = `
+        <span class="material-symbols-outlined">check_circle</span>
+        Rapport d'expertise reçu !
+        <button class="risk-expert-toast-btn" id="riskExpertGoInspect">
+          Voir les composants
+          <span class="material-symbols-outlined">arrow_forward</span>
+        </button>
+      `;
+      document.querySelector('.risk-expert-main')?.prepend(toast);
+
+      setTimeout(() => {
+        const goBtn = document.getElementById('riskExpertGoInspect');
+        if (goBtn) {
+          goBtn.onclick = () => {
+            const headerTabs = document.getElementById('headerTabs');
+            if (!headerTabs) return;
+            const btn = headerTabs.querySelector('.tab-btn[data-tab="inspect"]') as HTMLButtonElement | null;
+            if (btn) btn.click();
+          };
+        }
+      }, 50);
+
+      return;
+    }
+
+    const item = items[step];
+    item.classList.add('active');
+    item.classList.remove('active');
+    item.classList.add('complete');
+
+    step++;
+    setTimeout(advance, 600);
+  };
+
+  setTimeout(advance, 800);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TAB 3: INSPECT — 3D House + Components + Recommendations
    ═══════════════════════════════════════════════════════════════ */
 
 function setupInspect(): void {

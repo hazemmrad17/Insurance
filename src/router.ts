@@ -12,7 +12,7 @@ export const VIEW_TABS: Record<string, string[]> = {
   portfolio: ['Summary', 'Map', 'Trends'],
   clients: [],
   settings: ['Account', 'Security', 'Billing & Plans', 'Notifications', 'Connections'],
-  'property-risk': ['Locate', 'Inspect', 'Evaluate'],
+  'property-risk': ['Locate', 'Expert', 'Inspect', 'Evaluate'],
 };
 
 // Map view name → base path
@@ -29,7 +29,7 @@ const SUB_TAB_KEYS: Record<string, string[]> = {
   portfolio: ['summary', 'map', 'trends'],
   clients: [],
   settings: ['account', 'security', 'billing', 'notifications', 'connections'],
-  'property-risk': ['locate', 'inspect', 'evaluate'],
+  'property-risk': ['locate', 'expert', 'inspect', 'evaluate'],
 };
 
 // Maps view+tab-key → content-key for showViewSubTab
@@ -37,7 +37,7 @@ const SUB_TAB_CONTENT: Record<string, Record<string, string>> = {
   portfolio: { summary: 'summary', map: 'map', trends: 'trends' },
   clients: {},
   settings: { account: 'account', security: 'security', billing: 'billing', notifications: 'notifications', connections: 'connections' },
-  'property-risk': { locate: 'locate', inspect: 'inspect', evaluate: 'evaluate' },
+  'property-risk': { locate: 'locate', expert: 'expert', inspect: 'inspect', evaluate: 'evaluate' },
 };
 
 // ── Sub-tab helper: activate sub-tab for a view by tab-key ──
@@ -252,8 +252,8 @@ export function updateHeaderTabs(viewName: string, activeTabKey?: string): void 
   setupHeaderTabs();
 
   // If we have an active tab key, activate its content
-  if (activeTabKey) {
-    activateSubTab(viewName, activeTabKey);
+  if (activeKey) {
+    activateSubTab(viewName, activeKey);
   }
 }
 

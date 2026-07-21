@@ -416,8 +416,11 @@
 
         <!-- ====== VIEW: Property Risk Hub (unified) ====== -->
         <section class="view-panel" id="view-property-risk">
-          <!-- Step indicator -->
-          <div class="risk-steps">
+          <!-- Step indicator with inline nav buttons -->
+          <div class="risk-steps" id="riskStepsBar">
+            <button class="risk-nav-btn-prev" id="riskNavPrev" aria-label="Previous step">
+              <span class="material-symbols-outlined">chevron_left</span>
+            </button>
             <div class="risk-step active" data-step="locate">
               <span class="risk-step-circle">1</span>
               <div class="risk-step-text">
@@ -426,8 +429,16 @@
               </div>
             </div>
             <div class="risk-step-line" style="margin-left:12px;"></div>
-            <div class="risk-step" data-step="inspect">
+            <div class="risk-step" data-step="expert">
               <span class="risk-step-circle">2</span>
+              <div class="risk-step-text">
+                <span class="risk-step-name">Expert</span>
+                <span class="risk-step-desc">Évaluation sur place</span>
+              </div>
+            </div>
+            <div class="risk-step-line"></div>
+            <div class="risk-step" data-step="inspect">
+              <span class="risk-step-circle">3</span>
               <div class="risk-step-text">
                 <span class="risk-step-name">Inspect</span>
                 <span class="risk-step-desc">Analyser les composants 3D</span>
@@ -435,15 +446,18 @@
             </div>
             <div class="risk-step-line"></div>
             <div class="risk-step" data-step="evaluate">
-              <span class="risk-step-circle">3</span>
+              <span class="risk-step-circle">4</span>
               <div class="risk-step-text">
                 <span class="risk-step-name">Evaluate</span>
                 <span class="risk-step-desc">Score + actuariat + avenant</span>
               </div>
             </div>
+            <button class="risk-nav-btn-next" id="riskNavNext" aria-label="Next step">
+              <span class="material-symbols-outlined">chevron_right</span>
+            </button>
           </div>
 
-          <!-- STEP 1: Locate (BDNB Map) -->
+          <!-- STEP 1: Locate (BDNB Map + Results Panel) -->
           <div class="risk-tab-content active" data-content="locate">
             <div class="bdnb-search-bar">
               <div class="bdnb-search-input-group">
@@ -454,22 +468,160 @@
               </div>
             </div>
             <div class="risk-locate-layout">
-              <div class="risk-locate-map">
+              <div class="risk-locate-map" id="riskLocateMap">
                 <div class="bdnb-status" id="bdnbStatus"></div>
                 <div id="climateMapContainer" style="width:100%;height:100%;min-height:400px;"></div>
               </div>
               <div class="risk-locate-panel" id="riskLocatePanel">
-                <div class="risk-locate-card">
-                  <h4><span class="material-symbols-outlined">search</span>Adresse</h4>
-                  <p style="font-size:12px;color:var(--text-muted);line-height:1.5;">
-                    Cherchez une adresse dans la barre de recherche ci-dessus. Les données du bâtiment BDNB s'afficheront ici automatiquement.
-                  </p>
+                <div class="rp-container" id="riskResultsPanel">
+                  <div class="rp-empty-state">
+                    <span class="material-symbols-outlined" style="font-size:40px;color:var(--text-muted);opacity:0.3;">gps_fixed</span>
+                    <p style="font-size:12px;color:var(--text-muted);margin:0;">Recherchez une adresse pour voir l'évaluation complète des risques</p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- STEP 2: Inspect (3D House + Components) -->
+          <!-- STEP 2: Expert (Send expert, wait for evaluation) -->
+          <div class="risk-tab-content" data-content="expert">
+            <div class="risk-expert-layout">
+              <div class="risk-expert-main">
+                <!-- Status banner -->
+                <div class="risk-expert-banner" id="riskExpertBanner">
+                  <div class="risk-expert-status">
+                    <div class="risk-expert-status-icon">
+                      <span class="material-symbols-outlined" style="font-size:36px;">engineering</span>
+                    </div>
+                    <div class="risk-expert-status-text">
+                      <h3>Expert envoyé sur place</h3>
+                      <p>Un expert technique a été mandaté pour évaluer l'état du bâtiment et recommander les rénovations nécessaires.</p>
+                    </div>
+                    <div class="risk-expert-status-badge" id="riskExpertBadge">
+                      <span class="risk-status-pulse"></span>
+                      En attente du rapport
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Timeline -->
+                <div class="risk-expert-card">
+                  <h4><span class="material-symbols-outlined" style="font-size:16px!important;color:var(--color-primary);">timeline</span> Suivi de la mission</h4>
+                  <div class="risk-expert-timeline">
+                    <div class="risk-expert-timeline-item complete">
+                      <span class="risk-expert-timeline-dot"></span>
+                      <div>
+                        <span class="risk-expert-timeline-title">Localisation du bien</span>
+                        <span class="risk-expert-timeline-time">Adresse identifiée sur la carte</span>
+                      </div>
+                      <span class="risk-expert-timeline-check">✓</span>
+                    </div>
+                    <div class="risk-expert-timeline-item complete">
+                      <span class="risk-expert-timeline-dot"></span>
+                      <div>
+                        <span class="risk-expert-timeline-title">Données risques chargées</span>
+                        <span class="risk-expert-timeline-time">Analyse Géorisques + climat + bâtiment</span>
+                      </div>
+                      <span class="risk-expert-timeline-check">✓</span>
+                    </div>
+                    <div class="risk-expert-timeline-item active">
+                      <span class="risk-expert-timeline-dot"></span>
+                      <div>
+                        <span class="risk-expert-timeline-title">Expert mandaté</span>
+                        <span class="risk-expert-timeline-time">En attente du rapport d'évaluation</span>
+                      </div>
+                      <span class="risk-expert-timeline-loading"></span>
+                    </div>
+                    <div class="risk-expert-timeline-item">
+                      <span class="risk-expert-timeline-dot"></span>
+                      <div>
+                        <span class="risk-expert-timeline-title">Rapport reçu</span>
+                        <span class="risk-expert-timeline-time">Analyse des composants et recommandations</span>
+                      </div>
+                    </div>
+                    <div class="risk-expert-timeline-item">
+                      <span class="risk-expert-timeline-dot"></span>
+                      <div>
+                        <span class="risk-expert-timeline-title">Devis & planification</span>
+                        <span class="risk-expert-timeline-time">Estimation des travaux et priorisation</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Expert info card -->
+                <div class="risk-expert-card" id="riskExpertInfo">
+                  <h4><span class="material-symbols-outlined" style="font-size:16px!important;">badge</span> Expert mandaté</h4>
+                  <div class="risk-expert-info-grid">
+                    <div class="risk-expert-info-item">
+                      <span class="risk-expert-info-label">Nom</span>
+                      <span class="risk-expert-info-value">Thomas Mercier</span>
+                    </div>
+                    <div class="risk-expert-info-item">
+                      <span class="risk-expert-info-label">Société</span>
+                      <span class="risk-expert-info-value">BâtiConseil Expertise</span>
+                    </div>
+                    <div class="risk-expert-info-item">
+                      <span class="risk-expert-info-label">Mobilsation</span>
+                      <span class="risk-expert-info-value" id="riskExpertDate">—</span>
+                    </div>
+                    <div class="risk-expert-info-item">
+                      <span class="risk-expert-info-label">Statut</span>
+                      <span class="risk-expert-info-value"><span class="risk-status-badge pending">En cours</span></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Side: actions card -->
+              <div class="risk-expert-side">
+                <div class="risk-expert-card">
+                  <h4><span class="material-symbols-outlined" style="font-size:16px!important;">assignment</span> Actions</h4>
+                  <div class="risk-expert-actions">
+                    <button class="risk-expert-action-btn" id="riskExpertSimulate">
+                      <span class="material-symbols-outlined">play_arrow</span>
+                      Simuler la réception du rapport
+                    </button>
+                    <button class="risk-expert-action-btn secondary" id="riskExpertContact">
+                      <span class="material-symbols-outlined">phone</span>
+                      Contacter l'expert
+                    </button>
+                    <button class="risk-expert-action-btn secondary" id="riskExpertResend">
+                      <span class="material-symbols-outlined">refresh</span>
+                      Relancer la demande
+                    </button>
+                  </div>
+                  <p class="risk-expert-note">
+                    Le délai moyen d'intervention est de 48 à 72h. Vous serez notifié dès réception du rapport. Une fois reçu, l'onglet Inspect sera débloqué avec les données de l'expert.
+                  </p>
+                </div>
+
+                <div class="risk-expert-card">
+                  <h4><span class="material-symbols-outlined" style="font-size:16px!important;color:#f59e0b;">schedule</span> Délais estimés</h4>
+                  <div class="risk-expert-delays">
+                    <div class="risk-expert-delay-row">
+                      <span>Prise en charge</span>
+                      <span class="risk-expert-delay-val">4-6h</span>
+                    </div>
+                    <div class="risk-expert-delay-row">
+                      <span>Visite sur site</span>
+                      <span class="risk-expert-delay-val">24-48h</span>
+                    </div>
+                    <div class="risk-expert-delay-row">
+                      <span>Rapport préliminaire</span>
+                      <span class="risk-expert-delay-val">48-72h</span>
+                    </div>
+                    <div class="risk-expert-delay-row">
+                      <span>Rapport final</span>
+                      <span class="risk-expert-delay-val">72-96h</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 3: Inspect (3D House + Components) -->
           <div class="risk-tab-content" data-content="inspect">
             <div class="risk-inspect-layout">
               <div class="risk-inspect-3d">

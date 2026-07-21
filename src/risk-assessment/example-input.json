@@ -1,0 +1,142 @@
+{
+  "property": {
+    "builtYear": 1850,
+    "constructionPeriod": "<1915",
+    "surfaceUtile": null,
+    "surfaceEmprise": 1506,
+    "levels": 8,
+    "height": 22,
+    "dpeClass": "D",
+    "energyConsumption": 203,
+    "emissionGes": 12,
+    "wallMaterial": "PIERRE",
+    "roofMaterial": "ZINC ALUMINIUM - AUTRES",
+    "heatingType": "collectif",
+    "usageType": "Résidentiel collectif",
+    "nbLogements": 73,
+    "departmentCode": "75"
+  },
+  "valuation": {
+    "reconstructionValuePerSqm": 2800,
+    "lastTransactionPricePerSqm": 10500,
+    "lastTransactionDate": null,
+    "lastTransactionType": null,
+    "dataConfidence": "high"
+  },
+  "geography": {
+    "parcelId": "75102_6998_00008",
+    "altitude": 34.19,
+    "slope": "flat",
+    "distanceToWaterway": 620,
+    "distanceFireStation": 1200,
+    "landUse": "urban"
+  },
+  "risks": {
+    "naturels": {
+      "inondation": {
+        "present": true,
+        "level": "moyen"
+      },
+      "remonteeNappe": {
+        "present": true,
+        "level": "moyen"
+      },
+      "risqueCotier": {
+        "present": false,
+        "level": null
+      },
+      "seisme": {
+        "present": true,
+        "level": "faible"
+      },
+      "mouvementTerrain": {
+        "present": true,
+        "level": "moyen"
+      },
+      "retraitGonflementArgile": {
+        "present": true,
+        "level": "moyen"
+      },
+      "reculTraitCote": {
+        "present": false,
+        "level": null
+      },
+      "avalanche": {
+        "present": false,
+        "level": null
+      },
+      "feuForet": {
+        "present": false,
+        "level": null
+      },
+      "eruptionVolcanique": {
+        "present": false,
+        "level": null
+      },
+      "cyclone": {
+        "present": false,
+        "level": null
+      },
+      "radon": {
+        "present": true,
+        "level": "faible"
+      }
+    },
+    "technologiques": {
+      "icpe": {
+        "present": true,
+        "level": "moyen"
+      },
+      "nucleaire": {
+        "present": false,
+        "level": null
+      },
+      "canalisationsMatieresDangereuses": {
+        "present": true,
+        "level": "moyen"
+      },
+      "pollutionSols": {
+        "present": true,
+        "level": "moyen"
+      },
+      "ruptureBarrage": {
+        "present": false,
+        "level": null
+      },
+      "risqueMinier": {
+        "present": false,
+        "level": null
+      }
+    },
+    "commune": "Paris",
+    "communeCode": "75056",
+    "naturalRiskCount": 6,
+    "technoRiskCount": 3,
+    "catnatLast10Years": 3,
+    "pprApproved": true
+  },
+  "climate": {
+    "freezeDaysPerYear": 48,
+    "stormFrequency": 2,
+    "hailRisk": 1,
+    "annualPrecipitation": 553,
+    "heatwaveDaysPerYear": 5,
+    "windZone": 2,
+    "snowZone": "A1"
+  },
+  "metadata": {
+    "addressLabel": "8 Rue de la Paix 75002 Paris",
+    "longitude": 2.330992,
+    "latitude": 48.868831,
+    "communeName": "Paris",
+    "communeCode": "75056",
+    "assessmentDate": "2026-07-21",
+    "dataFreshness": {
+      "bdnb": "2026-07-21",
+      "georisques": "2026-07-21",
+      "dvf": null,
+      "ign": "2026-07-21",
+      "meteofrance": "2026-07-21"
+    }
+  }
+}
