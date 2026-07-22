@@ -212,7 +212,6 @@ function renderValuation(v?: RiskAssessmentInput['valuation']): string {
   if (v.lastTransactionPricePerSqm) rows.push({ label: 'Prix marché', value: `${v.lastTransactionPricePerSqm.toLocaleString('fr-FR')} €/m²` });
   if (v.lastTransactionDate) rows.push({ label: 'Dernière transaction', value: v.lastTransactionDate });
   if (v.lastTransactionType) rows.push({ label: 'Type', value: v.lastTransactionType });
-  if (v.dataConfidence) rows.push({ label: 'Confiance', value: `conf_${v.dataConfidence}` });
 
   if (rows.length === 0) return '<div class="rp-empty">Données de valorisation incomplètes</div>';
   return renderRows(rows);
@@ -307,19 +306,50 @@ function renderRisks(r: RiskAssessmentInput['risks']): string {
   return html;
 }
 
-/* ── Climate (Open-Meteo) ── */
+/* ── Climate (Open-Meteo Climate API — CMIP6) ── */
 
 function renderClimate(c?: RiskAssessmentInput['climate']): string {
   if (!c) return '<div class="rp-empty">Aucune donnée climatique</div>';
 
   const rows: RowDef[] = [];
-  if (c.freezeDaysPerYear !== null) rows.push({ label: 'Jours de gel/an', value: `${c.freezeDaysPerYear}` });
-  if (c.heatwaveDaysPerYear !== null) rows.push({ label: 'Jours canicule/an', value: `${c.heatwaveDaysPerYear}` });
-  if (c.annualPrecipitation !== null) rows.push({ label: 'Précipitations/an', value: `${c.annualPrecipitation} mm` });
-  if (c.stormFrequency !== null) rows.push({ label: 'Fréquence tempêtes', value: `${c.stormFrequency}/5` });
-  if (c.hailRisk !== null) rows.push({ label: 'Risque grêle', value: `${c.hailRisk}/5` });
+
+  // Historical norms
+  if (c.freezeDaysPerYear !== null) rows.push({ label: '❄️ Jours de gel/an', value: `${c.freezeDaysPerYear} (2000–2014)` });
+  if (c.heatwaveDaysPerYear !== null) rows.push({ label: '🔥 Jours canicule/an', value: `${c.heatwaveDaysPerYear} (2000–2014)` });
+  if (c.annualPrecipitation !== null) rows.push({ label: '🌧️ Précipitations/an', value: `${c.annualPrecipitation} mm (2000–2014)` });
+  if (c.stormFrequency !== null) rows.push({ label: '🌬️ Fréquence tempêtes', value: `${c.stormFrequency}/5 (2000–2014)` });
+  if (c.hailRisk !== null) rows.push({ label: '🧊 Risque grêle', value: `${c.hailRisk}/5` });
   if (c.windZone !== null) rows.push({ label: 'Zone vent', value: `${c.windZone}` });
   if (c.snowZone) rows.push({ label: 'Zone neige', value: c.snowZone });
+
+  // Future projections
+  // Future projections (CMIP6 — Open-Meteo)
+  const hasProjections = c.projectedFreezeDays !== null || c.projectedHeatwaveDays !== null;
+  if (hasProjections) {
+    rows.push({ label: '', value: '' });
+    if (c.projectedFreezeDays !== null) rows.push({ label: '❄️ Jours de gel (2050)', value: `${c.projectedFreezeDays} (projeté)` });
+    if (c.projectedHeatwaveDays !== null) rows.push({ label: '🔥 Jours canicule (2050)', value: `${c.projectedHeatwaveDays} (projeté)` });
+    if (c.projectedPrecipitation !== null) rows.push({ label: '🌧️ Précipitations (2050)', value: `${c.projectedPrecipitation} mm (projeté)` });
+    if (c.projectedStormFrequency !== null) rows.push({ label: '🌬️ Tempêtes (2050)', value: `${c.projectedStormFrequency}/5 (projeté)` });
+    if (c.projectionModel) rows.push({ label: 'Modèle', value: c.projectionModel, mono: true });
+    if (c.projectionScenario) rows.push({ label: 'Scénario', value: c.projectionScenario, mono: true });
+  }
+
+  // DRIAS ADAMONT bias-corrected indicators
+  if (c.drias) {
+    rows.push({ label: '', value: '' });
+    rows.push({ label: '📐 Correction DRIAS ADAMONT', value: '', mono: true });
+    if (c.drias.heatwaveDays !== null) rows.push({ label: '🔥 Jours canicule (corrigé)', value: `${c.drias.heatwaveDays}/an` });
+    if (c.drias.tropicalNights !== null) rows.push({ label: '🌙 Nuits tropicales (corrigé)', value: `${c.drias.tropicalNights}/an` });
+    if (c.drias.summerDays !== null) rows.push({ label: '☀️ Jours d\'été (corrigé)', value: `${c.drias.summerDays}/an` });
+    if (c.drias.frostDays !== null) rows.push({ label: '❄️ Jours de gel (corrigé)', value: `${c.drias.frostDays}/an` });
+    if (c.drias.heavyPrecipDays !== null) rows.push({ label: '🌧️ Fortes précip. (corrigé)', value: `${c.drias.heavyPrecipDays}/an` });
+    if (c.drias.max5dayPrecip !== null) rows.push({ label: '💧 Max 5j précip. (corrigé)', value: `${c.drias.max5dayPrecip} mm` });
+    if (c.drias.consecutiveDryDays !== null) rows.push({ label: '🏜️ Jours secs conséc. max', value: `${c.drias.consecutiveDryDays} j` });
+    if (c.drias.fireWeatherIndex !== null) rows.push({ label: '🔥 Indice feux forêt', value: `${c.drias.fireWeatherIndex}` });
+    if (c.drias.dataSource) rows.push({ label: 'Source DRIAS', value: c.drias.dataSource, mono: true });
+    if (c.drias.warmingLevel) rows.push({ label: 'Niveau réchauff.', value: c.drias.warmingLevel, mono: true });
+  }
 
   if (rows.length === 0) return '<div class="rp-empty">Données climatiques incomplètes</div>';
   return renderRows(rows);
@@ -337,7 +367,7 @@ function renderMetadata(m: RiskAssessmentInput['metadata']): string {
   // Data freshness
   for (const [provider, date] of Object.entries(m.dataFreshness)) {
     if (date) {
-      const labels: Record<string, string> = { bdnb: 'BDNB', georisques: 'Géorisques', dvf: 'DVF', ign: 'IGN', meteofrance: 'Météo' };
+      const labels: Record<string, string> = { bdnb: 'BDNB', georisques: 'Géorisques', dvf: 'DVF', ign: 'IGN', openmeteo_climate: 'Open-Meteo Climat', drias: 'DRIAS' };
       rows.push({ label: labels[provider] || provider, value: date });
     }
   }

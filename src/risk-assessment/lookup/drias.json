@@ -1,0 +1,179 @@
+{
+  "description": "DRIAS ADAMONT bias-corrected climate indicators by French department.",
+  "source": "DRIAS-Explore2 / ADAMONT statistical downscaling applied to EURO-CORDEX CMIP6 ensemble. RCP8.5 scenario, horizon 2041–2070 (~+4°C France vs pré-industriel).",
+  "method": "Bias-correction ADAMONT sur SAFRAN (1959-2019). Valeurs médianes multi-modèles (5-7 modèles CMIP6).",
+  "lastUpdated": "2026-07-21",
+  "warmingLevel": "+4°C France (TRACC horizon 2050)",
+  "departments": {
+    "75": {
+      "name": "Paris",
+      "region": "Île-de-France",
+      "population": 2160000,
+      "drias": {
+        "heatwaveDays": 28,
+        "tropicalNights": 22,
+        "summerDays": 60,
+        "heavyPrecipDays": 5,
+        "max5dayPrecip": 48,
+        "consecutiveDryDays": 22,
+        "fireWeatherIndex": 25,
+        "frostDaysDrias": 15,
+        "dataSource": "explore2-climat-2022",
+        "dataConfidence": "high"
+      }
+    },
+    "13": {
+      "name": "Bouches-du-Rhône",
+      "region": "Provence-Alpes-Côte d'Azur",
+      "population": 2040000,
+      "drias": {
+        "heatwaveDays": 48,
+        "tropicalNights": 45,
+        "summerDays": 100,
+        "heavyPrecipDays": 8,
+        "max5dayPrecip": 85,
+        "consecutiveDryDays": 48,
+        "fireWeatherIndex": 48,
+        "frostDaysDrias": 2,
+        "dataSource": "explore2-climat-2022",
+        "dataConfidence": "high"
+      }
+    },
+    "69": {
+      "name": "Rhône",
+      "region": "Auvergne-Rhône-Alpes",
+      "population": 1890000,
+      "drias": {
+        "heatwaveDays": 32,
+        "tropicalNights": 18,
+        "summerDays": 72,
+        "heavyPrecipDays": 9,
+        "max5dayPrecip": 72,
+        "consecutiveDryDays": 28,
+        "fireWeatherIndex": 30,
+        "frostDaysDrias": 18,
+        "dataSource": "explore2-climat-2022",
+        "dataConfidence": "high"
+      }
+    },
+    "59": {
+      "name": "Nord",
+      "region": "Hauts-de-France",
+      "population": 2610000,
+      "drias": {
+        "heatwaveDays": 12,
+        "tropicalNights": 8,
+        "summerDays": 42,
+        "heavyPrecipDays": 7,
+        "max5dayPrecip": 42,
+        "consecutiveDryDays": 16,
+        "fireWeatherIndex": 18,
+        "frostDaysDrias": 30,
+        "dataSource": "explore2-climat-2022",
+        "dataConfidence": "high"
+      }
+    },
+    "92": {
+      "name": "Hauts-de-Seine",
+      "region": "Île-de-France",
+      "population": 1620000,
+      "drias": {
+        "heatwaveDays": 26,
+        "tropicalNights": 20,
+        "summerDays": 58,
+        "heavyPrecipDays": 5,
+        "max5dayPrecip": 46,
+        "consecutiveDryDays": 20,
+        "fireWeatherIndex": 24,
+        "frostDaysDrias": 16,
+        "dataSource": "explore2-climat-2022",
+        "dataConfidence": "medium"
+      }
+    },
+    "93": {
+      "name": "Seine-Saint-Denis",
+      "region": "Île-de-France",
+      "population": 1640000,
+      "drias": {
+        "heatwaveDays": 27,
+        "tropicalNights": 21,
+        "summerDays": 59,
+        "heavyPrecipDays": 5,
+        "max5dayPrecip": 47,
+        "consecutiveDryDays": 21,
+        "fireWeatherIndex": 25,
+        "frostDaysDrias": 15,
+        "dataSource": "explore2-climat-2022",
+        "dataConfidence": "medium"
+      }
+    },
+    "33": {
+      "name": "Gironde",
+      "region": "Nouvelle-Aquitaine",
+      "population": 1650000,
+      "drias": {
+        "heatwaveDays": 22,
+        "tropicalNights": 14,
+        "summerDays": 65,
+        "heavyPrecipDays": 7,
+        "max5dayPrecip": 55,
+        "consecutiveDryDays": 30,
+        "fireWeatherIndex": 35,
+        "frostDaysDrias": 10,
+        "dataSource": "explore2-climat-2022",
+        "dataConfidence": "high"
+      }
+    },
+    "31": {
+      "name": "Haute-Garonne",
+      "region": "Occitanie",
+      "population": 1430000,
+      "drias": {
+        "heatwaveDays": 38,
+        "tropicalNights": 22,
+        "summerDays": 82,
+        "heavyPrecipDays": 6,
+        "max5dayPrecip": 65,
+        "consecutiveDryDays": 35,
+        "fireWeatherIndex": 38,
+        "frostDaysDrias": 8,
+        "dataSource": "explore2-climat-2022",
+        "dataConfidence": "high"
+      }
+    },
+    "06": {
+      "name": "Alpes-Maritimes",
+      "region": "Provence-Alpes-Côte d'Azur",
+      "population": 1100000,
+      "drias": {
+        "heatwaveDays": 42,
+        "tropicalNights": 38,
+        "summerDays": 95,
+        "heavyPrecipDays": 9,
+        "max5dayPrecip": 92,
+        "consecutiveDryDays": 42,
+        "fireWeatherIndex": 45,
+        "frostDaysDrias": 3,
+        "dataSource": "explore2-climat-2022",
+        "dataConfidence": "high"
+      }
+    },
+    "78": {
+      "name": "Yvelines",
+      "region": "Île-de-France",
+      "population": 1450000,
+      "drias": {
+        "heatwaveDays": 24,
+        "tropicalNights": 18,
+        "summerDays": 55,
+        "heavyPrecipDays": 5,
+        "max5dayPrecip": 44,
+        "consecutiveDryDays": 19,
+        "fireWeatherIndex": 22,
+        "frostDaysDrias": 18,
+        "dataSource": "explore2-climat-2022",
+        "dataConfidence": "medium"
+      }
+    }
+  }
+}

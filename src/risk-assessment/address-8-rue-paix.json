@@ -7,39 +7,38 @@
     "levels": 8,
     "height": 22,
     "dpeClass": "D",
-    "energyConsumption": 203,
-    "emissionGes": 12,
+    "energyConsumption": null,
+    "emissionGes": null,
     "wallMaterial": "PIERRE",
     "roofMaterial": "ZINC ALUMINIUM - AUTRES",
-    "heatingType": "collectif",
+    "heatingType": null,
     "usageType": "Résidentiel collectif",
-    "nbLogements": 73,
+    "nbLogements": null,
     "departmentCode": "75"
   },
   "valuation": {
     "reconstructionValuePerSqm": 2800,
     "lastTransactionPricePerSqm": 10500,
     "lastTransactionDate": null,
-    "lastTransactionType": null,
-    "dataConfidence": "high"
+    "lastTransactionType": null
   },
   "geography": {
-    "parcelId": "75102_6998_00008",
+    "parcelId": "75102-000-AB-0047",
     "altitude": 34.19,
-    "slope": "flat",
-    "distanceToWaterway": 620,
-    "distanceFireStation": 1200,
+    "slope": "moderate",
+    "distanceToWaterway": null,
+    "distanceFireStation": null,
     "landUse": "urban"
   },
   "risks": {
     "naturels": {
       "inondation": {
         "present": true,
-        "level": "moyen"
+        "level": null
       },
       "remonteeNappe": {
         "present": true,
-        "level": "moyen"
+        "level": null
       },
       "risqueCotier": {
         "present": false,
@@ -51,14 +50,14 @@
       },
       "mouvementTerrain": {
         "present": true,
-        "level": "moyen"
-      },
-      "retraitGonflementArgile": {
-        "present": true,
-        "level": "moyen"
+        "level": null
       },
       "reculTraitCote": {
         "present": false,
+        "level": null
+      },
+      "retraitGonflementArgile": {
+        "present": true,
         "level": null
       },
       "avalanche": {
@@ -85,7 +84,7 @@
     "technologiques": {
       "icpe": {
         "present": true,
-        "level": "moyen"
+        "level": null
       },
       "nucleaire": {
         "present": false,
@@ -93,11 +92,11 @@
       },
       "canalisationsMatieresDangereuses": {
         "present": true,
-        "level": "moyen"
+        "level": null
       },
       "pollutionSols": {
         "present": true,
-        "level": "moyen"
+        "level": null
       },
       "ruptureBarrage": {
         "present": false,
@@ -112,24 +111,41 @@
     "communeCode": "75056",
     "naturalRiskCount": 6,
     "technoRiskCount": 3,
-    "catnatLast10Years": 3,
-    "pprApproved": true
-  },
-  "security": {
-    "burglaryRatePerThousand": 8.5,
-    "vandalismRatePerThousand": 4.2,
-    "theftRatePerThousand": 3.1,
-    "securityIndex": 72,
-    "dataYear": 2024
+    "catnatLast10Years": 0,
+    "pprApproved": true,
+    "enrichment": {
+      "argileExposition": null,
+      "cavitiesNearby": 0,
+      "pollutedSitesNearby": null
+    }
   },
   "climate": {
-    "freezeDaysPerYear": 48,
-    "stormFrequency": 2,
+    "freezeDaysPerYear": 46,
+    "stormFrequency": 1,
     "hailRisk": 1,
-    "annualPrecipitation": 553,
-    "heatwaveDaysPerYear": 5,
-    "windZone": 2,
-    "snowZone": "A1"
+    "annualPrecipitation": 634,
+    "heatwaveDaysPerYear": 0,
+    "windZone": 1,
+    "snowZone": "A1",
+    "projectedFreezeDays": 33,
+    "projectedHeatwaveDays": 1,
+    "projectedPrecipitation": 660,
+    "projectedStormFrequency": 1,
+    "projectionModel": "EC_Earth3P_HR",
+    "projectionScenario": "CMIP6 high-resolution (≈RCP8.5)",
+    "drias": {
+      "method": "Bias-correction ADAMONT sur SAFRAN (1959-2019). Valeurs médianes multi-modèles (5-7 modèles CMIP6).",
+      "warmingLevel": "+4°C France (TRACC horizon 2050)",
+      "heatwaveDays": 28,
+      "tropicalNights": 22,
+      "summerDays": 60,
+      "heavyPrecipDays": 5,
+      "max5dayPrecip": 48,
+      "consecutiveDryDays": 22,
+      "fireWeatherIndex": 25,
+      "frostDays": 15,
+      "dataSource": "explore2-climat-2022"
+    }
   },
   "metadata": {
     "addressLabel": "8 Rue de la Paix 75002 Paris",
@@ -137,14 +153,14 @@
     "latitude": 48.868831,
     "communeName": "Paris",
     "communeCode": "75056",
-    "assessmentDate": "2026-07-21",
+    "assessmentDate": "2026-07-22",
     "dataFreshness": {
-      "bdnb": "2026-07-21",
-      "georisques": "2026-07-21",
-      "dvf": null,
-      "ign": "2026-07-21",
-      "interstats": null,
-      "meteofrance": "2026-07-21"
+      "bdnb": "2026-07-22",
+      "georisques": "2026-07-22",
+      "dvf": "2026-07-22",
+      "ign": "2026-07-22",
+      "openmeteo_climate": "2026-07-22",
+      "drias": "2026-07-22"
     }
   }
 }

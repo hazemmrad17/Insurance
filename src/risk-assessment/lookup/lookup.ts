@@ -44,7 +44,6 @@ export function lookupDepartment(code: string): DepartmentLookupResult | null {
         lastTransactionPricePerSqm: data.valuation.avgMarketPricePerSqm,
         lastTransactionDate: null,
         lastTransactionType: null,
-        dataConfidence: data.valuation.dataConfidence,
       },
     },
     exact: true,

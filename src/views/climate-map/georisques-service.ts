@@ -177,9 +177,22 @@ export async function fetchCatnat(codeInsee: string): Promise<CatnatRecord[]> {
       console.warn(`[Géorisques] CATNAT API: ${res.status}`);
       return [];
     }
-    interface CatnatResponse { count: number; results: CatnatRecord[] }
-    const data: CatnatResponse = await res.json();
-    return data.results || (Array.isArray(data) ? data : []);
+
+    const raw: any = await res.json();
+    // API v1 returns paginated: { results: N, data: [...] } or flat array
+    const records: any[] = raw?.data || (Array.isArray(raw) ? raw : []);
+
+    // Normalise field names: API uses date_publication_arrete, code uses date_arrete
+    return records.map(r => ({
+      code_insee: r.code_insee,
+      libelle_risque: r.libelle_risque_jo || r.libelle_risque,
+      libelle_commune: r.libelle_commune,
+      date_debut: r.date_debut_evt || r.date_debut,
+      date_fin: r.date_fin_evt || r.date_fin,
+      date_arrete: r.date_publication_arrete || r.date_arrete,
+      date_jo: r.date_publication_jo || r.date_jo,
+      nature_risque: r.nature_risque,
+    }));
   } catch (e) {
     console.warn('[Géorisques] CATNAT fetch failed:', e);
     return [];

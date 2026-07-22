@@ -10,8 +10,7 @@
       "population": 2160000,
       "valuation": {
         "reconstructionValuePerSqm": 2800,
-        "avgMarketPricePerSqm": 10500,
-        "dataConfidence": "high"
+        "avgMarketPricePerSqm": 10500
       }
     },
     "13": {
@@ -20,8 +19,7 @@
       "population": 2040000,
       "valuation": {
         "reconstructionValuePerSqm": 2400,
-        "avgMarketPricePerSqm": 3800,
-        "dataConfidence": "high"
+        "avgMarketPricePerSqm": 3800
       }
     },
     "69": {
@@ -30,8 +28,7 @@
       "population": 1890000,
       "valuation": {
         "reconstructionValuePerSqm": 2500,
-        "avgMarketPricePerSqm": 4700,
-        "dataConfidence": "high"
+        "avgMarketPricePerSqm": 4700
       }
     },
     "59": {
@@ -40,8 +37,7 @@
       "population": 2610000,
       "valuation": {
         "reconstructionValuePerSqm": 2200,
-        "avgMarketPricePerSqm": 2700,
-        "dataConfidence": "high"
+        "avgMarketPricePerSqm": 2700
       }
     },
     "92": {
@@ -50,8 +46,7 @@
       "population": 1620000,
       "valuation": {
         "reconstructionValuePerSqm": 2700,
-        "avgMarketPricePerSqm": 6500,
-        "dataConfidence": "high"
+        "avgMarketPricePerSqm": 6500
       }
     },
     "93": {
@@ -60,8 +55,7 @@
       "population": 1640000,
       "valuation": {
         "reconstructionValuePerSqm": 2400,
-        "avgMarketPricePerSqm": 3800,
-        "dataConfidence": "medium"
+        "avgMarketPricePerSqm": 3800
       }
     },
     "33": {
@@ -70,8 +64,7 @@
       "population": 1650000,
       "valuation": {
         "reconstructionValuePerSqm": 2300,
-        "avgMarketPricePerSqm": 4200,
-        "dataConfidence": "high"
+        "avgMarketPricePerSqm": 4200
       }
     },
     "31": {
@@ -80,8 +73,7 @@
       "population": 1430000,
       "valuation": {
         "reconstructionValuePerSqm": 2300,
-        "avgMarketPricePerSqm": 3700,
-        "dataConfidence": "high"
+        "avgMarketPricePerSqm": 3700
       }
     },
     "06": {
@@ -90,8 +82,7 @@
       "population": 1100000,
       "valuation": {
         "reconstructionValuePerSqm": 2500,
-        "avgMarketPricePerSqm": 4800,
-        "dataConfidence": "high"
+        "avgMarketPricePerSqm": 4800
       }
     },
     "78": {
@@ -100,8 +91,7 @@
       "population": 1450000,
       "valuation": {
         "reconstructionValuePerSqm": 2500,
-        "avgMarketPricePerSqm": 4300,
-        "dataConfidence": "high"
+        "avgMarketPricePerSqm": 4300
       }
     }
   }
