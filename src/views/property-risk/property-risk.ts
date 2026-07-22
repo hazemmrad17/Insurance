@@ -105,6 +105,7 @@ export function initPropertyRisk(): void {
 
   setupStepNav();
   setupRiskNav();
+  setupMoreMenu();
   setupMapInterop();
   setupInspect();
   setupEvaluate();
@@ -121,7 +122,8 @@ export function initPropertyRisk(): void {
 export function destroyPropertyRisk(): void {
   destroyClimateMap();
   destroyHouse();
-  initialized = false;
+  // Keep initialized = true to avoid duplicate event listeners on re-entry.
+  // The one-time setup (setupStepNav, setupRiskNav, etc.) must run only once.
 }
 
 /* ── Step navigation ──────────────────────────────────────── */
@@ -218,10 +220,34 @@ function getActiveRiskTab(): string {
 }
 
 function navigateToTab(tabKey: string): void {
+  // Direct content switch — avoids circular dep & prevents the
+  // header-tab click → navigateTo → switchView → updateHeaderTabs
+  // cycle that regenerates #headerTabs via innerHTML, destroying
+  // the button the user just clicked (which caused tab skips).
+
+  // 1) Update header tab button active state
   const headerTabs = document.getElementById('headerTabs');
-  if (!headerTabs) return;
-  const btn = headerTabs.querySelector(`.tab-btn[data-tab="${tabKey}"]`) as HTMLButtonElement | null;
-  if (btn) btn.click();
+  if (headerTabs) {
+    headerTabs.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+    const btn = headerTabs.querySelector(`.tab-btn[data-tab="${tabKey}"]`);
+    if (btn) btn.classList.add('active');
+  }
+
+  // 2) Switch tab content directly (mirrors showPropertyRiskSubTab logic)
+  const panels = document.querySelectorAll('.risk-tab-content');
+  panels.forEach(el => el.classList.remove('active'));
+  const target = document.querySelector(`.risk-tab-content[data-content="${tabKey}"]`);
+  if (target) target.classList.add('active');
+
+  // 3) Update URL to match (without triggering a router cycle)
+  window.history.pushState(
+    { view: 'property-risk', subTab: tabKey },
+    '',
+    `/risk-hub/${tabKey}`
+  );
+
+  // 4) Notify lifecycle
+  onRiskTabChange(tabKey);
 }
 
 function updateRiskNav(): void {
@@ -254,6 +280,87 @@ function updateRiskNav(): void {
     const tabIdx = TAB_ORDER.indexOf(tab);
     // Highlight next/prev steps subtly
     el.classList.toggle('nav-adjacent', Math.abs(tabIdx - idx) === 1 && tabIdx !== idx);
+  });
+}
+
+/* ── 3-dots More Menu ────────────────────────────────────── */
+
+function setupMoreMenu(): void {
+  const moreBtn = document.getElementById('riskMoreBtn');
+  const moreMenu = document.getElementById('riskMoreMenu');
+  if (!moreBtn || !moreMenu) return;
+
+  // Toggle menu on click
+  moreBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    moreMenu.classList.toggle('open');
+  });
+
+  // Close on outside click
+  document.addEventListener('click', (e) => {
+    if (!moreMenu.contains(e.target as Node) && e.target !== moreBtn) {
+      moreMenu.classList.remove('open');
+    }
+  });
+
+  // Close on Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') moreMenu.classList.remove('open');
+  });
+
+  // Wire menu items
+  moreMenu.querySelectorAll('.risk-more-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const action = (item as HTMLElement).getAttribute('data-action');
+      moreMenu.classList.remove('open');
+
+      switch (action) {
+        case 'export':
+          // Trigger the export button in the results panel if it exists
+          const exportBtn = document.getElementById('rpExportBtn');
+          if (exportBtn) {
+            exportBtn.click();
+          } else {
+            showToast('<div class="risk-toast-body">Aucune donnée à exporter — recherchez d\'abord une adresse.</div>', 3000);
+          }
+          break;
+
+        case 'print':
+          window.print();
+          break;
+
+        case 'darkmode':
+          const html = document.documentElement;
+          const isDark = html.classList.toggle('dark-mode');
+          localStorage.setItem('previa-dark-mode', String(isDark));
+          // Sync the settings toggle if present
+          const settingsToggle = document.getElementById('settingsDarkMode') as HTMLInputElement | null;
+          if (settingsToggle) settingsToggle.checked = isDark;
+          showToast(`<div class="risk-toast-body">${isDark ? '🌙 Mode sombre activé' : '☀️ Mode clair activé'}</div>`, 2000);
+          break;
+
+        case 'reset':
+          if (confirm('Réinitialiser la recherche et l\'évaluation en cours ?')) {
+            // Clear state
+            state.selectedAddress = null;
+            state.selectedBuilding = null;
+            state.selectedWorks = new Set(Object.keys(housePartData));
+            // Clear results panel
+            const panel = document.getElementById('riskResultsPanel');
+            if (panel) {
+              panel.innerHTML = `
+                <div class="rp-empty-state">
+                  <span class="material-symbols-outlined" style="font-size:40px;color:var(--text-muted);opacity:0.3;">gps_fixed</span>
+                  <p style="font-size:12px;color:var(--text-muted);margin:0;">Recherchez une adresse pour voir l'évaluation complète des risques</p>
+                </div>`;
+            }
+            // Navigate back to Locate
+            navigateToTab('locate');
+            showToast('<div class="risk-toast-body">✅ Évaluation réinitialisée</div>', 2000);
+          }
+          break;
+      }
+    });
   });
 }
 

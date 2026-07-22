@@ -5,6 +5,12 @@
 
 import { initPropertyRisk, destroyPropertyRisk, onRiskTabChange } from './views/property-risk/property-risk.js';
 import { initPortfolio, destroyPortfolio, onPortfolioTabChange } from './views/portfolio/portfolio.js';
+import { initAssure, destroyAssure } from './views/assure/assure.js';
+import { hideLandingPage } from './views/landing/landing.js';
+
+// ── Role State ────────────────────────────────────────────────
+export type UserRole = 'assureur' | 'assure';
+let currentRole: UserRole = 'assureur';
 
 // ── View Config ────────────────────────────────────────────────
 export const VIEW_TABS: Record<string, string[]> = {
@@ -13,15 +19,24 @@ export const VIEW_TABS: Record<string, string[]> = {
   clients: [],
   settings: ['Account', 'Security', 'Billing & Plans', 'Notifications', 'Connections'],
   'property-risk': ['Locate', 'Expert', 'Inspect', 'Evaluate'],
+  'assure-bien': [],
+  'assure-travaux': [],
+  'assure-engagement': [],
+  'assure-dossier': [],
 };
 
 // Map view name → base path
 const ROUTES: Record<string, string> = {
-  overview: '/',
+
+  overview: '/dashboard',
   portfolio: '/portfolio',
   clients: '/clients',
   settings: '/settings',
   'property-risk': '/risk-hub',
+  'assure-bien': '/assure/bien',
+  'assure-travaux': '/assure/travaux',
+  'assure-engagement': '/assure/engagement',
+  'assure-dossier': '/assure/dossier',
 };
 
 // Sub-tab keys per view that support deep-linking
@@ -30,6 +45,10 @@ const SUB_TAB_KEYS: Record<string, string[]> = {
   clients: [],
   settings: ['account', 'security', 'billing', 'notifications', 'connections'],
   'property-risk': ['locate', 'expert', 'inspect', 'evaluate'],
+  'assure-bien': ['Mon Bien', 'Mes Travaux', 'Mon Engagement', 'Mon Dossier'],
+  'assure-travaux': ['Mon Bien', 'Mes Travaux', 'Mon Engagement', 'Mon Dossier'],
+  'assure-engagement': ['Mon Bien', 'Mes Travaux', 'Mon Engagement', 'Mon Dossier'],
+  'assure-dossier': ['Mon Bien', 'Mes Travaux', 'Mon Engagement', 'Mon Dossier'],
 };
 
 // Maps view+tab-key → content-key for showViewSubTab
@@ -40,7 +59,7 @@ const SUB_TAB_CONTENT: Record<string, Record<string, string>> = {
   'property-risk': { locate: 'locate', expert: 'expert', inspect: 'inspect', evaluate: 'evaluate' },
 };
 
-// ── Sub-tab helper: activate sub-tab for a view by tab-key ──
+/* ── Sub-tab helper: activate sub-tab for a view by tab-key ── */
 function activateSubTab(viewName: string, tabKey: string): void {
   if (viewName === 'property-risk') {
     showPropertyRiskSubTab(tabKey);
@@ -49,7 +68,6 @@ function activateSubTab(viewName: string, tabKey: string): void {
   if (SUB_TAB_CONTENT[viewName]?.[tabKey]) {
     showViewSubTab(viewName, tabKey);
   }
-  // Notify portfolio map lifecycle on sub-tab changes
   if (viewName === 'portfolio') {
     onPortfolioTabChange(tabKey);
   }
@@ -61,34 +79,36 @@ const REDIRECTS: Record<string, { view: string; subTab?: string }> = {
   property: { view: 'property-risk', subTab: 'inspect' },
   assureur: { view: 'property-risk', subTab: 'evaluate' },
   assessments: { view: 'portfolio', subTab: 'summary' },
+  assure: { view: 'assure-bien' },
+  'espace-assure': { view: 'assure-bien' },
 };
 
 /* ── Parse URL path into { view, subTab? } ───────────────── */
 function parseUrl(path: string): { view: string; subTab?: string } {
-  // Remove trailing slash
   const clean = path.replace(/\/$/, '');
   const parts = clean.split('/').filter(Boolean);
 
   if (parts.length === 0) return { view: 'overview' };
 
+  if (parts[0] === 'assure' && parts.length > 1) {
+    const sub = parts[1];
+    const map: Record<string, string> = { bien: 'assure-bien', travaux: 'assure-travaux', engagement: 'assure-engagement', dossier: 'assure-dossier' };
+    if (map[sub]) return { view: map[sub] };
+  }
+
   const viewName = parts[0];
   const subTab = parts.length > 1 ? parts[1] : undefined;
 
-  // Auth routes
   if (viewName === 'auth' && subTab) {
     return { view: 'auth-' + subTab };
   }
 
-  // Check redirects for old routes
   if (REDIRECTS[viewName]) {
-    console.log(`[Router] Redirecting /${viewName} → /${REDIRECTS[viewName].view}/${REDIRECTS[viewName].subTab || ''}`);
     return REDIRECTS[viewName];
   }
 
-  // Validate view name (prevent 404 on unknown routes)
   if (!ROUTES[viewName]) return { view: 'overview' };
 
-  // Validate sub-tab for this view
   if (subTab && SUB_TAB_KEYS[viewName]?.includes(subTab)) {
     return { view: viewName, subTab };
   }
@@ -130,6 +150,55 @@ function getInitialRoute(): { view: string; subTab?: string } {
   return parseUrl(window.location.pathname);
 }
 
+/* ── Role Management ───────────────────────────────────────── */
+export function setRole(role: UserRole): void {
+  currentRole = role;
+  updateSidebarVisibility();
+
+  // Navigate to default view of selected role if current view does not match
+  const activeView = document.querySelector('.sidebar-nav .nav-item.active')?.getAttribute('data-view') || '';
+  if (role === 'assure' && !activeView.startsWith('assure-')) {
+    navigateTo('assure-bien');
+  } else if (role === 'assureur' && activeView.startsWith('assure-')) {
+    navigateTo('overview');
+  }
+}
+
+export function updateSidebarVisibility(): void {
+  const assureurItems = document.querySelectorAll('.nav-role-assureur');
+  const assureItems = document.querySelectorAll('.nav-role-assure');
+  const roleBadge = document.getElementById('sidebarRoleBadge');
+  const roleBtnText = document.getElementById('roleSwitchText');
+  if (currentRole === 'assure') {
+    assureurItems.forEach(el => (el as HTMLElement).style.display = 'none');
+    assureItems.forEach(el => (el as HTMLElement).style.display = '');
+    if (roleBadge) {
+      roleBadge.textContent = 'ESPACE ASSURÉ';
+      roleBadge.className = 'sidebar-role-badge assure';
+    }
+    if (roleBtnText) roleBtnText.textContent = 'Mode Assureur';
+  } else {
+    assureurItems.forEach(el => (el as HTMLElement).style.display = '');
+    assureItems.forEach(el => (el as HTMLElement).style.display = 'none');
+    if (roleBadge) {
+      roleBadge.textContent = 'ESPACE ASSUREUR';
+      roleBadge.className = 'sidebar-role-badge assureur';
+    }
+    if (roleBtnText) roleBtnText.textContent = 'Mode Assuré';
+  }
+}
+
+function setupRoleSwitcher(): void {
+  const btn = document.getElementById('roleSwitchBtn');
+  if (btn) {
+    btn.addEventListener('click', () => {
+      const nextRole: UserRole = currentRole === 'assureur' ? 'assure' : 'assureur';
+      setRole(nextRole);
+    });
+  }
+
+}
+
 /* ── Activate nav item for the given view ──────────────────── */
 function activateNavItem(viewName: string): void {
   const navItems = document.querySelectorAll('.sidebar-nav .nav-item');
@@ -137,6 +206,14 @@ function activateNavItem(viewName: string): void {
     const v = nav.getAttribute('data-view');
     nav.classList.toggle('active', v === viewName);
   });
+
+  // Auto detect role from viewName
+  if (viewName.startsWith('assure-')) {
+    currentRole = 'assure';
+  } else if (viewName !== 'settings') {
+    currentRole = 'assureur';
+  }
+  updateSidebarVisibility();
 }
 
 // ── Sidebar Toggle ─────────────────────────────────────────────
@@ -161,18 +238,22 @@ export function setupSidebarToggle(): void {
 
 // ── Sidebar Navigation ─────────────────────────────────────────
 export function setupSidebarNavigation(): void {
+  setupRoleSwitcher();
+
   const navItems = document.querySelectorAll('.sidebar-nav .nav-item');
   navItems.forEach(item => {
     item.addEventListener('click', () => {
       const viewName = item.getAttribute('data-view');
-      if (!viewName || viewName === 'logout') return;
+      if (!viewName) return;
+      if (viewName === 'logout') {
+        navigateTo('auth-signin');
+        return;
+      }
       activateNavItem(viewName);
-      // Sidebar clicks go to the first sub-tab (no sub-tab = show first tab)
       navigateTo(viewName);
     });
   });
 
-  // Activate initial view from URL
   const { view, subTab } = getInitialRoute();
   activateNavItem(view);
   switchView(view, subTab);
@@ -180,7 +261,8 @@ export function setupSidebarNavigation(): void {
 
 // ── View Switching ─────────────────────────────────────────────
 export function switchView(viewName: string, subTab?: string): void {
-  // Auth views are outside the dashboard shell
+  hideLandingPage();
+
   if (viewName && viewName.startsWith('auth-')) {
     import('./views/auth/auth.js').then(({ showAuthPage }) => {
       showAuthPage(viewName.replace('auth-', ''));
@@ -188,7 +270,6 @@ export function switchView(viewName: string, subTab?: string): void {
     return;
   }
 
-  // Restore dashboard shell when leaving auth pages
   const dashboard = document.querySelector('.dashboard-container') as HTMLElement | null;
   if (dashboard) dashboard.style.display = '';
   document.querySelectorAll('.auth-view').forEach(el => el.classList.remove('active'));
@@ -198,11 +279,9 @@ export function switchView(viewName: string, subTab?: string): void {
   if (targetView) targetView.classList.add('active');
   updateHeaderTabs(viewName, subTab);
 
-  // Ensure client detail panel is closed when leaving the clients view
   const clientsPanel = document.getElementById('clientsDetailPanel');
   if (clientsPanel?.classList.contains('active') && viewName !== 'clients') {
     clientsPanel.classList.remove('active');
-    // Restore the default info tab content
     document.querySelector('.clients-tab-content[data-content="info"]')?.classList.add('active');
   }
 
@@ -218,6 +297,12 @@ export function switchView(viewName: string, subTab?: string): void {
   } else {
     destroyPortfolio();
   }
+
+  if (viewName.startsWith('assure-')) {
+    requestAnimationFrame(() => initAssure(viewName));
+  } else {
+    destroyAssure();
+  }
 }
 
 // ── Header Tabs ────────────────────────────────────────────────
@@ -225,22 +310,32 @@ export function updateHeaderTabs(viewName: string, activeTabKey?: string): void 
   const headerTabs = document.getElementById('headerTabs');
   if (!headerTabs) return;
 
-  const tabNames = VIEW_TABS[viewName] || VIEW_TABS.property;
+  const tabNames = VIEW_TABS[viewName] || [];
   const subTabKeys = SUB_TAB_KEYS[viewName] || [];
 
-  // Hide the entire header tabs row when there are no tabs
+  // Push actions right when tabs hidden, reset margin when tabs visible
+  const headerActions = document.querySelector('.header-actions') as HTMLElement | null;
+
   if (tabNames.length === 0) {
     headerTabs.style.display = 'none';
+    if (headerActions) headerActions.style.marginLeft = 'auto';
     return;
   }
   headerTabs.style.display = '';
+  if (headerActions) headerActions.style.marginLeft = '';
 
-  // Active key: use provided, or default to first sub-tab key
-  const activeKey = activeTabKey || subTabKeys[0] || '';
+  // Determine active tab key
+  let activeKey = activeTabKey || subTabKeys[0] || '';
+  // For assure views, derive active tab from the view name
+  if (viewName.startsWith('assure-') && !activeTabKey) {
+    const tabFromView = viewName.replace('assure-', '');
+    if (subTabKeys.includes(tabFromView)) {
+      activeKey = tabFromView;
+    }
+  }
 
   headerTabs.innerHTML = tabNames.map((name, i) => {
     const rawKey = name.toLowerCase();
-    // Use canonical key from SUB_TAB_KEYS when available (handles 'billing & plans' → 'billing')
     const tabKey = subTabKeys[i] || rawKey;
     const icon = viewName === 'settings'
       ? `<span class="material-symbols-outlined tab-icon">${subTabKeys[i] === 'account' ? 'person' : subTabKeys[i] === 'security' ? 'lock' : subTabKeys[i] === 'billing' ? 'credit_card' : subTabKeys[i] === 'notifications' ? 'notifications' : 'link'}</span>`
@@ -251,13 +346,19 @@ export function updateHeaderTabs(viewName: string, activeTabKey?: string): void 
 
   setupHeaderTabs();
 
-  // If we have an active tab key, activate its content
   if (activeKey) {
     activateSubTab(viewName, activeKey);
   }
 }
 
 export function setupHeaderTabs(): void {
+  const VIEW_MAP: Record<string, string> = {
+    bien: 'assure-bien',
+    travaux: 'assure-travaux',
+    engagement: 'assure-engagement',
+    dossier: 'assure-dossier',
+  };
+
   const tabs = document.querySelectorAll('.header-tabs .tab-btn');
   tabs.forEach(tab => {
     tab.addEventListener('click', () => {
@@ -270,7 +371,12 @@ export function setupHeaderTabs(): void {
       const activeView = document.querySelector('.sidebar-nav .nav-item.active');
       const viewName = activeView?.getAttribute('data-view') || '';
 
-      // Update URL with sub-tab
+      // Handle assure view navigation - map tab key to a different view entirely
+      if (viewName.startsWith('assure-') && VIEW_MAP[tabKey]) {
+        navigateTo(VIEW_MAP[tabKey]);
+        return;
+      }
+
       navigateTo(viewName, tabKey);
     });
   });
@@ -286,7 +392,6 @@ export function showPropertyRiskSubTab(tabName: string): void {
   const target = document.querySelector(`.risk-tab-content[data-content="${contentKey}"]`);
   if (target) target.classList.add('active');
 
-  // Notify the view module to manage map/house lifecycle + step updates
   onRiskTabChange(tabName);
 }
 
@@ -300,7 +405,6 @@ export function showViewSubTab(viewName: string, tabName: string): void {
 
   const contentKey = SUB_TAB_CONTENT[viewName]?.[tabName];
   if (!contentKey) {
-    // Fallback: tabName may already be the content key
     const target = document.querySelector(`${selector}[data-content="${tabName}"]`);
     if (target) {
       panels.forEach(el => el.classList.remove('active'));
@@ -353,7 +457,6 @@ export function setupHeaderActions(): void {
     });
   }
 
-  // Profile dropdown
   const trigger = document.getElementById('profileTrigger');
   const menu = document.getElementById('profileMenu');
   if (trigger && menu) {
@@ -387,10 +490,7 @@ export function setupHeaderActions(): void {
             break;
           }
           case 'logout':
-            if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
-              localStorage.removeItem('previa-dark-mode');
-              window.location.reload();
-            }
+            navigateTo('auth-signin');
             break;
           default: {
             const labels: Record<string, string> = { billing: 'Plan & Facturation', pricing: 'Tarifs', faq: 'FAQ' };
@@ -420,7 +520,6 @@ export function setupCrossNavigation(): void {
 export function initRouter(): void {
   setupPopstate();
 
-  // Set initial URL state
   const { view, subTab } = getInitialRoute();
   const path = buildPath(view, subTab);
   window.history.replaceState({ view, subTab: subTab || null }, '', path);

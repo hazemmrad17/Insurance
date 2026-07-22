@@ -60,6 +60,110 @@
   font-size: 18px !important;
 }
 
+/* ── 3-dots More Menu ────────────────────────────────────────── */
+.risk-step-more {
+  position: relative;
+  flex-shrink: 0;
+  margin-left: 4px;
+}
+
+.risk-more-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.risk-more-btn:hover {
+  background: var(--bg-panel);
+  color: var(--text-primary);
+}
+
+.risk-more-btn .material-symbols-outlined {
+  font-size: 18px !important;
+}
+
+.risk-more-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 200px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition: all 0.2s ease;
+  z-index: 50;
+}
+
+.risk-more-menu.open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.risk-more-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-primary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+  width: 100%;
+}
+
+.risk-more-item:hover {
+  background: var(--bg-panel);
+  color: var(--text-primary);
+}
+
+.risk-more-item .material-symbols-outlined {
+  font-size: 16px !important;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.risk-more-item:hover .material-symbols-outlined {
+  color: var(--color-primary);
+}
+
+.risk-more-divider {
+  height: 1px;
+  background: var(--border-color);
+  margin: 4px 0;
+}
+
+.dark-mode .risk-more-menu {
+  background: #1e293b;
+  border-color: #334155;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+
+.dark-mode .risk-more-item:hover {
+  background: #0f172a;
+}
+
 /* Adjacent step highlight */
 .risk-step.nav-adjacent {
   opacity: 0.85;
@@ -172,6 +276,11 @@
 /* ── View panels with absolute-positioned children ─────────── */
 .view-panel {
   position: relative;
+}
+
+/* Hide the global app-header when Risk Hub is active */
+.main-content:has(#view-property-risk.active) .app-header {
+  display: none;
 }
 
 /* ── TAB 1: LOCATE (Map + Results Panel split) ───────────── */
@@ -1492,10 +1601,10 @@
 }
 
 .rp-section-body {
-  padding: 2px 16px 12px;
+  padding: 4px 16px 16px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
 }
 
 /* ── Row ──────────────────────────────────────────────────── */
@@ -1503,7 +1612,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 4px 0;
+  padding: 6px 0;
   font-size: 11px;
   border-bottom: 1px solid rgba(0,0,0,0.04);
 }
@@ -1572,14 +1681,15 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  padding: 8px;
+  justify-content: center;
+  gap: 4px;
+  padding: 16px 8px 12px;
   background: var(--bg-panel);
   border-radius: var(--border-radius-sm);
 }
 
 .rp-kpi-val {
-  font-size: 22px;
+  font-size: 28px;
   font-weight: 700;
   line-height: 1;
 }
@@ -1609,7 +1719,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 3px 6px;
+  padding: 5px 8px;
   font-size: 11px;
   border-radius: 4px;
   transition: background 0.15s ease;

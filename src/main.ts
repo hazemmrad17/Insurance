@@ -3,6 +3,8 @@
  */
 import './base.css';
 import './style.css';
+import './views/assure/assure.css';
+import './views/landing/landing.css';
 
 // Material Web Components
 import '@material/web/iconbutton/icon-button.js';
@@ -22,11 +24,13 @@ import {
   setupModals,
 } from './router.js';
 
-// View modules (initialization is done lazily by the router's switchView)
+// View modules
 import { initClients } from './views/clients/clients.js';
 import { initSettings } from './views/settings/settings.js';
 import { initOverview } from './views/overview/overview.js';
 import { initAuth } from './views/auth/auth.js';
+import { initAssure } from './views/assure/assure.js';
+import { initLanding } from './views/landing/landing.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   // Core app infrastructure
@@ -35,12 +39,13 @@ document.addEventListener('DOMContentLoaded', () => {
   setupHeaderActions();
   setupCrossNavigation();
   setupModals();
+  initLanding();
   initRouter();
 
-  // View-specific interactions (lightweight event bindings)
+  // View-specific interactions
   initClients();
   initSettings();
   initOverview();
   initAuth();
-  // Risk Hub (property-risk), Portfolio, and Map are initialized lazily by the router
+  void initAssure;
 });

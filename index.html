@@ -29,26 +29,51 @@
         </div>
         
         <nav class="sidebar-nav">
-          <button class="nav-item active" data-view="overview" aria-label="Overview">
+          <!-- Assureur (Advisor / Insurer) Items -->
+          <button class="nav-item nav-role-assureur active" data-view="overview" aria-label="Overview">
             <span class="material-symbols-outlined">dashboard</span>
             <span class="nav-label">Overview</span>
             <md-ripple></md-ripple>
           </button>
-          <button class="nav-item" data-view="property-risk" aria-label="Risk Hub">
+          <button class="nav-item nav-role-assureur" data-view="property-risk" aria-label="Risk Hub">
             <span class="material-symbols-outlined">gps_fixed</span>
             <span class="nav-label">Risk Hub</span>
             <md-ripple></md-ripple>
           </button>
-          <button class="nav-item" data-view="portfolio" aria-label="Portfolio">
+          <button class="nav-item nav-role-assureur" data-view="portfolio" aria-label="Portfolio">
             <span class="material-symbols-outlined">folder_open</span>
             <span class="nav-label">Portfolio</span>
             <md-ripple></md-ripple>
           </button>
-          <button class="nav-item" data-view="clients" aria-label="Clients">
+          <button class="nav-item nav-role-assureur" data-view="clients" aria-label="Clients">
             <span class="material-symbols-outlined">groups</span>
             <span class="nav-label">Clients</span>
             <md-ripple></md-ripple>
           </button>
+
+          <!-- Assuré (Policyholder / Client) Items -->
+          <button class="nav-item nav-role-assure" data-view="assure-bien" aria-label="Mon Bien" style="display:none;">
+            <span class="material-symbols-outlined">home</span>
+            <span class="nav-label">Mon Bien</span>
+            <md-ripple></md-ripple>
+          </button>
+          <button class="nav-item nav-role-assure" data-view="assure-travaux" aria-label="Mes Travaux" style="display:none;">
+            <span class="material-symbols-outlined">home_repair_service</span>
+            <span class="nav-label">Mes Travaux</span>
+            <md-ripple></md-ripple>
+          </button>
+          <button class="nav-item nav-role-assure" data-view="assure-engagement" aria-label="Mon Engagement" style="display:none;">
+            <span class="material-symbols-outlined">verified</span>
+            <span class="nav-label">Mon Engagement</span>
+            <md-ripple></md-ripple>
+          </button>
+          <button class="nav-item nav-role-assure" data-view="assure-dossier" aria-label="Mon Dossier" style="display:none;">
+            <span class="material-symbols-outlined">folder_open</span>
+            <span class="nav-label">Mon Dossier</span>
+            <md-ripple></md-ripple>
+          </button>
+
+          <!-- Shared Settings -->
           <button class="nav-item" data-view="settings" aria-label="Settings">
             <span class="material-symbols-outlined">settings</span>
             <span class="nav-label">Settings</span>
@@ -57,6 +82,11 @@
         </nav>
 
         <div class="sidebar-bottom">
+          <button class="nav-item role-switch-btn" id="roleSwitchBtn" aria-label="Switch User Mode">
+            <span class="material-symbols-outlined">swap_horiz</span>
+            <span class="nav-label" id="roleSwitchText">Mode Assuré</span>
+            <md-ripple></md-ripple>
+          </button>
           <button class="nav-item logout-btn" data-view="logout" aria-label="Sign out">
             <span class="material-symbols-outlined">logout</span>
             <span class="nav-label">Sign out</span>
@@ -247,14 +277,14 @@
                       <span>0</span>
                       <span>10</span>
                       <span>20</span>
+                      <span>30</span>
+                      <span>40</span>
+                      <span>50</span>
                       <span>60</span>
                       <span>70</span>
                       <span>80</span>
                       <span>90</span>
                       <span>100</span>
-                      <span>30</span>
-                      <span>40</span>
-                      <span>50</span>
                     </div>
                   </div>
                 </div>
@@ -1296,106 +1326,6 @@
             </div>
           </div>
 
-          <!-- CONTRACTS sub-tab (keep existing) -->
-          <div class="clients-tab-content" data-content="contracts">
-            <div class="clients-header">
-              <div>
-                <h3>Contrats</h3>
-                <p>Gestion des contrats et avenants</p>
-              </div>
-            </div>
-            <div class="clients-contracts-list">
-              <div class="clients-contract-card">
-                <div class="clients-contract-top">
-                  <div class="clients-contract-type" style="background:rgba(197,106,61,0.15);color:var(--color-primary);">
-                    <span class="material-symbols-outlined">home</span>
-                  </div>
-                  <div class="clients-contract-info">
-                    <span class="clients-contract-name">Multirisque Habitation MRH-2026-00428</span>
-                    <span class="clients-contract-meta">8 Rue de la Paix, 75002 Paris · Souscrit le 15/01/2026</span>
-                  </div>
-                  <span class="clients-contract-status active">Actif</span>
-                </div>
-                <div class="clients-contract-bottom">
-                  <span><strong>1 240 €</strong> / an</span>
-                  <span>Échéance : 14/01/2027</span>
-                  <span>Renouvellement : Tacite</span>
-                  <button class="clients-contract-view">
-                    <span class="material-symbols-outlined" style="font-size:16px!important;">visibility</span>
-                    Voir
-                  </button>
-                </div>
-              </div>
-              <div class="clients-contract-card">
-                <div class="clients-contract-top">
-                  <div class="clients-contract-type" style="background:rgba(16,185,129,0.15);color:#10b981;">
-                    <span class="material-symbols-outlined">description</span>
-                  </div>
-                  <div class="clients-contract-info">
-                    <span class="clients-contract-name">Avenant n°1 — Extension Garantie</span>
-                    <span class="clients-contract-meta">Ajout couverture tempête · Effet au 01/03/2026</span>
-                  </div>
-                  <span class="clients-contract-status active">Actif</span>
-                </div>
-                <div class="clients-contract-bottom">
-                  <span><strong>+120 €</strong> / an</span>
-                  <span>Échéance : 14/01/2027</span>
-                  <button class="clients-contract-view">
-                    <span class="material-symbols-outlined" style="font-size:16px!important;">visibility</span>
-                    Voir
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- DOCUMENTS sub-tab (keep existing) -->
-          <div class="clients-tab-content" data-content="documents">
-            <div class="clients-header">
-              <div>
-                <h3>Documents & Pièces jointes</h3>
-                <p>Contrats signés, pièces d'identité, RIB, mandats</p>
-              </div>
-              <button class="clients-add-btn">
-                <span class="material-symbols-outlined" style="font-size:16px!important;">upload</span>
-                Ajouter un document
-              </button>
-            </div>
-            <div class="clients-docs-grid">
-              <div class="clients-doc-item">
-                <div class="clients-doc-icon" style="color:#ef4444;"><span class="material-symbols-outlined">picture_as_pdf</span></div>
-                <div class="clients-doc-body">
-                  <span class="clients-doc-name">Contrat_MRH_2026_00428_signe.pdf</span>
-                  <span class="clients-doc-meta">Contrat · 2.4 MB · 15/01/2026</span>
-                </div>
-                <span class="clients-doc-status">✓</span>
-              </div>
-              <div class="clients-doc-item">
-                <div class="clients-doc-icon" style="color:#ef4444;"><span class="material-symbols-outlined">picture_as_pdf</span></div>
-                <div class="clients-doc-body">
-                  <span class="clients-doc-name">Piece_identite_Jean_Dupont.pdf</span>
-                  <span class="clients-doc-meta">CNI · 1.1 MB · 10/01/2026</span>
-                </div>
-                <span class="clients-doc-status">✓</span>
-              </div>
-              <div class="clients-doc-item">
-                <div class="clients-doc-icon" style="color:#3b82f6;"><span class="material-symbols-outlined">description</span></div>
-                <div class="clients-doc-body">
-                  <span class="clients-doc-name">RIB_Jean_Dupont_CRLYFRPP.pdf</span>
-                  <span class="clients-doc-meta">RIB · 0.3 MB · 12/01/2026</span>
-                </div>
-                <span class="clients-doc-status">✓</span>
-              </div>
-              <div class="clients-doc-item">
-                <div class="clients-doc-icon" style="color:#f59e0b;"><span class="material-symbols-outlined">hourglass_bottom</span></div>
-                <div class="clients-doc-body">
-                  <span class="clients-doc-name">Mandat_SEPA_signé.pdf</span>
-                  <span class="clients-doc-meta">Mandat · En attente de signature</span>
-                </div>
-                <span class="clients-doc-status" style="color:#f59e0b;">⏳</span>
-              </div>
-            </div>
-          </div>
         </section>
           <!-- ====== CLIENT DETAIL PANEL ====== -->
           <div class="clients-detail-panel" id="clientsDetailPanel">
@@ -1432,7 +1362,11 @@
               </div>
               <!-- Detail tabs inside profile card (full width) -->
               <div class="cdp-tab-bar">
-                <button class="cdp-tab active" data-cdp-tab="info">
+                <button class="cdp-tab active" data-cdp-tab="overview">
+                  <span class="material-symbols-outlined" style="font-size:16px!important;">space_dashboard</span>
+                  Vue d'ensemble
+                </button>
+                <button class="cdp-tab" data-cdp-tab="info">
                   <span class="material-symbols-outlined" style="font-size:16px!important;">person</span>
                   Info
                 </button>
@@ -1469,8 +1403,84 @@
 
 
 
+            <!-- Tab: Overview (summary dashboard) -->
+            <div class="cdp-tab-content active" data-cdp-content="overview">
+              <div class="cdp-overview-grid">
+                <!-- Client info card -->
+                <div class="cdp-card cdp-overview-card">
+                  <div class="cdp-card-header">
+                    <h4><span class="material-symbols-outlined" style="font-size:16px!important;color:var(--color-primary);">badge</span> Identité</h4>
+                  </div>
+                  <div class="cdp-overview-id">
+                    <div class="cdp-overview-row">
+                      <span class="cdp-overview-label">Civilité</span>
+                      <span class="cdp-overview-value" id="cdpOvCivility">—</span>
+                    </div>
+                    <div class="cdp-overview-row">
+                      <span class="cdp-overview-label">Nom complet</span>
+                      <span class="cdp-overview-value" id="cdpOvName">—</span>
+                    </div>
+                    <div class="cdp-overview-row">
+                      <span class="cdp-overview-label">Email</span>
+                      <span class="cdp-overview-value" id="cdpOvEmail">—</span>
+                    </div>
+                    <div class="cdp-overview-row">
+                      <span class="cdp-overview-label">Téléphone</span>
+                      <span class="cdp-overview-value" id="cdpOvPhone">—</span>
+                    </div>
+                    <div class="cdp-overview-row">
+                      <span class="cdp-overview-label">Adresse</span>
+                      <span class="cdp-overview-value" id="cdpOvAddress">—</span>
+                    </div>
+                    <div class="cdp-overview-row">
+                      <span class="cdp-overview-label">Statut</span>
+                      <span class="cdp-overview-value" id="cdpOvStatus">—</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Contracts summary -->
+                <div class="cdp-card cdp-overview-card">
+                  <div class="cdp-card-header">
+                    <h4><span class="material-symbols-outlined" style="font-size:16px!important;color:#10b981;">description</span> Contrats</h4>
+                  </div>
+                  <div class="cdp-overview-stats">
+                    <div class="cdp-overview-stat">
+                      <span class="cdp-overview-stat-value" id="cdpOvTotalContracts">—</span>
+                      <span class="cdp-overview-stat-label">Total</span>
+                    </div>
+                    <div class="cdp-overview-stat">
+                      <span class="cdp-overview-stat-value" id="cdpOvActiveContracts" style="color:#059669;">—</span>
+                      <span class="cdp-overview-stat-label">Actifs</span>
+                    </div>
+                    <div class="cdp-overview-stat">
+                      <span class="cdp-overview-stat-value" id="cdpOvPendingContracts" style="color:#d97706;">—</span>
+                      <span class="cdp-overview-stat-label">En attente</span>
+                    </div>
+                    <div class="cdp-overview-stat">
+                      <span class="cdp-overview-stat-value" id="cdpOvAnnualPremium" style="color:var(--color-primary);">—</span>
+                      <span class="cdp-overview-stat-label">Primes/an</span>
+                    </div>
+                  </div>
+                  <div class="cdp-overview-contracts-list" id="cdpOvContractsList">
+                    <p style="font-size:11px;color:var(--text-muted);margin:0;">Aucun contrat</p>
+                  </div>
+                </div>
+
+                <!-- Recent payments -->
+                <div class="cdp-card cdp-overview-card">
+                  <div class="cdp-card-header">
+                    <h4><span class="material-symbols-outlined" style="font-size:16px!important;color:#f59e0b;">receipt</span> Derniers paiements</h4>
+                  </div>
+                  <div class="cdp-overview-payments" id="cdpOvPaymentsList">
+                    <p style="font-size:11px;color:var(--text-muted);margin:0;">Aucun paiement</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- Tab: Info (editable form) -->
-            <div class="cdp-tab-content active" data-cdp-content="info">
+            <div class="cdp-tab-content" data-cdp-content="info">
               <div class="cdp-card">
                 <div class="cdp-card-header">
                   <h4>Informations personnelles</h4>
@@ -2067,10 +2077,535 @@
             </div>
           </div>
         </section>
+
+        <!-- ====== VIEW: Espace Assuré — Mon Bien ====== -->
+        <section class="view-panel" id="view-assure-bien">
+          <!-- Overview-Style Cover Banner Section -->
+          <section class="banner-section">
+            <div class="banner-card">
+              <!-- Fading carousel of French architecture background -->
+              <div class="banner-gallery">
+                <img class="banner-gallery-slide" src="https://images.unsplash.com/photo-1550340499-a6c60fc8287c?w=1200&q=50" alt="" loading="lazy" />
+                <img class="banner-gallery-slide" src="https://images.unsplash.com/photo-1598965402089-897ce52e8355?w=1200&q=50" alt="" loading="lazy" />
+                <img class="banner-gallery-slide" src="https://images.unsplash.com/photo-1589394815801-7cedad5d2cdc?w=1200&q=50" alt="" loading="lazy" />
+                <img class="banner-gallery-slide" src="https://images.unsplash.com/photo-1485081669829-bacb8c7bb1f3?w=1200&q=50" alt="" loading="lazy" />
+              </div>
+              
+              <!-- Left Info -->
+              <div class="banner-info">
+                <h1>Mon Bien &<br>Risques Climatiques</h1>
+                <p id="assureBannerAddress">8 Rue de la Paix, Paris 75002 · Contrat MRH N° POL-2026-00428-FR</p>
+                <div class="team-avatars">
+                  <span class="team-avatar-svg" style="background:#c56a3d;">JD</span>
+                  <span class="team-avatar-svg" style="background:#10b981;">MB</span>
+                  <span class="team-avatar-svg" style="background:#3b82f6;">PL</span>
+                  <span class="team-avatar-svg" style="background:#8b5cf6;" id="assureBannerPolicyTag">MRH</span>
+                </div>
+              </div>
+
+              <!-- Floating Glassmorphism Property Card -->
+              <div class="floating-task-card">
+                <div class="floating-task-header">
+                  <div>
+                    <h3 id="assureBannerName">Jean Dupont</h3>
+                    <span class="task-date" id="assureBannerRisk">Evaluation 3D en cours</span>
+                  </div>
+                  <span class="material-symbols-outlined arrow-icon">arrow_forward</span>
+                </div>
+                <div class="floating-task-progress">
+                  <span class="progress-val" id="assureStatScore">65</span>
+                  <span class="progress-indicator-dot"></span>
+                </div>
+              </div>
+
+              <!-- Right Completion Card (Glassmorphic Stats & Chart) -->
+              <div class="banner-completion-card">
+                <div class="completion-header">
+                  <div>
+                    <span class="completion-label">Score de risque global</span>
+                    <h2 id="assureBannerScore">65</h2>
+                  </div>
+                  <span class="trend-indicator positive" id="assureBienImprove">-15 pts ▲</span>
+                </div>
+
+                <!-- Sparkline Line Chart -->
+                <div class="sparkline-chart">
+                  <svg viewBox="0 0 200 80" preserveAspectRatio="none">
+                    <defs>
+                      <linearGradient id="chart-grad-bien" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="rgba(255, 255, 255, 0.4)" />
+                        <stop offset="100%" stop-color="rgba(255, 255, 255, 0.0)" />
+                      </linearGradient>
+                    </defs>
+                    <path d="M 0,65 Q 30,55 60,40 T 120,50 T 160,25 T 200,35" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+                    <path d="M 0,65 Q 30,55 60,40 T 120,50 T 160,25 T 200,35 L 200,80 L 0,80 Z" fill="url(#chart-grad-bien)"/>
+                    <circle cx="160" cy="25" r="4" fill="#ffffff" stroke="rgba(255, 255, 255, 0.5)" stroke-width="3"/>
+                  </svg>
+                </div>
+
+                <div class="completion-footer">
+                  <div class="footer-stat">
+                    <span class="footer-stat-label">15 elements</span>
+                  </div>
+                  <div class="segmented-progress">
+                    <span class="seg active"></span>
+                    <span class="seg active"></span>
+                    <span class="seg active"></span>
+                    <span class="seg active"></span>
+                    <span class="seg"></span>
+                  </div>
+                  <div class="footer-stat align-right">
+                    <span class="footer-stat-label">24 securises</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Dashboard Widgets Grid -->
+          <section class="widgets-grid">
+            <div class="grid-column col-span-2">
+              <!-- Vulnerability Distribution Card -->
+              <div class="dashboard-card cross-section-card">
+                <div class="card-header">
+                  <h3>Analyse des vulnerabilites</h3>
+                  <span class="material-symbols-outlined action-icon">north_east</span>
+                </div>
+                <div class="card-body">
+                  <div class="card-metric">
+                    <h2 id="assurePropScore">65% <span class="trend positive" id="assurePropRisk">Risque Modéré</span></h2>
+                    <span class="legend-indicator">Exposition climats (BDNB / Georisques)</span>
+                  </div>
+                  <div class="bar-chart-container">
+                    <div class="chart-bars">
+                      <div class="bar" style="height: 30%"></div>
+                      <div class="bar" style="height: 35%"></div>
+                      <div class="bar" style="height: 40%"></div>
+                      <div class="bar" style="height: 45%"></div>
+                      <div class="bar" style="height: 50%"></div>
+                      <div class="bar highlight" style="height: 60%"></div>
+                      <div class="bar highlight" style="height: 70%"></div>
+                      <div class="bar highlight" style="height: 80%"></div>
+                      <div class="bar highlight" style="height: 85%"></div>
+                      <div class="bar highlight" style="height: 80%"></div>
+                      <div class="bar highlight" style="height: 70%"></div>
+                      <div class="bar highlight" style="height: 60%"></div>
+                      <div class="bar" style="height: 50%"></div>
+                      <div class="bar" style="height: 45%"></div>
+                      <div class="bar" style="height: 40%"></div>
+                      <div class="bar" style="height: 35%"></div>
+                      <div class="bar" style="height: 30%"></div>
+                    </div>
+                    <div class="slider-wrapper">
+                      <md-slider min="0" max="100" value="65" ticks></md-slider>
+                    </div>
+                    <div class="chart-labels">
+                      <span>0</span>
+                      <span>10</span>
+                      <span>20</span>
+                      <span>30</span>
+                      <span>40</span>
+                      <span>50</span>
+                      <span>60</span>
+                      <span>70</span>
+                      <span>80</span>
+                      <span>90</span>
+                      <span>100</span>
+                    </div>
+                  </div>
+                  <div class="assure-prop-grid" style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border-color);">
+                    <div class="assure-prop-item">
+                      <span class="assure-prop-label">Adresse</span>
+                      <span class="assure-prop-value" id="assurePropAddress">8 Rue de la Paix</span>
+                    </div>
+                    <div class="assure-prop-item">
+                      <span class="assure-prop-label">Ville</span>
+                      <span class="assure-prop-value" id="assurePropCity">Paris 75002</span>
+                    </div>
+                    <div class="assure-prop-item">
+                      <span class="assure-prop-label">DPE Bâtiment</span>
+                      <span class="assure-prop-value" id="assurePropDpe">D</span>
+                    </div>
+                    <div class="assure-prop-item">
+                      <span class="assure-prop-label">Année Construction</span>
+                      <span class="assure-prop-value" id="assurePropYear">1978</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Savings Potential Card -->
+              <div class="dashboard-card distance-card">
+                <div class="distance-metric">
+                  <h2 id="assureStatSavings">3 720 €/an <span class="trend positive">-30% ▼</span></h2>
+                  <div class="distance-progress-group">
+                    <span class="date-label">Economies potentielles (Bonus 10 ans)</span>
+                    <md-linear-progress value="0.30" class="progress-bar-custom"></md-linear-progress>
+                  </div>
+                  <span class="legend-indicator" id="assureStatEngagement">En attente de signature</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid-column col-span-3">
+              <!-- Circular Progresses Row -->
+              <div class="circular-cards-row">
+                <!-- Flood -->
+                <div class="dashboard-card circ-widget">
+                  <div class="widget-header">
+                    <h3>Risque inondation</h3>
+                    <span class="material-symbols-outlined action-icon">north_east</span>
+                  </div>
+                  <div class="circ-body">
+                    <div class="circ-kpi">
+                      <span class="circ-pct" id="assurGaugeBienFloodVal">76%</span>
+                      <span class="circ-trend negative">Elevé</span>
+                    </div>
+                    <div class="circ-ring">
+                      <svg viewBox="0 0 100 100">
+                        <path d="M 5 50 A 45 45 0 0 1 50 5" fill="none" stroke="var(--border-color)" stroke-width="10" stroke-linecap="round"/>
+                        <path id="assurGaugeBienFlood" d="M 5 50 A 45 45 0 0 1 50 5" fill="none" stroke="#ef4444" stroke-width="10" stroke-linecap="round" stroke-dasharray="70.685" stroke-dashoffset="16.96"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Clay -->
+                <div class="dashboard-card circ-widget">
+                  <div class="widget-header">
+                    <h3>Retrait argile</h3>
+                    <span class="material-symbols-outlined action-icon">north_east</span>
+                  </div>
+                  <div class="circ-body">
+                    <div class="circ-kpi">
+                      <span class="circ-pct" id="assurGaugeBienClayVal">58%</span>
+                      <span class="circ-trend positive">Modéré</span>
+                    </div>
+                    <div class="circ-ring">
+                      <svg viewBox="0 0 100 100">
+                        <path d="M 5 50 A 45 45 0 0 1 50 5" fill="none" stroke="var(--border-color)" stroke-width="10" stroke-linecap="round"/>
+                        <path id="assurGaugeBienClay" d="M 5 50 A 45 45 0 0 1 50 5" fill="none" stroke="#f59e0b" stroke-width="10" stroke-linecap="round" stroke-dasharray="70.685" stroke-dashoffset="25.45"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Seismic -->
+                <div class="dashboard-card circ-widget">
+                  <div class="widget-header">
+                    <h3>Risque sismique</h3>
+                    <span class="material-symbols-outlined action-icon">north_east</span>
+                  </div>
+                  <div class="circ-body">
+                    <div class="circ-kpi">
+                      <span class="circ-pct" id="assurGaugeBienSeismicVal">36%</span>
+                      <span class="circ-trend positive">Faible</span>
+                    </div>
+                    <div class="circ-ring">
+                      <svg viewBox="0 0 100 100">
+                        <path d="M 5 50 A 45 45 0 0 1 50 5" fill="none" stroke="var(--border-color)" stroke-width="10" stroke-linecap="round"/>
+                        <path id="assurGaugeBienSeismic" d="M 5 50 A 45 45 0 0 1 50 5" fill="none" stroke="#3b82f6" stroke-width="10" stroke-linecap="round" stroke-dasharray="70.685" stroke-dashoffset="40"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Recommendation Card -->
+              <div class="dashboard-card">
+                <div class="card-header">
+                  <h3>Plan de prévention recommande</h3>
+                  <span class="material-symbols-outlined action-icon">north_east</span>
+                </div>
+                <div class="card-body">
+                  <div style="display:flex;flex-direction:column;gap:10px;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg-panel);border-radius:var(--border-radius-sm);">
+                      <div style="display:flex;align-items:center;gap:10px;">
+                        <span class="material-symbols-outlined" style="color:#ef4444;">roofing</span>
+                        <div>
+                          <div style="font-size:13px;font-weight:600;color:var(--text-primary);">Rénovation toiture & évacuations</div>
+                          <div style="font-size:11px;color:var(--text-muted);">Protection contre infiltrations & tempêtes</div>
+                        </div>
+                      </div>
+                      <span style="font-size:12px;font-weight:600;color:#10b981;">Éco. 200 €/an</span>
+                    </div>
+
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg-panel);border-radius:var(--border-radius-sm);">
+                      <div style="display:flex;align-items:center;gap:10px;">
+                        <span class="material-symbols-outlined" style="color:#f59e0b;">foundation</span>
+                        <div>
+                          <div style="font-size:13px;font-weight:600;color:var(--text-primary);">Drainage périphérique & fondations</div>
+                          <div style="font-size:11px;color:var(--text-muted);">Prévention du retrait des argiles</div>
+                        </div>
+                      </div>
+                      <span style="font-size:12px;font-weight:600;color:#10b981;">Éco. 150 €/an</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <!-- ====== VIEW: Espace Assuré — Mes Travaux ====== -->
+        <section class="view-panel" id="view-assure-travaux">
+          <div class="assure-travaux-layout">
+            <div class="assure-travaux-main">
+              <!-- 3D viewer -->
+              <div class="assure-3d-card dashboard-card" style="padding:0;">
+                <span class="assure-3d-label">Vue 3D — cliquez un composant pour détailler</span>
+                <div id="assureHouseContainer" class="assure-3d-container"></div>
+              </div>
+              <!-- Component grid -->
+              <div class="dashboard-card" style="flex:1;">
+                <div class="card-header">
+                  <h3><span class="material-symbols-outlined" style="font-size:18px!important;vertical-align:middle;color:var(--color-primary);margin-right:4px;">home_repair_service</span>Composants de votre bien</h3>
+                  <span style="font-size:11px;color:var(--text-muted);">Cochez les travaux à réaliser</span>
+                </div>
+                <div class="assure-comp-grid" id="assureCompGrid"></div>
+              </div>
+            </div>
+            <!-- Side: selected works -->
+            <div class="assure-travaux-side">
+              <div class="assure-works-card">
+                <h4><span class="material-symbols-outlined">checklist</span>Travaux sélectionnés</h4>
+                <div class="assure-works-list" id="assureWorksList">
+                  <span class="assure-works-empty">Cochez des composants pour voir les travaux recommandés.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Summary bar -->
+          <div class="assure-works-summary">
+            <div class="assure-works-summary-item">
+              <span class="assure-works-summary-label">Coût total</span>
+              <span class="assure-works-summary-value" id="assureTravauxCost">—</span>
+            </div>
+            <div class="assure-works-summary-divider"></div>
+            <div class="assure-works-summary-item">
+              <span class="assure-works-summary-label">Économie annuelle</span>
+              <span class="assure-works-summary-value savings" id="assureTravauxSavings">—</span>
+            </div>
+            <div class="assure-works-summary-divider"></div>
+            <div class="assure-works-summary-item">
+              <span class="assure-works-summary-label">Nouvelle prime</span>
+              <span class="assure-works-summary-value" id="assureTravauxPremium">—</span>
+            </div>
+            <button class="assure-works-cta" id="assureTravauxNextBtn">
+              <span class="material-symbols-outlined">arrow_forward</span>
+              Voir mon engagement
+            </button>
+          </div>
+        </section>
+
+        <!-- ====== VIEW: Espace Assuré — Mon Engagement ====== -->
+        <section class="view-panel" id="view-assure-engagement">
+          <div class="assure-engagement-layout">
+            <div class="assure-engagement-main">
+              <!-- Score comparison -->
+              <div class="assure-score-header">
+                <h3>Mon score de risque</h3>
+                <p>Avant et après réalisation des travaux sélectionnés</p>
+              </div>
+              <div class="assur-score-compare" style="background:var(--bg-card);border-radius:var(--border-radius-md);">
+                <div class="assur-score-card">
+                  <span class="assur-score-label">Score actuel</span>
+                  <div class="assur-gauge">
+                    <svg class="assur-gauge-svg" viewBox="0 0 120 120">
+                      <circle cx="60" cy="60" r="50" fill="none" stroke="var(--border-color)" stroke-width="10"/>
+                      <circle id="assureGaugeArcCurrent" cx="60" cy="60" r="50" fill="none" stroke="#f59e0b" stroke-width="10"
+                        stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="110"
+                        transform="rotate(-90 60 60)"/>
+                      <text id="assureGaugeValCurrent" x="60" y="57" text-anchor="middle" class="assur-gauge-val">65</text>
+                      <text x="60" y="72" text-anchor="middle" class="assur-gauge-unit">/100</text>
+                    </svg>
+                  </div>
+                </div>
+                <div class="assur-score-improvement">
+                  <span class="material-symbols-outlined assur-improve-icon">trending_down</span>
+                  <span class="assur-improve-val" id="assureImproveVal">—</span>
+                  <span class="assur-improve-label">Amélioration</span>
+                </div>
+                <div class="assur-score-card">
+                  <span class="assur-score-label">Score projeté</span>
+                  <div class="assur-gauge">
+                    <svg class="assur-gauge-svg" viewBox="0 0 120 120">
+                      <circle cx="60" cy="60" r="50" fill="none" stroke="var(--border-color)" stroke-width="10"/>
+                      <circle id="assureGaugeArcProjected" cx="60" cy="60" r="50" fill="none" stroke="#10b981" stroke-width="10"
+                        stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="204"
+                        transform="rotate(-90 60 60)"/>
+                      <text id="assureGaugeValProjected" x="60" y="57" text-anchor="middle" class="assur-gauge-val">29</text>
+                      <text x="60" y="72" text-anchor="middle" class="assur-gauge-unit">/100</text>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Premium impact -->
+              <div class="assure-premium-card">
+                <h4><span class="material-symbols-outlined">payments</span>Impact sur votre prime</h4>
+                <div class="assure-premium-row">
+                  <span class="assure-premium-row-label">Prime actuelle</span>
+                  <span class="assure-premium-row-value" id="assureEngPremiumCurrent">1 240 €/an</span>
+                </div>
+                <div class="assure-premium-arrow">
+                  <span class="material-symbols-outlined" style="color:#10b981;">arrow_downward</span>
+                </div>
+                <div class="assure-premium-row accent">
+                  <span class="assure-premium-row-label">Nouvelle prime après travaux</span>
+                  <span class="assure-premium-row-value" id="assureEngPremiumNew">940 €/an</span>
+                </div>
+                <div class="assure-premium-row">
+                  <span class="assure-premium-row-label">Économie annuelle</span>
+                  <span class="assure-premium-row-value savings" id="assureEngPremiumSaving">—</span>
+                </div>
+              </div>
+
+              <!-- Recap chips -->
+              <div class="assure-recap-chips">
+                <div class="assure-recap-chip">
+                  <span class="assure-recap-chip-label">Réduction prime</span>
+                  <span class="assure-recap-chip-value positive" id="assureRecapReduc">—</span>
+                </div>
+                <div class="assure-recap-chip">
+                  <span class="assure-recap-chip-label">Amélioration score</span>
+                  <span class="assure-recap-chip-value positive" id="assureRecapImprov">—</span>
+                </div>
+                <div class="assure-recap-chip">
+                  <span class="assure-recap-chip-label">Retour sur investissement</span>
+                  <span class="assure-recap-chip-value" id="assureRecapPayback">—</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Side: engagement terms + sign CTA -->
+            <div class="assure-engagement-side">
+              <!-- Policy info -->
+              <div class="assure-policy-card">
+                <h4><span class="material-symbols-outlined">description</span>Mon contrat</h4>
+                <div class="assure-policy-row">
+                  <span class="assure-policy-row-label">N° police</span>
+                  <span class="assure-policy-row-value" id="assurePolNumber">—</span>
+                </div>
+                <div class="assure-policy-row">
+                  <span class="assure-policy-row-label">Assuré</span>
+                  <span class="assure-policy-row-value" id="assurePolClient">—</span>
+                </div>
+                <div class="assure-policy-row">
+                  <span class="assure-policy-row-label">Bien assuré</span>
+                  <span class="assure-policy-row-value" id="assurePolProperty">—</span>
+                </div>
+                <div class="assure-policy-row">
+                  <span class="assure-policy-row-label">Prime actuelle</span>
+                  <span class="assure-policy-row-value" id="assurePolPremiumCurrent">—</span>
+                </div>
+                <div class="assure-policy-row">
+                  <span class="assure-policy-row-label">Nouvelle prime</span>
+                  <span class="assure-policy-row-value" style="color:#10b981;" id="assurePolPremiumNew">—</span>
+                </div>
+              </div>
+
+              <!-- Terms -->
+              <div class="assure-terms-card">
+                <h4><span class="material-symbols-outlined">gavel</span>Conditions de l'engagement</h4>
+                <ul class="assure-terms-list">
+                  <li><span class="material-symbols-outlined">check_circle</span>Durée d'engagement : <strong>10 ans</strong></li>
+                  <li><span class="material-symbols-outlined">check_circle</span>Bonus maintenu si les travaux sont réalisés dans les <strong>24 mois</strong></li>
+                  <li><span class="material-symbols-outlined">check_circle</span>Clause de non-résiliation pour la période d'engagement</li>
+                  <li><span class="material-symbols-outlined">check_circle</span>Franchise réduite en proportion de l'amélioration du score</li>
+                </ul>
+              </div>
+
+              <!-- Works committed -->
+              <div class="assure-terms-card">
+                <h4><span class="material-symbols-outlined">build</span>Travaux engagés</h4>
+                <div class="assure-avenant-works" id="assureAvenantWorks">
+                  <p style="font-size:12px;color:var(--text-muted);">Aucun travail sélectionné.</p>
+                </div>
+              </div>
+
+              <!-- Sign CTA -->
+              <div id="assureEngagementPill" class="assure-engagement-status none">
+                <span class="material-symbols-outlined" style="font-size:14px!important;">pending</span>
+                <span id="assureEngagementStatusLabel">Engagement non signé</span>
+              </div>
+              <button class="assure-sign-cta" id="assureSignBtn" disabled>
+                <span class="material-symbols-outlined">draw</span>
+                Signer mon engagement
+              </button>
+              <p class="assure-sign-note">En signant, vous vous engagez à réaliser les travaux listés dans un délai de 24 mois. Votre assureur confirmera la réduction de prime par avenant.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ====== VIEW: Espace Assuré — Mon Dossier ====== -->
+        <section class="view-panel" id="view-assure-dossier">
+          <div class="assure-dossier-layout">
+            <div class="assure-dossier-main">
+              <!-- Assessment history -->
+              <div class="assure-history-card">
+                <h4><span class="material-symbols-outlined">history</span>Historique des évaluations</h4>
+                <div class="assure-history-list" id="assureHistoryList"></div>
+              </div>
+              <!-- Documents -->
+              <div class="assure-history-card">
+                <h4><span class="material-symbols-outlined">folder_open</span>Mes documents</h4>
+                <div class="assure-doc-list" id="assureDocList"></div>
+              </div>
+            </div>
+
+            <!-- Side: advisor + contract info -->
+            <div class="assure-dossier-side">
+              <!-- Advisor contact -->
+              <div class="assure-advisor-card">
+                <h4><span class="material-symbols-outlined">support_agent</span>Mon conseiller</h4>
+                <div class="assure-advisor-identity">
+                  <div class="assure-advisor-avatar">JD</div>
+                  <div>
+                    <div class="assure-advisor-name" id="assureAdvisorName">Jean Dupont</div>
+                    <div class="assure-advisor-role">Conseiller en assurance</div>
+                  </div>
+                </div>
+                <div class="assure-advisor-contact-row">
+                  <span class="material-symbols-outlined">mail</span>
+                  <span id="assureAdvisorEmail">jean.dupont@previa.fr</span>
+                </div>
+                <div class="assure-advisor-contact-row">
+                  <span class="material-symbols-outlined">phone</span>
+                  <span id="assureAdvisorPhone">—</span>
+                </div>
+                <div class="assure-advisor-contact-row">
+                  <span class="material-symbols-outlined">badge</span>
+                  <span id="assureAdvisorRef">—</span>
+                </div>
+              </div>
+
+              <!-- Contract summary -->
+              <div class="assure-policy-card">
+                <h4><span class="material-symbols-outlined">description</span>Mon contrat</h4>
+                <div class="assure-policy-row">
+                  <span class="assure-policy-row-label">N° police</span>
+                  <span class="assure-policy-row-value" id="assureDossierPolicy">—</span>
+                </div>
+                <div class="assure-policy-row">
+                  <span class="assure-policy-row-label">Type</span>
+                  <span class="assure-policy-row-value" id="assureDossierType">—</span>
+                </div>
+                <div class="assure-policy-row">
+                  <span class="assure-policy-row-label">Prime annuelle</span>
+                  <span class="assure-policy-row-value" id="assureDossierPremium">—</span>
+                </div>
+                <div class="assure-policy-row">
+                  <span class="assure-policy-row-label">Expiration</span>
+                  <span class="assure-policy-row-value" id="assureDossierExpiry">—</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
     </div>
 
-    <!-- ====== CLIENT WIZARD MODAL ====== -->
     <div class="modal-overlay" id="clientWizardModal">
       <div class="modal-content wizard-modal">
         <div class="modal-header">
@@ -2455,6 +2990,65 @@
     <!-- ═══════════════════════════════════════════════════════
          AUTH VIEWS — Cover style (outside dashboard shell)
          ═══════════════════════════════════════════════════════ -->
+
+    <!-- ====== MODAL: Signature de l'engagement ====== -->
+    <div class="modal-overlay" id="assureSignModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <span class="material-symbols-outlined" style="color:var(--color-primary);">draw</span>
+          <div class="modal-header-info">
+            <span class="modal-header-title">Signature de l'engagement</span>
+            <span class="modal-header-meta" id="assureModalPolRef">—</span>
+          </div>
+          <button class="modal-close-btn" id="assureSignModalClose" aria-label="Fermer">
+            <span class="material-symbols-outlined" style="font-size:18px!important;">close</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="assure-sign-summary">
+            <div class="assure-sign-alert">
+              <span class="material-symbols-outlined">info</span>
+              <span>En signant cet engagement, vous confirmez votre intention de réaliser les travaux listés ci-dessous dans un délai de 24 mois. La réduction de prime sera effective dès la signature de l'avenant par votre assureur.</span>
+            </div>
+            <div class="report-property">
+              <div class="report-property-item">
+                <span class="label">Assuré</span>
+                <span class="value" id="assureModalClient">—</span>
+              </div>
+              <div class="report-property-item">
+                <span class="label">N° police</span>
+                <span class="value" id="assureModalPolRefBody">—</span>
+              </div>
+              <div class="report-property-item">
+                <span class="label">Nouvelle prime</span>
+                <span class="value" id="assureModalNewPremium">—</span>
+              </div>
+              <div class="report-property-item">
+                <span class="label">Économie</span>
+                <span class="value" id="assureModalSavings">—</span>
+              </div>
+              <div class="report-property-item">
+                <span class="label">Coût travaux</span>
+                <span class="value" id="assureModalTotalCost">—</span>
+              </div>
+              <div class="report-property-item">
+                <span class="label">Fin d'engagement</span>
+                <span class="value" id="assureModalExpiry">—</span>
+              </div>
+            </div>
+            <div class="report-section-title">Travaux engagés</div>
+            <div class="assure-avenant-works" id="assureModalWorks"></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="modal-footer-btn" onclick="document.getElementById('assureSignModal').classList.remove('open')">Annuler</button>
+          <button class="modal-footer-btn primary" id="assureSignConfirm">
+            <span class="material-symbols-outlined" style="font-size:16px!important;vertical-align:middle;">draw</span>
+            Confirmer la signature
+          </button>
+        </div>
+      </div>
+    </div>
 
     <!-- ====== AUTH: Sign In ====== -->
     <section class="auth-view" id="auth-sign-in">

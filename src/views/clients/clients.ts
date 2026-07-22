@@ -2,11 +2,20 @@
  * Clients view module — table search, client wizard, contract/document UI.
  */
 
+let initialized = false;
+
 export function initClients(): void {
+  if (initialized) return;
+  initialized = true;
   setupClientSearch();
   setupClientWizard();
   setupClientActions();
 }
+
+export function destroyClients(): void {
+  initialized = false;
+}
+
 
 // ── Client Search ──────────────────────────────────────
 function setupClientSearch(): void {
@@ -328,11 +337,62 @@ function openClientDetail(clientId: string): void {
     </div>`;
   }).join('');
 
-  // Reset to info tab
+  // Populate overview
+  populateOverview(data);
+
+  // Reset to overview tab
   document.querySelectorAll('.cdp-tab-content').forEach(el => el.classList.remove('active'));
-  document.querySelector('.cdp-tab-content[data-cdp-content="info"]')?.classList.add('active');
+  document.querySelector('.cdp-tab-content[data-cdp-content="overview"]')?.classList.add('active');
   document.querySelectorAll('.cdp-tab').forEach(t => t.classList.remove('active'));
-  document.querySelector('.cdp-tab[data-cdp-tab="info"]')?.classList.add('active');
+  document.querySelector('.cdp-tab[data-cdp-tab="overview"]')?.classList.add('active');
+}
+
+function populateOverview(data: ClientDetail): void {
+  // Identity
+  document.getElementById('cdpOvCivility')!.textContent = data.civility;
+  document.getElementById('cdpOvName')!.textContent = `${data.firstName} ${data.lastName}`;
+  document.getElementById('cdpOvEmail')!.textContent = data.email;
+  document.getElementById('cdpOvPhone')!.textContent = data.phone;
+  document.getElementById('cdpOvAddress')!.textContent = `${data.address}, ${data.cp} ${data.city}`;
+  const statusLabels: Record<string, string> = { active: 'Actif', pending: 'En attente', suspended: 'Suspendu' };
+  const statusEl = document.getElementById('cdpOvStatus')!;
+  statusEl.textContent = statusLabels[data.status] || data.status;
+  statusEl.style.color = data.status === 'active' ? '#059669' : data.status === 'pending' ? '#d97706' : '#dc2626';
+  statusEl.style.fontWeight = '600';
+
+  // Contracts summary
+  document.getElementById('cdpOvTotalContracts')!.textContent = String(data.statContracts);
+  document.getElementById('cdpOvActiveContracts')!.textContent = String(data.statActive);
+  document.getElementById('cdpOvPendingContracts')!.textContent = String(data.statPending);
+  document.getElementById('cdpOvAnnualPremium')!.textContent = data.statPremium;
+
+  // Contracts list (mini)
+  const contractsList = document.getElementById('cdpOvContractsList')!;
+  contractsList.innerHTML = data.contracts.map(c => {
+    const statusColor = c.status === 'Actif' ? '#059669' : c.status === 'En attente' ? '#d97706' : '#94a3b8';
+    return `<div class="cdp-ov-contract-row">
+      <span class="material-symbols-outlined cdp-ov-contract-icon" style="color:${c.color};">${c.icon}</span>
+      <div class="cdp-ov-contract-info">
+        <span class="cdp-ov-contract-name">${c.name}</span>
+        <span class="cdp-ov-contract-ref">${c.ref} · ${c.type}</span>
+      </div>
+      <span class="cdp-ov-contract-status" style="color:${statusColor};">${c.status}</span>
+      <span class="cdp-ov-contract-premium">${c.premium}</span>
+    </div>`;
+  }).join('');
+
+  // Recent payments (last 3)
+  const paymentsList = document.getElementById('cdpOvPaymentsList')!;
+  const recentPayments = data.payments.slice(0, 3);
+  paymentsList.innerHTML = recentPayments.map(p => {
+    const statusLabel: Record<string, string> = { paid: 'Payé', pending: 'En attente', late: 'En retard', upcoming: 'À venir' };
+    return `<div class="cdp-ov-payment-row">
+      <span class="cdp-ov-payment-date">${p.date}</span>
+      <span class="cdp-ov-payment-type">${p.type}</span>
+      <span class="cdp-ov-payment-amount">${p.amount}</span>
+      <span class="cdp-ov-payment-status ${p.status}">${statusLabel[p.status] || p.status}</span>
+    </div>`;
+  }).join('');
 }
 
 function closeClientDetail(): void {
@@ -407,8 +467,87 @@ function saveClientInfo(): void {
   }, 1200);
 }
 
+// ── Status Toggle Dropdown ────────────────────────────
+function setupStatusToggle(): void {
+  const toggle = document.getElementById('cdpStatusToggle');
+  const dropdown = document.getElementById('cdpStatusDropdown');
+  const menu = document.getElementById('cdpStatusMenu');
+  if (!toggle || !dropdown || !menu) return;
+
+  // Toggle dropdown
+  toggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    dropdown.classList.toggle('open');
+  });
+
+  // Close on outside click
+  document.addEventListener('click', (e) => {
+    if (!dropdown.contains(e.target as Node)) {
+      dropdown.classList.remove('open');
+    }
+  });
+
+  // Close on Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') dropdown.classList.remove('open');
+  });
+
+  // Status option click
+  menu.querySelectorAll('.cdp-status-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      const newStatus = (opt as HTMLElement).getAttribute('data-status');
+      if (!newStatus || !currentClientId) return;
+
+      const data = MOCK_CLIENTS[currentClientId];
+      if (!data || data.status === newStatus) {
+        dropdown.classList.remove('open');
+        return;
+      }
+
+      changeClientStatus(currentClientId, newStatus);
+      dropdown.classList.remove('open');
+    });
+  });
+}
+
+function changeClientStatus(clientId: string, newStatus: string): void {
+  const data = MOCK_CLIENTS[clientId];
+  if (!data) return;
+
+  // Update mock data
+  data.status = newStatus;
+
+  // Update detail panel header
+  const statusEl = document.getElementById('cdpStatus');
+  if (statusEl) {
+    const labels: Record<string, string> = { active: 'Actif', pending: 'En attente', suspended: 'Suspendu' };
+    statusEl.textContent = labels[newStatus] || newStatus;
+    statusEl.className = 'cdp-status ' + newStatus;
+  }
+
+  // Update table row
+  const row = document.querySelector(`.clients-table-row[data-client="${clientId}"]`);
+  if (row) {
+    const statusCell = row.querySelector('.clients-table-status');
+    if (statusCell) {
+      const labels: Record<string, string> = { active: 'Actif', pending: 'En attente', suspended: 'Suspendu' };
+      statusCell.textContent = labels[newStatus] || newStatus;
+      statusCell.className = 'clients-table-status ' + newStatus;
+    }
+  }
+
+  // Flash feedback (reuse statusEl reference)
+  if (statusEl) {
+    statusEl.style.transition = 'all 0.15s ease';
+    statusEl.style.transform = 'scale(1.05)';
+    setTimeout(() => { statusEl.style.transform = ''; }, 200);
+  }
+}
+
 // ── Client Table Actions ──────────────────────────────
 function setupClientActions(): void {
+  setupStatusToggle();
+
   // View action — opens client detail panel
   document.querySelectorAll('.clients-action-btn[data-action="view"]').forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -481,6 +620,23 @@ function setupClientActions(): void {
         const editBtn = document.getElementById('cdpEditToggle')!;
         editBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px!important;">close</span> Annuler';
       }, 300);
+    });
+  });
+
+  // Quick status toggle — click opens dropdown in the detail panel for this client
+  document.querySelectorAll('.clients-action-btn[data-action="status"]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const row = (btn as HTMLElement).closest('.clients-table-row');
+      const clientId = row?.getAttribute('data-client');
+      if (clientId) {
+        openClientDetail(clientId);
+        // Open the detail panel's status dropdown
+        setTimeout(() => {
+          const toggle = document.getElementById('cdpStatusToggle');
+          if (toggle) toggle.click();
+        }, 400);
+      }
     });
   });
 

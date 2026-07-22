@@ -1,12 +1,12 @@
 /**
- * Portfolio Map — Dark 3D Mapbox GL map
+ * Portfolio Map — Dark 3D map for portfolio visualization
  *
  * Shows all 24 portfolio properties as 3D markers colored by risk level
- * on a dark Mapbox basemap with pitch/tilt for a modern geo-visualization.
+ * with pitch/tilt for a modern geo-visualization.
  *
- * Uses Mapbox GL JS natively (not MapLibre) because the custom Mapbox style
- * contains properties (terrain, root-level name, sprite, glyphs) that are
- * specific to Mapbox GL JS and not fully compatible with MapLibre GL.
+ * Supports both:
+ * 1. Custom Mapbox GL style if VITE_MAPBOX_TOKEN is provided in .env
+ * 2. CARTO Dark Matter raster fallback if no token is set (prevents Mapbox API errors)
  */
 
 import mapboxgl from 'mapbox-gl';
@@ -62,9 +62,37 @@ const PROPERTIES: PortfolioProperty[] = [
 let map: mapboxgl.Map | null = null;
 let popup: mapboxgl.Popup | null = null;
 
-// Set VITE_MAPBOX_TOKEN in your .env file: https://account.mapbox.com/access-tokens/
-const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string;
+// Read optional Mapbox token from environment
+const RAW_TOKEN = (import.meta.env.VITE_MAPBOX_TOKEN as string || '').trim();
+const HAS_VALID_MAPBOX_TOKEN = Boolean(RAW_TOKEN && RAW_TOKEN.startsWith('pk.'));
 const MAPBOX_STYLE = 'mapbox://styles/hazicore/cmrrmizig008301qk941gg6od';
+
+// Fallback CARTO Dark Matter style (no API token required)
+const CARTO_DARK_STYLE: mapboxgl.Style = {
+  version: 8,
+  sources: {
+    'carto-dark': {
+      type: 'raster',
+      tiles: [
+        'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png',
+        'https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png',
+        'https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png',
+        'https://d.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png',
+      ],
+      tileSize: 256,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    },
+  },
+  layers: [
+    {
+      id: 'carto-dark-layer',
+      type: 'raster',
+      source: 'carto-dark',
+      minzoom: 0,
+      maxzoom: 22,
+    },
+  ],
+};
 
 /* ═══════════════════════════════════════════════════════════════
    Exported API
@@ -78,29 +106,62 @@ export function initPortfolioMap(): void {
   container.style.height = '100%';
   container.style.minHeight = '460px';
 
-  mapboxgl.accessToken = MAPBOX_TOKEN;
-
   const centerLon = PROPERTIES.reduce((s, p) => s + p.lon, 0) / PROPERTIES.length;
   const centerLat = PROPERTIES.reduce((s, p) => s + p.lat, 0) / PROPERTIES.length;
 
-  map = new mapboxgl.Map({
-    container: 'portfolioMapContainer',
-    style: MAPBOX_STYLE,
-    center: [centerLon, centerLat],
-    zoom: 6,
-    pitch: 55,
-    bearing: -15,
-    minZoom: 3,
-    maxZoom: 18,
-  });
+  if (HAS_VALID_MAPBOX_TOKEN) {
+    mapboxgl.accessToken = RAW_TOKEN;
+  }
 
-  map.addControl(new mapboxgl.NavigationControl(), 'top-right');
-  map.addControl(new mapboxgl.ScaleControl({ unit: 'metric' }), 'bottom-left');
+  try {
+    map = new mapboxgl.Map({
+      container: 'portfolioMapContainer',
+      style: HAS_VALID_MAPBOX_TOKEN ? MAPBOX_STYLE : CARTO_DARK_STYLE,
+      center: [centerLon, centerLat],
+      zoom: 5.8,
+      pitch: 50,
+      bearing: -12,
+      minZoom: 3,
+      maxZoom: 18,
+    });
 
-  map.on('load', () => {
-    addPortfolioLayers();
-    addLegend();
-  });
+    map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+    map.addControl(new mapboxgl.ScaleControl({ unit: 'metric' }), 'bottom-left');
+
+    map.on('load', () => {
+      addPortfolioLayers();
+      addLegend();
+    });
+
+    map.on('error', (e) => {
+      // If custom mapbox style fails (e.g. invalid token), fallback to CARTO dark style safely
+      if (HAS_VALID_MAPBOX_TOKEN && e && String(e.error?.message || '').includes('access token')) {
+        console.warn('[PortfolioMap] Mapbox token error detected, switching to fallback basemap');
+        map?.setStyle(CARTO_DARK_STYLE);
+      }
+    });
+  } catch (err) {
+    console.warn('[PortfolioMap] Failed initializing Mapbox GL with token, retrying with fallback basemap:', err);
+    // Initialize without token using CARTO dark style
+    map = new mapboxgl.Map({
+      container: 'portfolioMapContainer',
+      style: CARTO_DARK_STYLE,
+      center: [centerLon, centerLat],
+      zoom: 5.8,
+      pitch: 50,
+      bearing: -12,
+      minZoom: 3,
+      maxZoom: 18,
+    });
+
+    map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+    map.addControl(new mapboxgl.ScaleControl({ unit: 'metric' }), 'bottom-left');
+
+    map.on('load', () => {
+      addPortfolioLayers();
+      addLegend();
+    });
+  }
 }
 
 export function destroyPortfolioMap(): void {
@@ -138,69 +199,77 @@ function addPortfolioLayers(): void {
     })),
   };
 
-  map.addSource('portfolio-props', {
-    type: 'geojson',
-    data: geoJson as any,
-  });
+  if (!map.getSource('portfolio-props')) {
+    map.addSource('portfolio-props', {
+      type: 'geojson',
+      data: geoJson as any,
+    });
+  }
 
   // 3D building extrusions
-  map.addLayer({
-    id: 'portfolio-extrusions',
-    type: 'fill-extrusion',
-    source: 'portfolio-props',
-    paint: {
-      'fill-extrusion-color': [
-        'match', ['get', 'risk'],
-        'high', '#ef4444',
-        'medium', '#f59e0b',
-        'low', '#10b981',
-        '#94a3b8',
-      ],
-      'fill-extrusion-height': ['interpolate', ['linear'], ['get', 'score'], 0, 10, 50, 60, 100, 120],
-      'fill-extrusion-base': 0,
-      'fill-extrusion-opacity': 0.6,
-    },
-  });
+  if (!map.getLayer('portfolio-extrusions')) {
+    map.addLayer({
+      id: 'portfolio-extrusions',
+      type: 'fill-extrusion',
+      source: 'portfolio-props',
+      paint: {
+        'fill-extrusion-color': [
+          'match', ['get', 'risk'],
+          'high', '#ef4444',
+          'medium', '#f59e0b',
+          'low', '#10b981',
+          '#94a3b8',
+        ],
+        'fill-extrusion-height': ['interpolate', ['linear'], ['get', 'score'], 0, 10, 50, 60, 100, 120],
+        'fill-extrusion-base': 0,
+        'fill-extrusion-opacity': 0.6,
+      },
+    });
+  }
 
   // Glow rings
-  map.addLayer({
-    id: 'portfolio-glow',
-    type: 'circle',
-    source: 'portfolio-props',
-    paint: {
-      'circle-radius': ['interpolate', ['linear'], ['zoom'], 5, 8, 10, 18, 15, 30],
-      'circle-color': [
-        'match', ['get', 'risk'],
-        'high', '#ef4444',
-        'medium', '#f59e0b',
-        'low', '#10b981',
-        '#94a3b8',
-      ],
-      'circle-opacity': 0.15,
-      'circle-blur': 0.6,
-    },
-  });
+  if (!map.getLayer('portfolio-glow')) {
+    map.addLayer({
+      id: 'portfolio-glow',
+      type: 'circle',
+      source: 'portfolio-props',
+      paint: {
+        'circle-radius': ['interpolate', ['linear'], ['zoom'], 5, 8, 10, 18, 15, 30],
+        'circle-color': [
+          'match', ['get', 'risk'],
+          'high', '#ef4444',
+          'medium', '#f59e0b',
+          'low', '#10b981',
+          '#94a3b8',
+        ],
+        'circle-opacity': 0.15,
+        'circle-blur': 0.6,
+      },
+    });
+  }
 
   // Center dot markers
-  map.addLayer({
-    id: 'portfolio-dots',
-    type: 'circle',
-    source: 'portfolio-props',
-    paint: {
-      'circle-radius': ['interpolate', ['linear'], ['zoom'], 5, 4, 10, 8, 15, 12],
-      'circle-color': [
-        'match', ['get', 'risk'],
-        'high', '#ef4444',
-        'medium', '#f59e0b',
-        'low', '#10b981',
-        '#94a3b8',
-      ],
-      'circle-opacity': 0.9,
-      'circle-stroke-width': 2,
-      'circle-stroke-color': '#ffffff',
-      'circle-stroke-opacity': 0.6,
-    },
-  });
+  if (!map.getLayer('portfolio-dots')) {
+    map.addLayer({
+      id: 'portfolio-dots',
+      type: 'circle',
+      source: 'portfolio-props',
+      paint: {
+        'circle-radius': ['interpolate', ['linear'], ['zoom'], 5, 4, 10, 8, 15, 12],
+        'circle-color': [
+          'match', ['get', 'risk'],
+          'high', '#ef4444',
+          'medium', '#f59e0b',
+          'low', '#10b981',
+          '#94a3b8',
+        ],
+        'circle-opacity': 0.9,
+        'circle-stroke-width': 2,
+        'circle-stroke-color': '#ffffff',
+        'circle-stroke-opacity': 0.6,
+      },
+    });
+  }
 
   // Wire interactions
   map.on('click', 'portfolio-dots', (e) => {
@@ -237,11 +306,11 @@ function showPropertyPopup(props: Record<string, unknown>, lngLat: mapboxgl.LngL
 
   const risk = (props.risk as string) || 'low';
   const color = risk === 'high' ? '#ef4444' : risk === 'medium' ? '#f59e0b' : '#10b981';
-  const riskLabel = risk === 'high' ? 'Haut risque' : risk === 'medium' ? 'Risque modere' : 'Faible risque';
+  const riskLabel = risk === 'high' ? 'Haut risque' : risk === 'medium' ? 'Risque modéré' : 'Faible risque';
 
   const html = '<div class="portfolio-map-popup">'
     + '<div class="portfolio-popup-header" style="border-left:3px solid ' + color + ';padding-left:8px;">'
-    + '<div class="portfolio-popup-addr">' + escapeHtml(String(props.address || 'Propriete')) + '</div>'
+    + '<div class="portfolio-popup-addr">' + escapeHtml(String(props.address || 'Propriété')) + '</div>'
     + '<div class="portfolio-popup-client">' + escapeHtml(String(props.client || '')) + '</div>'
     + '</div>'
     + '<div class="portfolio-popup-body">'
@@ -283,10 +352,10 @@ function addLegend(): void {
   legend.className = 'portfolio-map-legend mapboxgl-ctrl';
   legend.innerHTML = '<div class="portfolio-legend-title">Niveau de risque</div>'
     + '<div class="portfolio-legend-item"><span class="portfolio-legend-dot" style="background:#ef4444;"></span>Haut risque</div>'
-    + '<div class="portfolio-legend-item"><span class="portfolio-legend-dot" style="background:#f59e0b;"></span>Risque modere</div>'
+    + '<div class="portfolio-legend-item"><span class="portfolio-legend-dot" style="background:#f59e0b;"></span>Risque modéré</div>'
     + '<div class="portfolio-legend-item"><span class="portfolio-legend-dot" style="background:#10b981;"></span>Faible risque</div>'
     + '<div class="portfolio-legend-divider"></div>'
-    + '<div class="portfolio-legend-count">' + PROPERTIES.length + ' proprietes \u00b7 ' + PROPERTIES.filter(p => p.risk === 'high').length + ' haut risque</div>';
+    + '<div class="portfolio-legend-count">' + PROPERTIES.length + ' propriétés · ' + PROPERTIES.filter(p => p.risk === 'high').length + ' haut risque</div>';
   container.appendChild(legend);
 }
 

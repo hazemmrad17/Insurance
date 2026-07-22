@@ -443,7 +443,7 @@
 
 .trend-line-svg {
   width: 100%;
-  height: 220px;
+  height: auto;
   display: block;
 }
 

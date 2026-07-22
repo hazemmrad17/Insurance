@@ -1,0 +1,388 @@
+/* ═══════════════════════════════════════════════════════════════
+   PRÉVIA LANDING PAGE STYLES
+   Full-viewport marketing & portal gateway page
+   ═══════════════════════════════════════════════════════════════ */
+
+.landing-view {
+  display: none;
+  width: 100vw;
+  min-height: 100vh;
+  background-color: var(--bg-panel);
+  color: var(--text-primary);
+  overflow-y: auto;
+  position: relative;
+  z-index: 100;
+}
+
+.landing-view.active {
+  display: block;
+}
+
+/* ── Landing Header ────────────────────────────────────────── */
+.landing-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: rgba(248, 250, 252, 0.85);
+  border-bottom: 1px solid var(--border-color);
+  padding: 14px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dark-mode .landing-header {
+  background: rgba(15, 23, 42, 0.85);
+}
+
+.landing-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.landing-brand-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--border-radius-sm);
+  background: var(--color-primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(197, 106, 61, 0.3);
+}
+
+.landing-brand-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.4px;
+}
+
+.landing-nav {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.landing-nav-link {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  cursor: pointer;
+}
+
+.landing-nav-link:hover {
+  color: var(--color-primary);
+}
+
+.landing-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.landing-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  border-radius: var(--border-radius-sm);
+  font-family: var(--font-primary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  text-decoration: none;
+}
+
+.landing-btn.secondary {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.landing-btn.secondary:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.landing-btn.primary {
+  background: var(--color-primary);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(197, 106, 61, 0.35);
+}
+
+.landing-btn.primary:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
+}
+
+.landing-btn.accent {
+  background: #10b981;
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+}
+
+.landing-btn.accent:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+/* ── Hero Section ───────────────────────────────────────────── */
+.landing-hero {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 70px 24px 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+}
+
+.landing-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: rgba(197, 106, 61, 0.1);
+  border: 1px solid rgba(197, 106, 61, 0.25);
+  color: var(--color-primary);
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+.landing-hero h1 {
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -1px;
+  color: var(--text-primary);
+  max-width: 900px;
+  margin-bottom: 20px;
+}
+
+.landing-hero h1 span.gradient-text {
+  background: linear-gradient(135deg, #d4865e 0%, #c56a3d 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.landing-hero p.subtitle {
+  font-size: 18px;
+  color: var(--text-secondary);
+  max-width: 720px;
+  line-height: 1.55;
+  margin-bottom: 36px;
+}
+
+.landing-hero-ctas {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 50px;
+}
+
+.landing-hero-ctas .landing-btn {
+  padding: 14px 28px;
+  font-size: 15px;
+}
+
+/* ── Dual Portals Showcase Section ──────────────────────────── */
+.landing-portals-section {
+  max-width: 1140px;
+  margin: 0 auto 80px;
+  padding: 0 24px;
+}
+
+.landing-section-title {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.landing-section-title h2 {
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+}
+
+.landing-section-title p {
+  font-size: 15px;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+
+.landing-portals-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.landing-portal-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+}
+
+.landing-portal-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-primary);
+  box-shadow: 0 16px 40px rgba(197, 106, 61, 0.12);
+}
+
+.landing-portal-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.landing-portal-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--border-radius-md);
+  background: rgba(197, 106, 61, 0.1);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.landing-portal-icon.assure {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.landing-portal-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.landing-portal-subtitle {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+.landing-portal-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin-bottom: 24px;
+}
+
+.landing-portal-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 28px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.landing-portal-features li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.landing-portal-features li .material-symbols-outlined {
+  font-size: 18px !important;
+  color: #10b981;
+}
+
+/* ── Features Bento Grid ────────────────────────────────────── */
+.landing-bento-section {
+  max-width: 1140px;
+  margin: 0 auto 90px;
+  padding: 0 24px;
+}
+
+.landing-bento-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.landing-bento-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.landing-bento-card.col-span-2 {
+  grid-column: span 2;
+}
+
+.landing-bento-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--border-radius-sm);
+  background: var(--bg-panel);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.landing-bento-card h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.landing-bento-card p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* ── Landing Footer ─────────────────────────────────────────── */
+.landing-footer {
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-card);
+  padding: 40px 24px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.landing-footer-content {
+  max-width: 1140px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}

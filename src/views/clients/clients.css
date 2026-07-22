@@ -354,6 +354,34 @@
   font-size: 18px !important;
 }
 
+/* ── Inline status toggle in table ────────────────── */
+.clients-status-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.clients-status-toggle-btn:hover {
+  border-color: var(--color-primary);
+  background: rgba(197,106,61,0.04);
+}
+
+.clients-status-toggle-btn .material-symbols-outlined {
+  font-size: 14px !important;
+  color: var(--text-muted);
+}
+
+.clients-status-toggle-btn .clients-table-status {
+  pointer-events: none;
+}
+
 /* ── Contracts sub-tab ───────────────────────────── */
 .clients-contracts-list {
   display: flex;
@@ -650,6 +678,182 @@
 }
 
 /* ═══════════════════════════════════════════════════
+   OVERVIEW TAB (Vue d'ensemble)
+   ═══════════════════════════════════════════════════ */
+
+.cdp-overview-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.cdp-overview-card {
+  padding: 16px 18px;
+}
+
+.cdp-overview-card:last-child {
+  grid-column: span 2;
+}
+
+.cdp-overview-id {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cdp-overview-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.cdp-overview-row:last-child {
+  border-bottom: none;
+}
+
+.cdp-overview-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.cdp-overview-value {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  text-align: right;
+}
+
+.cdp-overview-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.cdp-overview-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 4px;
+  background: var(--bg-panel);
+  border-radius: var(--border-radius-sm);
+}
+
+.cdp-overview-stat-value {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.cdp-overview-stat-label {
+  font-size: 9px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.cdp-overview-contracts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cdp-ov-contract-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  background: var(--bg-panel);
+  border-radius: var(--border-radius-sm);
+  font-size: 11px;
+}
+
+.cdp-ov-contract-icon {
+  font-size: 16px !important;
+  flex-shrink: 0;
+}
+
+.cdp-ov-contract-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.cdp-ov-contract-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cdp-ov-contract-ref {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.cdp-ov-contract-status {
+  font-weight: 600;
+  font-size: 10px;
+  flex-shrink: 0;
+}
+
+.cdp-ov-contract-premium {
+  font-weight: 600;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.cdp-overview-payments {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cdp-ov-payment-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  background: var(--bg-panel);
+  border-radius: var(--border-radius-sm);
+  font-size: 11px;
+}
+
+.cdp-ov-payment-date {
+  color: var(--text-secondary);
+  min-width: 60px;
+}
+
+.cdp-ov-payment-type {
+  flex: 1;
+  color: var(--text-secondary);
+}
+
+.cdp-ov-payment-amount {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.cdp-ov-payment-status {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--border-radius-sm);
+}
+
+.cdp-ov-payment-status.paid { background: rgba(16,185,129,0.1); color: #059669; }
+.cdp-ov-payment-status.pending { background: rgba(245,158,11,0.1); color: #d97706; }
+.cdp-ov-payment-status.late { background: rgba(239,68,68,0.1); color: #dc2626; }
+.cdp-ov-payment-status.upcoming { background: rgba(59,130,246,0.1); color: #3b82f6; }
+
+/* ═══════════════════════════════════════════════════
    CLIENT DETAIL PANEL
    ═══════════════════════════════════════════════════ */
 
@@ -785,6 +989,125 @@
 .cdp-status.suspended {
   background: rgba(239,68,68,0.1);
   color: #dc2626;
+}
+
+/* ── Status dropdown ───────────────────────────────── */
+.cdp-status-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.cdp-status-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  font-family: var(--font-primary);
+  transition: opacity 0.15s ease;
+}
+
+.cdp-status-toggle:hover {
+  opacity: 0.8;
+}
+
+.cdp-status-arrow {
+  font-size: 16px !important;
+  color: var(--text-muted);
+  transition: transform 0.2s ease;
+}
+
+.cdp-status-dropdown.open .cdp-status-arrow {
+  transform: rotate(180deg);
+}
+
+.cdp-status-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 150px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.1);
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition: all 0.2s ease;
+  z-index: 50;
+}
+
+.cdp-status-dropdown.open .cdp-status-menu {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.cdp-status-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-primary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+  width: 100%;
+}
+
+.cdp-status-option:hover {
+  background: var(--bg-panel);
+  color: var(--text-primary);
+}
+
+.cdp-status-option.active {
+  font-weight: 600;
+  color: var(--text-primary);
+  background: rgba(16,185,129,0.06);
+}
+
+.cdp-option-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.cdp-option-dot.active {
+  background: #059669;
+}
+
+.cdp-option-dot.pending {
+  background: #d97706;
+}
+
+.cdp-option-dot.suspended {
+  background: #dc2626;
+}
+
+.dark-mode .cdp-status-menu {
+  background: #1e293b;
+  border-color: #334155;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.4);
+}
+
+.dark-mode .cdp-status-option:hover {
+  background: #0f172a;
+}
+
+.dark-mode .cdp-status-option.active {
+  background: rgba(16,185,129,0.1);
 }
 
 .cdp-profile-actions {
