@@ -120,9 +120,12 @@ async function fetchClimate(lon, lat) {
   const url = `${OPENMETEO}?latitude=${lat}&longitude=${lon}` +
     `&start_date=1950-01-01&end_date=2050-01-01` +
     `&daily=temperature_2m_min,temperature_2m_max,precipitation_sum,wind_speed_10m_max` +
+    `,relative_humidity_2m_mean,relative_humidity_2m_max,relative_humidity_2m_min` +
+    `,soil_moisture_0_to_10cm_mean` +
     `&models=EC_Earth3P_HR`;
   // Wait for parallel batch to finish before hitting climate API
-  await new Promise(r => setTimeout(r, 3000));
+  // Longer delay to avoid 429 rate limiting after multiple runs
+  await new Promise(r => setTimeout(r, 10000));
   const data = await fetchJson(url, 25000, 3);
   const days = data?.daily;
   if (!days?.time?.length) {
@@ -135,6 +138,10 @@ async function fetchClimate(lon, lat) {
   const tempsMax = days.temperature_2m_max || [];
   const precip = days.precipitation_sum || [];
   const winds = days.wind_speed_10m_max || [];
+  const humidMean = days.relative_humidity_2m_mean || [];
+  const humidMax = days.relative_humidity_2m_max || [];
+  const humidMin = days.relative_humidity_2m_min || [];
+  const soilMoist = days.soil_moisture_0_to_10cm_mean || [];
 
   const computeStats = (mask) => {
     const daysInPeriod = mask.filter(Boolean).length;
@@ -151,10 +158,22 @@ async function fetchClimate(lon, lat) {
     };
   };
 
+  const computeAverages = (mask, values) => {
+    const filtered = values.filter((_, i) => mask[i] && values[i] !== null);
+    if (filtered.length < 30) return null;
+    return filtered.reduce((s, v) => s + v, 0) / filtered.length;
+  };
+
   const historicalMask = times.map(t => t >= '2000-01-01' && t <= '2014-12-31');
   const projectionMask = times.map(t => t >= '2040-01-01' && t <= '2050-01-01');
   const historical = computeStats(historicalMask);
   const projected = computeStats(projectionMask);
+
+  const histHumidMean = computeAverages(historicalMask, humidMean);
+  const histHumidMax = computeAverages(historicalMask, humidMax);
+  const histHumidMin = computeAverages(historicalMask, humidMin);
+  const histSoilMoist = computeAverages(historicalMask, soilMoist);
+  const projSoilMoist = computeAverages(projectionMask, soilMoist);
 
   const windToStorm = (max) => max > 100 ? 4 : max > 80 ? 3 : max > 60 ? 2 : 1;
 
@@ -172,6 +191,11 @@ async function fetchClimate(lon, lat) {
     projectedStormFrequency: projected ? windToStorm(projected.maxWind) : null,
     projectionModel: projected ? 'EC_Earth3P_HR' : null,
     projectionScenario: projected ? 'CMIP6 high-resolution (≈RCP8.5)' : null,
+    meanHumidity: histHumidMean !== null ? Math.round(histHumidMean) : null,
+    maxHumidity: histHumidMax !== null ? Math.round(histHumidMax) : null,
+    minHumidity: histHumidMin !== null ? Math.round(histHumidMin) : null,
+    soilMoisture: histSoilMoist !== null ? Math.round(histSoilMoist * 1000) / 1000 : null,
+    projectedSoilMoisture: projSoilMoist !== null ? Math.round(projSoilMoist * 1000) / 1000 : null,
   };
 
   console.log(`  ✓ ${result.freezeDaysPerYear} freeze days/yr, ${result.annualPrecipitation}mm rain/yr`);
@@ -284,6 +308,8 @@ async function fetchBdnbBuilding(banId) {
       : year <= 2021 ? '2013_2021'
       : '>2021';
 
+    const rawParcelIds = props.l_parcelle_id;
+    const parcelIds = Array.isArray(rawParcelIds) && rawParcelIds.length > 0 ? rawParcelIds : null;
     return {
       builtYear: year,
       constructionPeriod,
@@ -300,12 +326,23 @@ async function fetchBdnbBuilding(banId) {
       usageType: props.usage_principal_bdnb_open ?? null,
       nbLogements: props.nb_logements ?? null,
       departmentCode: banId.slice(0, 2),
+      /* ── New BDNB fields ── */
+      nbLogementsRnc: props.nb_log ?? null,
+      clayExposure: props.alea_argile && props.alea_argile !== 'INDETERMINE' ? props.alea_argile : null,
+      altitudeSolMean: props.altitude_sol_mean ?? null,
+      heatingEnergyType: props.type_energie_chauffage ?? null,
+      parcelIds,
+      quartierPrioritaire: props.quartier_prioritaire === true || props.quartier_prioritaire === 'true' ? true :
+        props.quartier_prioritaire === false || props.quartier_prioritaire === 'false' ? false : null,
+      zonePatrimoniale: props.zone_plu_bati_patrimonial ?? null,
     };
   };
 
   const parsed = parseRecord(records[0]);
   console.log(`  ✓ ${parsed.builtYear} built, DPE ${parsed.dpeClass}, ${parsed.levels} levels, ${parsed.nbLogements} logements`);
   if (parsed.wallMaterial) console.log(`    Mur: ${parsed.wallMaterial}, Toit: ${parsed.roofMaterial}, Chauffage: ${parsed.heatingType}`);
+  if (parsed.clayExposure) console.log(`    Argile: ${parsed.clayExposure}, Sol: ${parsed.altitudeSolMean}m`);
+  if (parsed.nbLogementsRnc) console.log(`    Logements (RNC): ${parsed.nbLogementsRnc}, Parcelles: ${parsed.parcelIds?.join(',')}`);
   console.log(`    Usage: ${parsed.usageType}, ${parsed.surfaceEmprise}m² emprise`);
   return parsed;
 }
@@ -443,6 +480,84 @@ async function fetchCatnat(communeCode) {
   return recent;
 }
 
+/* ── Step: IGN WFS — Distance to waterway + forest ── */
+
+/** Haversine distance between two lon/lat points in metres */
+function haversine(lon1, lat1, lon2, lat2) {
+  const R = 6371000;
+  const toRad = d => d * Math.PI / 180;
+  const dLon = toRad(lon2 - lon1);
+  const dLat = toRad(lat2 - lat1);
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+/** Min distance from (lon,lat) to a GeoJSON geometry */
+function minDistToGeom(lon, lat, geom) {
+  if (!geom?.type || !geom?.coordinates) return null;
+  const extract = (coords, type) => {
+    if (type === 'Point') return [[coords[0], coords[1]]];
+    if (['MultiPoint', 'LineString'].includes(type)) return coords.map(c => [c[0], c[1]]);
+    if (['MultiLineString', 'Polygon'].includes(type)) return coords.flat().map(c => [c[0], c[1]]);
+    if (type === 'MultiPolygon') return coords.flat(2).map(c => [c[0], c[1]]);
+    return [];
+  };
+  const pts = extract(geom.coordinates, geom.type);
+  if (!pts.length) return null;
+  let min = Infinity;
+  for (const [plon, plat] of pts) {
+    const d = haversine(lon, lat, plon, plat);
+    if (d < min) min = d;
+  }
+  return min === Infinity ? null : Math.round(min);
+}
+
+/** Fetch min distance to waterway via BD TOPO WFS */
+const IGN_WFS = 'https://data.geopf.fr/wfs/ows';
+
+async function fetchWaterDistance(lon, lat) {
+  console.log('\n💧  Distance cours d\'eau (WFS)…');
+  // WFS 2.0 BBOX uses EPSG:4326 axis order (lat,lon,lat,lon)
+  const bbox = `${lat - 0.05},${lon - 0.05},${lat + 0.05},${lon + 0.05}`;
+  let minDist = Infinity;
+  for (const tn of ['BDTOPO_V3:troncon_hydrographique', 'BDTOPO_V3:surface_hydrographique']) {
+    const url = `${IGN_WFS}?service=WFS&version=2.0.0&request=GetFeature&typeNames=${tn}` +
+      `&bbox=${bbox}&outputFormat=application/json&count=50`;
+    const data = await fetchJson(url, 6000, 1);
+    if (data?.features?.length) {
+      for (const f of data.features) {
+        const d = minDistToGeom(lon, lat, f.geometry);
+        if (d !== null && d < minDist) minDist = d;
+      }
+    }
+  }
+  const result = minDist === Infinity ? null : minDist;
+  console.log(`  ✓ ${result !== null ? `${result}m` : 'aucun cours d\'eau trouvé'}`);
+  return result;
+}
+
+/** Fetch min distance to forest via IGN Masque Forêt WFS */
+const IGN_FORET = 'IGNF_MASQUE-FORET.2021-2023:masque_foret';
+
+async function fetchForestDistance(lon, lat) {
+  console.log('\n🌲  Distance forêt (WFS)…');
+  // WFS 2.0 BBOX uses EPSG:4326 axis order (lat,lon,lat,lon)
+  const bbox = `${lat - 0.05},${lon - 0.05},${lat + 0.05},${lon + 0.05}`;
+  const url = `${IGN_WFS}?service=WFS&version=2.0.0&request=GetFeature&typeNames=${IGN_FORET}` +
+    `&bbox=${bbox}&outputFormat=application/json&count=50`;
+  const data = await fetchJson(url, 6000, 1);
+  let minDist = Infinity;
+  if (data?.features?.length) {
+    for (const f of data.features) {
+      const d = minDistToGeom(lon, lat, f.geometry);
+      if (d !== null && d < minDist) minDist = d;
+    }
+  }
+  const result = minDist === Infinity ? null : minDist;
+  console.log(`  ✓ ${result !== null ? `${result}m` : 'aucune forêt trouvée'}`);
+  return result;
+}
+
 /* ── Step 7: DVF department lookup ── */
 
 function lookupDvf(deptCode) {
@@ -500,15 +615,23 @@ async function main() {
   const deptCode = geo.banId ? geo.banId.slice(0, 2) : '75';
   const communeCode = geo.banId ? geo.banId.slice(0, 5) : null;
 
-  // 2–6: Run all in parallel
-  console.log('\n── Fetching providers ──');
-  const [altitude, climate, risks, parcelId, building, catnat] = await Promise.all([
+  // Run providers in staggered batches to avoid API rate limits
+  console.log('\n── Fetching providers (staggered) ──');
+  // Batch 1: Geospatial + building (fast APIs)
+  const [altitude, parcelId, building, catnat] = await Promise.all([
     fetchAltitude(geo.lon, geo.lat),
-    fetchClimate(geo.lon, geo.lat),
-    fetchGeorisques(geo.lon, geo.lat),
     fetchCadastralParcel(geo.lon, geo.lat),
     fetchBdnbBuilding(geo.banId),
     fetchCatnat(communeCode),
+  ]);
+  // Short delay between batches
+  await new Promise(r => setTimeout(r, 1000));
+  // Batch 2: Risks, climate, distances
+  const [risks, climate, waterDist, forestDist] = await Promise.all([
+    fetchGeorisques(geo.lon, geo.lat),
+    fetchClimate(geo.lon, geo.lat),
+    fetchWaterDistance(geo.lon, geo.lat),
+    fetchForestDistance(geo.lon, geo.lat),
   ]);
 
   // Step X: Géorisques v2 enrichment (after parcel is resolved)
@@ -537,6 +660,9 @@ async function main() {
     levels: null, height: null, dpeClass: null, energyConsumption: null,
     emissionGes: null, wallMaterial: null, roofMaterial: null, heatingType: null,
     usageType: null, nbLogements: null, departmentCode: deptCode,
+    nbLogementsRnc: null, clayExposure: null, altitudeSolMean: null,
+    heatingEnergyType: null, parcelIds: null, quartierPrioritaire: null,
+    zonePatrimoniale: null,
   };
 
   const ignData = altitude || { altitude: null, slope: null };
@@ -553,7 +679,8 @@ async function main() {
       parcelId: parcelId || null,
       altitude: ignData.altitude,
       slope: ignData.slope,
-      distanceToWaterway: null,
+      distanceToWaterway: waterDist,
+      distanceToForest: forestDist,
       distanceFireStation: null,
       landUse: 'urban',
     },
@@ -577,6 +704,8 @@ async function main() {
         snowZone: null, projectedFreezeDays: null, projectedHeatwaveDays: null,
         projectedPrecipitation: null, projectedStormFrequency: null,
         projectionModel: null, projectionScenario: null,
+        meanHumidity: null, maxHumidity: null, minHumidity: null,
+        soilMoisture: null, projectedSoilMoisture: null,
       }),
       drias: driasData ?? undefined,
     },
@@ -612,8 +741,12 @@ async function main() {
   console.log(`  Climate:     ${result.climate.freezeDaysPerYear ?? '?'} freeze/yr, ${result.climate.annualPrecipitation ?? '?'}mm/yr`);
   console.log(`  DVF:         ${result.valuation?.reconstructionValuePerSqm ?? '?'} €/m² reconstruction`);
   console.log(`  DRIAS:       ${driasData ? `${driasData.heatwaveDays} canicule days` : 'no data'}`);
+  console.log(`  Water dist:  ${waterDist !== null ? `${waterDist}m` : 'N/A'}`);
+  console.log(`  Forest dist: ${forestDist !== null ? `${forestDist}m` : 'N/A'}`);
   console.log(`  Providers:   ${[
     building && 'BDNB',
+    waterDist !== null && 'WFS-Eau',
+    forestDist !== null && 'WFS-Forêt',
     risks && 'Géorisques',
     ignData.altitude !== null && 'IGN',
     climate && 'Open-Meteo',

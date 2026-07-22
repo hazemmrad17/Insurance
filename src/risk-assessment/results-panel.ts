@@ -189,12 +189,19 @@ function renderProperty(p: RiskAssessmentInput['property']): string {
   if (p.surfaceUtile) rows.push({ label: 'Surface utile', value: `${p.surfaceUtile.toFixed(0)} m²` });
   if (p.surfaceEmprise) rows.push({ label: 'Emprise sol', value: `${p.surfaceEmprise.toFixed(0)} m²` });
   if (p.nbLogements) rows.push({ label: 'Logements', value: `${p.nbLogements}` });
+  if (p.nbLogementsRnc) rows.push({ label: 'Logements (RNC)', value: `${p.nbLogementsRnc}` });
   if (p.dpeClass) rows.push({ label: 'DPE', value: p.dpeClass, badge: true });
   if (p.energyConsumption) rows.push({ label: 'Conso énergie', value: `${p.energyConsumption} kWh/m²/an` });
   if (p.emissionGes) rows.push({ label: 'Émissions GES', value: `${p.emissionGes} kgCO₂/m²/an` });
   if (p.wallMaterial) rows.push({ label: 'Matériau mur', value: p.wallMaterial });
   if (p.roofMaterial) rows.push({ label: 'Matériau toit', value: p.roofMaterial });
-  if (p.heatingType) rows.push({ label: 'Chauffage', value: p.heatingType });
+  if (p.heatingType) rows.push({ label: 'Chauffage (type)', value: p.heatingType });
+  if (p.heatingEnergyType) rows.push({ label: 'Chauffage (énergie)', value: p.heatingEnergyType });
+  if (p.clayExposure) rows.push({ label: 'Exposition argile', value: p.clayExposure });
+  if (p.altitudeSolMean) rows.push({ label: 'Altitude sol (BDNB)', value: `${p.altitudeSolMean} m` });
+  if (p.quartierPrioritaire !== null) rows.push({ label: 'QPV', value: p.quartierPrioritaire ? 'Oui' : 'Non' });
+  if (p.zonePatrimoniale) rows.push({ label: 'Zone patrimoniale', value: String(p.zonePatrimoniale) });
+  if (p.parcelIds) rows.push({ label: 'Parcelles', value: p.parcelIds.join(', '), mono: true });
   if (p.usageType) rows.push({ label: 'Usage', value: p.usageType });
   if (p.departmentCode) rows.push({ label: 'Département', value: p.departmentCode });
 
@@ -226,6 +233,7 @@ function renderGeography(g?: RiskAssessmentInput['geography']): string {
   if (g.altitude !== null) rows.push({ label: 'Altitude', value: `${g.altitude.toFixed(0)} m` });
   if (g.slope) rows.push({ label: 'Pente', value: g.slope === 'flat' ? 'Plat' : g.slope === 'moderate' ? 'Modéré' : 'Fort' });
   if (g.distanceToWaterway) rows.push({ label: 'Distance cours d\'eau', value: `${g.distanceToWaterway} m` });
+  if (g.distanceToForest) rows.push({ label: 'Distance forêt', value: `${g.distanceToForest} m` });
   if (g.distanceFireStation) rows.push({ label: 'Distance pompiers', value: `${g.distanceFireStation} m` });
   if (g.landUse) rows.push({ label: 'Occupation sol', value: g.landUse });
   if (g.parcelId) rows.push({ label: 'Parcelle', value: g.parcelId, mono: true });
@@ -317,6 +325,8 @@ function renderClimate(c?: RiskAssessmentInput['climate']): string {
   if (c.freezeDaysPerYear !== null) rows.push({ label: '❄️ Jours de gel/an', value: `${c.freezeDaysPerYear} (2000–2014)` });
   if (c.heatwaveDaysPerYear !== null) rows.push({ label: '🔥 Jours canicule/an', value: `${c.heatwaveDaysPerYear} (2000–2014)` });
   if (c.annualPrecipitation !== null) rows.push({ label: '🌧️ Précipitations/an', value: `${c.annualPrecipitation} mm (2000–2014)` });
+  if (c.meanHumidity !== null) rows.push({ label: '💧 Humidité relative', value: `${c.meanHumidity}% (moy. 2000–2014)` });
+  if (c.soilMoisture !== null) rows.push({ label: '🌱 Humidité sol 0-10cm', value: `${c.soilMoisture} m³/m³ (2000–2014)` });
   if (c.stormFrequency !== null) rows.push({ label: '🌬️ Fréquence tempêtes', value: `${c.stormFrequency}/5 (2000–2014)` });
   if (c.hailRisk !== null) rows.push({ label: '🧊 Risque grêle', value: `${c.hailRisk}/5` });
   if (c.windZone !== null) rows.push({ label: 'Zone vent', value: `${c.windZone}` });
@@ -331,6 +341,7 @@ function renderClimate(c?: RiskAssessmentInput['climate']): string {
     if (c.projectedHeatwaveDays !== null) rows.push({ label: '🔥 Jours canicule (2050)', value: `${c.projectedHeatwaveDays} (projeté)` });
     if (c.projectedPrecipitation !== null) rows.push({ label: '🌧️ Précipitations (2050)', value: `${c.projectedPrecipitation} mm (projeté)` });
     if (c.projectedStormFrequency !== null) rows.push({ label: '🌬️ Tempêtes (2050)', value: `${c.projectedStormFrequency}/5 (projeté)` });
+    if (c.projectedSoilMoisture !== null) rows.push({ label: '🌱 Humidité sol (2050)', value: `${c.projectedSoilMoisture} m³/m³ (projeté)` });
     if (c.projectionModel) rows.push({ label: 'Modèle', value: c.projectionModel, mono: true });
     if (c.projectionScenario) rows.push({ label: 'Scénario', value: c.projectionScenario, mono: true });
   }
