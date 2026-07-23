@@ -32,7 +32,11 @@ import { initAuth } from './views/auth/auth.js';
 import { initAssure } from './views/assure/assure.js';
 import { initLanding } from './views/landing/landing.js';
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  // Try session restore first (valid JWT cookie → auto-login)
+  const { restoreSession } = await import('./views/auth/auth.js');
+  await restoreSession();
+
   // Core app infrastructure
   setupSidebarToggle();
   setupSidebarNavigation();

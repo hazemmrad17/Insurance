@@ -14,7 +14,7 @@
   <body>
     <div class="dashboard-container">
       <!-- Left Sidebar / Navigation Rail (Retractable) -->
-      <aside class="sidebar expanded" id="sidebar">
+      <aside class="sidebar" id="sidebar">
         <!-- Toggle button for expand/collapse -->
         <div class="sidebar-header">
           <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
@@ -52,9 +52,9 @@
           </button>
 
           <!-- Assuré (Policyholder / Client) Items -->
-          <button class="nav-item nav-role-assure" data-view="assure-bien" aria-label="Mon Bien" style="display:none;">
+          <button class="nav-item nav-role-assure" data-view="assure-bien" aria-label="Vue d'ensemble" style="display:none;">
             <span class="material-symbols-outlined">home</span>
-            <span class="nav-label">Mon Bien</span>
+            <span class="nav-label">Vue d'ensemble</span>
             <md-ripple></md-ripple>
           </button>
           <button class="nav-item nav-role-assure" data-view="assure-travaux" aria-label="Mes Travaux" style="display:none;">
@@ -82,6 +82,14 @@
         </nav>
 
         <div class="sidebar-bottom">
+          <!-- Theme toggle -->
+          <button class="nav-item" id="headerThemeToggle" aria-label="Toggle dark mode">
+            <span class="material-symbols-outlined theme-icon-light">light_mode</span>
+            <span class="material-symbols-outlined theme-icon-dark">dark_mode</span>
+            <span class="nav-label">Theme</span>
+            <md-ripple></md-ripple>
+          </button>
+          <!-- Role switch -->
           <button class="nav-item role-switch-btn" id="roleSwitchBtn" aria-label="Switch User Mode">
             <span class="material-symbols-outlined">swap_horiz</span>
             <span class="nav-label" id="roleSwitchText">Mode Assuré</span>
@@ -92,7 +100,6 @@
             <span class="nav-label">Sign out</span>
             <md-ripple></md-ripple>
           </button>
-          <span class="touch"></span>
         </div>
       </aside>
 
@@ -104,52 +111,6 @@
             <button class="tab-btn" data-tab="summary">Summary</button>
             <button class="tab-btn active" data-tab="map">Map</button>
             <button class="tab-btn" data-tab="alerts">Alerts</button>
-          </div>
-          <div class="header-actions">
-            <button class="header-theme-btn" id="headerThemeToggle" aria-label="Toggle dark mode">
-              <span class="material-symbols-outlined theme-icon-light">light_mode</span>
-              <span class="material-symbols-outlined theme-icon-dark">dark_mode</span>
-            </button>
-            <div class="profile-dropdown" id="profileDropdown">
-              <button class="profile-trigger" id="profileTrigger" aria-label="Profile menu">
-                <span class="material-symbols-outlined">account_circle</span>
-              </button>
-              <div class="profile-menu" id="profileMenu">
-                <div class="profile-menu-header">
-                  <span class="material-symbols-outlined" style="font-size:20px!important;color:var(--color-primary);">person</span>
-                  <div>
-                    <span class="profile-menu-name">Jean Dupont</span>
-                    <span class="profile-menu-email">jean.dupont@previa.fr</span>
-                  </div>
-                </div>
-                <div class="profile-menu-divider"></div>
-                <button class="profile-menu-item" data-action="profile">
-                  <span class="material-symbols-outlined">badge</span>
-                  <span>Profile</span>
-                </button>
-                <button class="profile-menu-item" data-action="settings">
-                  <span class="material-symbols-outlined">settings</span>
-                  <span>Paramètres</span>
-                </button>
-                <button class="profile-menu-item" data-action="billing">
-                  <span class="material-symbols-outlined">credit_card</span>
-                  <span>Plan & Facturation</span>
-                </button>
-                <button class="profile-menu-item" data-action="pricing">
-                  <span class="material-symbols-outlined">sell</span>
-                  <span>Tarifs</span>
-                </button>
-                <button class="profile-menu-item" data-action="faq">
-                  <span class="material-symbols-outlined">help</span>
-                  <span>FAQ</span>
-                </button>
-                <div class="profile-menu-divider"></div>
-                <button class="profile-menu-item logout" data-action="logout">
-                  <span class="material-symbols-outlined">logout</span>
-                  <span>Déconnexion</span>
-                </button>
-              </div>
-            </div>
           </div>
         </header>
 
@@ -2093,7 +2054,7 @@
               
               <!-- Left Info -->
               <div class="banner-info">
-                <h1>Mon Bien &<br>Risques Climatiques</h1>
+                <h1>Vue d'ensemble &<br>Risques Climatiques</h1>
                 <p id="assureBannerAddress">8 Rue de la Paix, Paris 75002 · Contrat MRH N° POL-2026-00428-FR</p>
                 <div class="team-avatars">
                   <span class="team-avatar-svg" style="background:#c56a3d;">JD</span>
@@ -3078,11 +3039,11 @@
             <form onsubmit="return false">
               <div class="auth-input-group">
                 <span class="material-symbols-outlined input-icon">email</span>
-                <input type="email" placeholder="Email professionnel" />
+                <input type="email" name="email" placeholder="Email professionnel" />
               </div>
               <div class="auth-input-group">
                 <span class="material-symbols-outlined input-icon">lock</span>
-                <input type="password" placeholder="Mot de passe" />
+                <input type="password" name="password" placeholder="Mot de passe" />
                 <button type="button" class="input-toggle"><span class="material-symbols-outlined">visibility_off</span></button>
               </div>
               <div class="auth-check-row">
@@ -3142,24 +3103,24 @@
             <form onsubmit="return false">
               <div class="auth-input-group">
                 <span class="material-symbols-outlined input-icon">person</span>
-                <input type="text" placeholder="Nom complet" />
+                <input type="text" name="fullName" placeholder="Nom complet" />
               </div>
               <div class="auth-input-group">
                 <span class="material-symbols-outlined input-icon">business</span>
-                <input type="text" placeholder="Nom de l'entreprise" />
+                <input type="text" name="company" placeholder="Nom de l'entreprise" />
               </div>
               <div class="auth-input-group">
                 <span class="material-symbols-outlined input-icon">email</span>
-                <input type="email" placeholder="Email professionnel" />
+                <input type="email" name="email" placeholder="Email professionnel" />
               </div>
               <div class="auth-input-group">
                 <span class="material-symbols-outlined input-icon">lock</span>
-                <input type="password" placeholder="Mot de passe" />
+                <input type="password" name="password" placeholder="Mot de passe" />
                 <button type="button" class="input-toggle"><span class="material-symbols-outlined">visibility_off</span></button>
               </div>
               <div class="auth-input-group">
                 <span class="material-symbols-outlined input-icon">lock</span>
-                <input type="password" placeholder="Confirmer le mot de passe" />
+                <input type="password" name="passwordConfirm" placeholder="Confirmer le mot de passe" />
                 <button type="button" class="input-toggle"><span class="material-symbols-outlined">visibility_off</span></button>
               </div>
               <div class="auth-check-row">

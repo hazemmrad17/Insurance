@@ -68,7 +68,7 @@ body {
   display: flex; flex-direction: column; align-items: center;
   padding: 12px 6px; justify-content: space-between;
   transition: width 0.25s cubic-bezier(0.2,0,0,1);
-  overflow: hidden; position: relative; z-index: 10;
+  position: relative; z-index: 10;
 }
 .sidebar.expanded { width: 220px; align-items: stretch; }
 /* Hover-expand: when collapsed, hovering expands the sidebar */
@@ -155,6 +155,15 @@ body {
 .sidebar:not(.expanded):hover .sidebar-bottom .profile-avatar { align-self: center; }
 .logout-btn { color: var(--text-muted); }
 
+/* Profile menu in sidebar — opens to the right */
+.sidebar-bottom .profile-menu {
+  top: auto;
+  bottom: 0;
+  left: 100%;
+  right: auto;
+  margin-left: 4px;
+}
+
 .profile-avatar {
   width: 36px; height: 36px; border-radius: 50%;
   overflow: hidden; border: 2px solid var(--border-color); flex-shrink: 0;
@@ -205,7 +214,10 @@ body {
 .dark-mode .theme-icon-dark { display: inline-flex; }
 
 /* Profile dropdown */
-.profile-dropdown { position: relative; }
+.profile-dropdown {
+  position: relative;
+  width: 100%;
+}
 
 .profile-trigger {
   width: 36px; height: 36px; border: none; border-radius: var(--border-radius-sm);
@@ -223,6 +235,7 @@ body {
   padding: 6px 0;
   box-shadow: 0 12px 40px rgba(0,0,0,0.14), 0 2px 8px rgba(0,0,0,0.06);
   border: 1px solid var(--border-color);
+  display: flex;
   flex-direction: column;
   overflow: hidden;
   z-index: 50;
@@ -272,8 +285,8 @@ body {
   color: var(--text-secondary);
   cursor: pointer; transition: all 0.15s ease; text-align: left;
   position: relative;
-  margin: 0 4px;
-  border-radius: var(--border-radius-sm);
+  margin: 0;
+  border-radius: 0;
 }
 .profile-menu-item:hover {
   background: #f1f5f9; color: var(--text-primary);

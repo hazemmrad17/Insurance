@@ -1,26 +1,65 @@
+/**
+ * Auth API Client — Login, Register, Logout, Session Restore
+ *
+ * All calls use apiFetch which sends httpOnly cookies automatically.
+ * On success, the backend sets a JWT cookie — subsequent requests
+ * are authenticated via that cookie.
+ */
+
 import { apiFetch } from './client.js';
-import type { RegisterRequest, LoginRequest, AuthResponse, AuthUser } from '@previa/shared/types';
 
-export async function login(credentials: LoginRequest): Promise<AuthResponse> {
-  return apiFetch<AuthResponse>('/api/auth/login', {
+export interface AuthUser {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: 'assureur' | 'assure';
+}
+
+interface AuthResponse {
+  user: AuthUser;
+}
+
+interface MeResponse {
+  user: AuthUser;
+}
+
+export async function login(
+  email: string,
+  password: string,
+): Promise<AuthUser> {
+  const data = await apiFetch<AuthResponse>('/api/auth/login', {
     method: 'POST',
-    body: JSON.stringify(credentials),
+    body: JSON.stringify({ email, password }),
+  });
+  return data.user;
+}
+
+export async function register(params: {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  role: 'assureur' | 'assure';
+}): Promise<AuthUser> {
+  const data = await apiFetch<AuthResponse>('/api/auth/register', {
+    method: 'POST',
+    body: JSON.stringify(params),
+  });
+  return data.user;
+}
+
+export async function logout(): Promise<void> {
+  await apiFetch<{ success: boolean }>('/api/auth/logout', {
+    method: 'POST',
   });
 }
 
-export async function register(data: RegisterRequest): Promise<AuthResponse> {
-  return apiFetch<AuthResponse>('/api/auth/register', {
-    method: 'POST',
-    body: JSON.stringify(data),
-  });
-}
-
-export async function logout(): Promise<{ success: boolean }> {
-  return apiFetch<{ success: boolean }>('/api/auth/logout', {
-    method: 'POST',
-  });
-}
-
-export async function getMe(): Promise<{ user: AuthUser }> {
-  return apiFetch<{ user: AuthUser }>('/api/auth/me');
+export async function getMe(): Promise<AuthUser | null> {
+  try {
+    const data = await apiFetch<MeResponse>('/api/auth/me');
+    return data.user;
+  } catch {
+    return null;
+  }
 }

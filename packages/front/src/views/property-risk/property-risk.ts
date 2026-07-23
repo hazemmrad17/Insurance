@@ -14,9 +14,9 @@ import { housePartData, selectHousePart, onHousePartSelect } from '../../house3d
 import { initClimateMap, destroyClimateMap, escapeHtml } from '../climate-map/climate-map.js';
 import { initHouse, destroyHouse } from '../../house3d.js';
 import { RiskState } from './risk-state.js';
-import { scoreAll, scoreProjected, PERIL_META } from '../../risk-assessment/scoring-engine.js';
+import { scoreProjected, PERIL_META } from '../../risk-assessment/scoring-engine.js';
 import { setResultsPanelContainer, renderResults, renderLoadingState } from '../../risk-assessment/results-panel.js';
-import { orchestrate } from '../../risk-assessment/risk-orchestrator.js';
+import { runAssessment } from '../../api/risks.js';
 
 /* ═══════════════════════════════════════════════════════════════
    State
@@ -364,7 +364,8 @@ function setupAddressSearch(): void {
     }
 
     try {
-      const res = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(query)}&limit=5&autocomplete=1`);
+      // Use Vite proxy (/ban-api → api-adresse.data.gouv.fr) to avoid CORS issues
+      const res = await fetch(`/ban-api/search/?q=${encodeURIComponent(query)}&limit=5&autocomplete=1`);
       if (!res.ok) return;
       const data = await res.json();
 
@@ -425,14 +426,8 @@ function setupAddressSearch(): void {
   }
 }
 
-let abortController: AbortController | null = null;
-
 async function startAssessment(lon: number, lat: number, addressLabel: string, banId?: string): Promise<void> {
-  // Cancel any in-flight assessment
-  if (abortController) {
-    abortController.abort();
-  }
-
+  // Clear previous state
   RiskState.clear();
   RiskState.setCoords({ lat, lon });
   RiskState.setAddress(addressLabel);
@@ -445,31 +440,31 @@ async function startAssessment(lon: number, lat: number, addressLabel: string, b
   }
 
   try {
-    const assessment = await orchestrate(
-      { lon, lat, addressLabel, banId },
-      (progress) => {
-        RiskState.setLoadingProgress(progress);
-        if (container) renderLoadingState(progress);
-      },
-    );
+    // Use backend API (POST /api/risk/assess) instead of client-side orchestrator
+    // Backend handles: all provider API calls, WFS distance queries, CATNAT, DVF/DRIAS
+    const response = await runAssessment({
+      latitude: lat,
+      longitude: lon,
+      address: addressLabel,
+      banId,
+    });
 
-    // Compute scores
-    const scores = scoreAll(assessment);
+    // AssessResponse extends RiskAssessmentInput + scores + assessmentId
+    const scores = response.scores;
 
-    RiskState.setAssessment(assessment);
+    RiskState.setAssessment(response);
     RiskState.setScores(scores);
     RiskState.setLoading(false);
 
     // Show results in Expert tab
-    if (container) renderResults(assessment);
+    if (container) renderResults(response);
 
     // Navigate to Expert tab
     const expertTab = document.querySelector('.tab-btn[data-tab="expert"]') as HTMLButtonElement | null;
     if (expertTab) expertTab.click();
 
-    showToast(`<div class="risk-toast-body">✅ Évaluation terminée — ${assessment.metadata.communeName}</div>`, 3000);
-  } catch (err: any) {
-    if (err?.name === 'AbortError') return; // Cancelled by new search
+    showToast(`<div class="risk-toast-body">✅ Évaluation terminée — ${response.metadata.communeName}</div>`, 3000);
+  } catch {
     RiskState.setLoading(false);
     showToast('<div class="risk-toast-body">❌ Erreur lors de l\'évaluation. Veuillez réessayer.</div>', 5000);
   }

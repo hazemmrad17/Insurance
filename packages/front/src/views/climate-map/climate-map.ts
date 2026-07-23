@@ -18,8 +18,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import proj4 from 'proj4';
 import { loadGeorisques, clearGeorisques, initWmsOnMap } from './georisques-viz.js';
 import { fetchWithTimeout } from './fetch-utils.js';
-import { orchestrate } from '../../risk-assessment/risk-orchestrator.js';
-import { setResultsPanelContainer, renderResults, renderLoadingState } from '../../risk-assessment/results-panel.js';
+import { setResultsPanelContainer, renderResults } from '../../risk-assessment/results-panel.js';
 
 /* ═══════════════════════════════════════════════════════════════
    Types
@@ -541,23 +540,42 @@ async function handleSearch(query: string): Promise<void> {
   const lastPart = labelParts[labelParts.length - 1] || '';
   const communeName = lastPart && !lastPart.match(/^[0-9]/) && lastPart.length > 2 ? lastPart : undefined;
 
-  // Orchestrate ALL providers in parallel
+  // Call backend API to orchestrate all providers (POST /api/risk/assess)
   setStatus('Chargement des données...');
 
-  const assessment = await orchestrate({
-    lon: geocoded.lon,
-    lat: geocoded.lat,
-    addressLabel: geocoded.label,
-    banId: geocoded.banId,
-    communeCode,
-    communeName,
-  }, (progress) => {
-    renderLoadingState(progress);
-    setStatus(progress.message);
-  });
+  try {
+    const res = await fetchWithTimeout('/api/risk/assess', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        latitude: geocoded.lat,
+        longitude: geocoded.lon,
+        address: geocoded.label,
+        banId: geocoded.banId,
+        communeCode,
+        communeName,
+      }),
+    }, 30000);
 
-  // Render full results panel
-  renderResults(assessment);
+    if (!res.ok) throw new Error('Backend assessment failed');
+    const result = await res.json();
+
+    // Render full results panel from backend response
+    renderResults(result);
+  } catch (err) {
+    console.error('[BDNB Map] Backend assessment failed, falling back to client-side:', err);
+    // Fallback: import and use client-side orchestrator directly
+    const { orchestrate: clientOrchestrate } = await import('../../risk-assessment/risk-orchestrator.js');
+    const assessment = await clientOrchestrate({
+      lon: geocoded.lon,
+      lat: geocoded.lat,
+      addressLabel: geocoded.label,
+      banId: geocoded.banId,
+      communeCode,
+      communeName,
+    });
+    renderResults(assessment);
+  }
 
   // Load Géorisques WMS on the map (visual overlays, separate from data)
   loadGeorisques(map!, geocoded.lon, geocoded.lat).catch(() => {});

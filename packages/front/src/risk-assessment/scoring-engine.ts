@@ -1,12 +1,14 @@
 /**
- * Scoring Engine — 5-Peril Risk Scoring
- * =======================================
+ * Scoring Engine — 5-Peril Risk Scoring (frontend subset)
+ * ========================================================
  *
- * Pure stateless functions that take a RiskAssessmentInput and return
- * 0-100 scores for each peril, plus a weighted global score.
+ * ⚠️ The full scoring engine now runs on the backend (packages/api/src/services/scoring.service.ts).
+ * This frontend file keeps only what the UI needs:
+ *   - scoreProjected: recompute projected scores after user mitigates perils
+ *   - PERIL_META: display metadata for the 5 perils
  *
- * Formulas are transparent weighted averages — no ML, fully explainable.
- * Each peril uses only data from official French government APIs.
+ * The core scoring functions are NOT exported anymore — they are internal
+ * helpers for scoreProjected.
  */
 
 import type { RiskAssessmentInput, RiskLevel } from './schema.js';
@@ -218,7 +220,8 @@ function weightedGlobal(perilScores: Omit<PerilScores, 'global'>): number {
  * Compute all 5 per-peril scores + weighted global score
  * from a single RiskAssessmentInput.
  */
-export function scoreAll(assessment: RiskAssessmentInput): PerilScores {
+/** @internal — used by scoreProjected. Backend version is in packages/api */
+function scoreAll(assessment: RiskAssessmentInput): PerilScores {
   const scores = {
     inondation: scoreInondation(assessment),
     rga: scoreRga(assessment),

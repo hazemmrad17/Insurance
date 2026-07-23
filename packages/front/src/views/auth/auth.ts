@@ -56,6 +56,23 @@ export function destroyAuth(): void {
   document.querySelectorAll('.auth-view').forEach(el => el.classList.remove('active'));
 }
 
+/* ── Session restore: auto-login if valid cookie exists ─── */
+export async function restoreSession(): Promise<boolean> {
+  try {
+    const { getMe } = await import('../../api/auth.js');
+    const user = await getMe();
+    if (user) {
+      const { navigateTo, setRole } = await import('../../router.js');
+      setRole(user.role);
+      navigateTo(user.role === 'assure' ? 'assure-bien' : 'overview');
+      return true;
+    }
+  } catch {
+    // No session — stay on auth page
+  }
+  return false;
+}
+
 /* ═══════════════════════════════════════════════════════════════
    Password visibility toggle
    ═══════════════════════════════════════════════════════════════ */
@@ -148,33 +165,100 @@ function wireAuthLinks(): void {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   Submit buttons — simulate auth flow then enter dashboard
+   Submit buttons — real API calls via httpOnly cookies
    ═══════════════════════════════════════════════════════════════ */
+
+function getFormValue(form: Element, name: string): string {
+  const input = form.querySelector(`[name="${name}"]`) as HTMLInputElement | null;
+  return input?.value?.trim() || '';
+}
+
+function setFormError(btn: HTMLButtonElement, message: string): void {
+  // Remove any existing error
+  const existing = btn.parentElement?.querySelector('.auth-error-message');
+  if (existing) existing.remove();
+
+  const errorEl = document.createElement('div');
+  errorEl.className = 'auth-error-message';
+  errorEl.style.cssText = 'font-size:11px;color:#ef4444;padding:6px 0 0;text-align:center;';
+  errorEl.textContent = message;
+  btn.parentElement?.insertBefore(errorEl, btn.nextSibling);
+
+  // Auto-remove after 5s
+  setTimeout(() => errorEl.remove(), 5000);
+}
 
 function wireSubmitButtons(): void {
   document.querySelectorAll('.auth-submit-btn').forEach(btn => {
     if ((btn as HTMLElement).getAttribute('data-wired')) return;
     (btn as HTMLElement).setAttribute('data-wired', 'true');
 
-    btn.addEventListener('click', (e) => {
+    btn.addEventListener('click', async (e) => {
       e.preventDefault();
-      const form = (btn as HTMLElement).closest('.auth-form-card');
-      if (!form) return;
 
-      // Simulate submission
-      const originalText = btn.innerHTML;
-      btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px!important;">sync</span> Verification...';
-      btn.setAttribute('disabled', 'true');
+      const btnEl = btn as HTMLButtonElement;
+      const authView = btnEl.closest('.auth-view') as HTMLElement | null;
+      const formCard = btnEl.closest('.auth-form-card');
+      const viewId = authView?.id || '';
+      const originalText = btnEl.innerHTML;
 
-      setTimeout(() => {
-        btn.innerHTML = originalText;
-        btn.removeAttribute('disabled');
+      // Disable + show spinner
+      btnEl.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px!important;">sync</span> Verification...';
+      btnEl.disabled = true;
 
-        // Navigate to dashboard
-        import('../../router.js').then(({ navigateTo }) => {
-          navigateTo('overview');
-        });
-      }, 1200);
+      if (!formCard) {
+        btnEl.innerHTML = originalText;
+        btnEl.disabled = false;
+        return;
+      }
+
+      try {
+        const { login, register } = await import('../../api/auth.js');
+        const { navigateTo } = await import('../../router.js');
+
+        if (viewId === 'auth-sign-in') {
+          // POST /api/auth/login
+          const email = getFormValue(formCard, 'email');
+          const password = getFormValue(formCard, 'password');
+
+          if (!email || !password) {
+            setFormError(btnEl, 'Veuillez remplir tous les champs obligatoires.');
+            btnEl.innerHTML = originalText;
+            btnEl.disabled = false;
+            return;
+          }
+
+          const user = await login(email, password);
+          // navigateTo already sets the role via activateNavItem
+          navigateTo(user.role === 'assure' ? 'assure-bien' : 'overview');
+
+        } else if (viewId === 'auth-sign-up') {
+          // POST /api/auth/register
+          const email = getFormValue(formCard, 'email');
+          const password = getFormValue(formCard, 'password');
+          const fullName = getFormValue(formCard, 'fullName');
+
+          if (!email || !password || !fullName) {
+            setFormError(btnEl, 'Veuillez remplir tous les champs obligatoires.');
+            btnEl.innerHTML = originalText;
+            btnEl.disabled = false;
+            return;
+          }
+
+          // Split "Nom complet" into firstName / lastName
+          const nameParts = fullName.trim().split(/\s+/);
+          const firstName = nameParts[0] || '';
+          const lastName = nameParts.slice(1).join(' ') || firstName;
+
+          // Default role to assureur (user can switch later via sidebar)
+          const user = await register({ email, password, firstName, lastName, role: 'assureur' });
+          navigateTo(user.role === 'assure' ? 'assure-bien' : 'overview');
+        }
+      } catch (err: any) {
+        setFormError(btnEl, err.message || 'Une erreur est survenue. Veuillez réessayer.');
+        btnEl.innerHTML = originalText;
+        btnEl.disabled = false;
+      }
     });
   });
 }

@@ -36,6 +36,10 @@ export async function fetchClimate(lon: number, lat: number): Promise<ClimateDat
     const tempsMax: number[] = days.temperature_2m_max || [];
     const precip: (number | null)[] = days.precipitation_sum || [];
     const winds: (number | null)[] = days.wind_speed_10m_max || [];
+    const humidMean: (number | null)[] = days.relative_humidity_2m_mean || [];
+    const humidMax: (number | null)[] = days.relative_humidity_2m_max || [];
+    const humidMin: (number | null)[] = days.relative_humidity_2m_min || [];
+    const soilMoist: (number | null)[] = days.soil_moisture_0_to_10cm_mean || [];
 
     const historicalMask = times.map(t => t >= '2000-01-01' && t <= '2014-12-31');
     const projectionMask = times.map(t => t >= '2040-01-01' && t <= '2050-01-01');
@@ -57,6 +61,20 @@ export async function fetchClimate(lon: number, lat: number): Promise<ClimateDat
 
     const historical = computeStats(historicalMask);
     const projected = computeStats(projectionMask);
+
+    // Compute humidity and soil moisture averages over historical/projection periods
+    const computeAverages = (mask: boolean[], values: (number | null)[]) => {
+      const filtered = values.filter((_, i) => mask[i] && values[i] !== null) as number[];
+      if (filtered.length < 30) return null;
+      return filtered.reduce((s, v) => s + v, 0) / filtered.length;
+    };
+
+    const histHumidMean = computeAverages(historicalMask, humidMean);
+    const histHumidMax = computeAverages(historicalMask, humidMax);
+    const histHumidMin = computeAverages(historicalMask, humidMin);
+    const histSoilMoist = computeAverages(historicalMask, soilMoist);
+    const projSoilMoist = computeAverages(projectionMask, soilMoist);
+
     const windToStorm = (max: number) => max > 100 ? 4 : max > 80 ? 3 : max > 60 ? 2 : 1;
 
     return {
@@ -73,11 +91,12 @@ export async function fetchClimate(lon: number, lat: number): Promise<ClimateDat
       projectedStormFrequency: projected ? windToStorm(projected.maxWind) : null,
       projectionModel: projected ? 'EC_Earth3P_HR' : null,
       projectionScenario: projected ? 'CMIP6 high-resolution (≈RCP8.5)' : null,
-      meanHumidity: 75,
-      maxHumidity: 95,
-      minHumidity: 45,
-      soilMoisture: 0.25,
-      projectedSoilMoisture: 0.20,
+      /* ── Humidity + soil moisture parsed from API (not hardcoded) ── */
+      meanHumidity: histHumidMean !== null ? Math.round(histHumidMean) : null,
+      maxHumidity: histHumidMax !== null ? Math.round(histHumidMax) : null,
+      minHumidity: histHumidMin !== null ? Math.round(histHumidMin) : null,
+      soilMoisture: histSoilMoist !== null ? Math.round(histSoilMoist * 1000) / 1000 : null,
+      projectedSoilMoisture: projSoilMoist !== null ? Math.round(projSoilMoist * 1000) / 1000 : null,
     };
   } catch {
     return emptyClimate();

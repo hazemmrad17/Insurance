@@ -45,10 +45,10 @@ const SUB_TAB_KEYS: Record<string, string[]> = {
   clients: [],
   settings: ['account', 'security', 'billing', 'notifications', 'connections'],
   'property-risk': ['locate', 'expert', 'inspect', 'evaluate'],
-  'assure-bien': ['Mon Bien', 'Mes Travaux', 'Mon Engagement', 'Mon Dossier'],
-  'assure-travaux': ['Mon Bien', 'Mes Travaux', 'Mon Engagement', 'Mon Dossier'],
-  'assure-engagement': ['Mon Bien', 'Mes Travaux', 'Mon Engagement', 'Mon Dossier'],
-  'assure-dossier': ['Mon Bien', 'Mes Travaux', 'Mon Engagement', 'Mon Dossier'],
+  'assure-bien': ['Vue d\'ensemble', 'Mes Travaux', 'Mon Engagement', 'Mon Dossier'],
+  'assure-travaux': ['Vue d\'ensemble', 'Mes Travaux', 'Mon Engagement', 'Mon Dossier'],
+  'assure-engagement': ['Vue d\'ensemble', 'Mes Travaux', 'Mon Engagement', 'Mon Dossier'],
+  'assure-dossier': ['Vue d\'ensemble', 'Mes Travaux', 'Mon Engagement', 'Mon Dossier'],
 };
 
 // Maps view+tab-key → content-key for showViewSubTab
@@ -201,7 +201,7 @@ function setupRoleSwitcher(): void {
 
 /* ── Activate nav item for the given view ──────────────────── */
 function activateNavItem(viewName: string): void {
-  const navItems = document.querySelectorAll('.sidebar-nav .nav-item');
+  const navItems = document.querySelectorAll('#sidebar .nav-item');
   navItems.forEach(nav => {
     const v = nav.getAttribute('data-view');
     nav.classList.toggle('active', v === viewName);
@@ -240,13 +240,16 @@ export function setupSidebarToggle(): void {
 export function setupSidebarNavigation(): void {
   setupRoleSwitcher();
 
-  const navItems = document.querySelectorAll('.sidebar-nav .nav-item');
+  const navItems = document.querySelectorAll('#sidebar .nav-item');
   navItems.forEach(item => {
     item.addEventListener('click', () => {
       const viewName = item.getAttribute('data-view');
       if (!viewName) return;
       if (viewName === 'logout') {
-        navigateTo('auth-signin');
+        import('./api/auth.js').then(({ logout }) => {
+          logout().catch(() => {});
+          navigateTo('auth-signin');
+        });
         return;
       }
       activateNavItem(viewName);
@@ -490,7 +493,10 @@ export function setupHeaderActions(): void {
             break;
           }
           case 'logout':
-            navigateTo('auth-signin');
+            import('./api/auth.js').then(({ logout }) => {
+              logout().catch(() => {});
+              navigateTo('auth-signin');
+            });
             break;
           default: {
             const labels: Record<string, string> = { billing: 'Plan & Facturation', pricing: 'Tarifs', faq: 'FAQ' };
