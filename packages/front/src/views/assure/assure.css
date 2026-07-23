@@ -1,0 +1,1061 @@
+/* ═══════════════════════════════════════════════════════════════
+   ESPACE ASSURÉ — Client Portal View
+   Provides layouting and styles for the 4 Assuré views:
+   #view-assure-bien, #view-assure-travaux, #view-assure-engagement, #view-assure-dossier
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Role Switcher Button in Sidebar ─────────────────────────── */
+.role-switch-btn {
+  color: var(--color-primary);
+  border-top: 1px solid var(--border-color);
+  margin-top: 4px;
+  padding-top: 6px;
+}
+
+.role-switch-btn:hover {
+  background: rgba(197, 106, 61, 0.08);
+  color: var(--color-primary-dark);
+}
+
+/* ── View Container Scoping ─────────────────────────────────── */
+#view-assure-bien,
+#view-assure-travaux,
+#view-assure-engagement,
+#view-assure-dossier {
+  gap: 12px;
+}
+
+/* ── Welcome Banner ─────────────────────────────────────────── */
+.assure-welcome {
+  font-size: 11px;
+  color: rgba(255,255,255,0.75);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 4px;
+}
+
+.assure-banner-address {
+  font-size: 13px;
+  opacity: 0.85;
+  margin-top: 6px;
+}
+
+/* ── Property info card ─────────────────────────────────────── */
+.assure-prop-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.assure-prop-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.assure-prop-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.assure-prop-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* ── Engagement status pill ─────────────────────────────────── */
+.assure-engagement-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--border-radius-sm);
+}
+
+.assure-engagement-status.signed {
+  background: rgba(16,185,129,0.12);
+  color: #059669;
+}
+
+.assure-engagement-status.pending {
+  background: rgba(245,158,11,0.12);
+  color: #d97706;
+}
+
+.assure-engagement-status.none {
+  background: var(--bg-panel);
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+}
+
+.dark-mode .assure-engagement-status.signed { background: rgba(16,185,129,0.15); }
+.dark-mode .assure-engagement-status.pending { background: rgba(245,158,11,0.15); }
+
+/* ── Quick stats row (on Mon Bien) ──────────────────────────── */
+.assure-stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.assure-stat-card {
+  background: var(--bg-card);
+  border-radius: var(--border-radius-md);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.assure-stat-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.assure-stat-value {
+  font-size: 26px;
+  font-weight: 300;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+
+.assure-stat-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* ── Mes Travaux layout ─────────────────────────────────────── */
+.assure-travaux-layout {
+  display: flex;
+  gap: 12px;
+  flex: 1;
+  min-height: 0;
+}
+
+.assure-travaux-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.assure-travaux-side {
+  width: 300px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 3D viewer card */
+.assure-3d-card {
+  background: var(--bg-card);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  position: relative;
+  height: 380px;
+  min-height: 380px;
+  flex-shrink: 0;
+  border: 1px solid var(--border-color);
+}
+
+.assure-3d-label {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.assure-3d-container {
+  width: 100%;
+  height: 100%;
+}
+
+/* Component cards grid */
+.assure-comp-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.assure-comp-card {
+  background: var(--bg-card);
+  border-radius: var(--border-radius-md);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.assure-comp-card:hover {
+  border-color: var(--color-primary);
+}
+
+.assure-comp-card.selected {
+  border-color: #10b981;
+  background: rgba(16,185,129,0.03);
+}
+
+.dark-mode .assure-comp-card.selected {
+  background: rgba(16,185,129,0.06);
+}
+
+.assure-comp-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.assure-comp-card-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Checkbox toggle */
+.assure-comp-toggle {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.assure-comp-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.assure-comp-checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border-color);
+  border-radius: 3px;
+  transition: all 0.15s ease;
+}
+
+.assure-comp-toggle input:checked + .assure-comp-checkmark {
+  background: #10b981;
+  border-color: #10b981;
+}
+
+.assure-comp-toggle input:checked + .assure-comp-checkmark::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.assure-comp-risk-badge {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  align-self: flex-start;
+}
+
+.assure-comp-risk-badge.high { background: #fef2f2; color: #dc2626; }
+.assure-comp-risk-badge.medium { background: #fffbeb; color: #d97706; }
+.assure-comp-risk-badge.low { background: #ecfdf5; color: #059669; }
+
+.dark-mode .assure-comp-risk-badge.high { background: rgba(220,38,38,0.15); }
+.dark-mode .assure-comp-risk-badge.medium { background: rgba(217,119,6,0.15); }
+.dark-mode .assure-comp-risk-badge.low { background: rgba(5,150,105,0.15); }
+
+.assure-comp-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.assure-comp-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  color: var(--text-secondary);
+  padding-top: 4px;
+  border-top: 1px solid var(--border-color);
+}
+
+.assure-comp-saving {
+  color: #10b981;
+  font-weight: 600;
+}
+
+/* Side: selected works summary */
+.assure-works-card {
+  background: var(--bg-card);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--border-color);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.assure-works-card h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.assure-works-card h4 .material-symbols-outlined {
+  font-size: 16px !important;
+  color: var(--color-primary);
+}
+
+.assure-works-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.assure-works-empty {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.assure-works-item {
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.assure-works-item:last-child { border-bottom: none; }
+
+.assure-works-item-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  display: block;
+  margin-bottom: 3px;
+}
+
+.assure-works-item-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.assure-works-item-list li {
+  font-size: 10px;
+  color: var(--text-muted);
+  padding: 2px 0 2px 10px;
+  position: relative;
+}
+
+.assure-works-item-list li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--color-primary);
+}
+
+/* Works summary bar */
+.assure-works-summary {
+  background: var(--bg-card);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--border-color);
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.assure-works-summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.assure-works-summary-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.assure-works-summary-value {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.assure-works-summary-value.savings {
+  color: #10b981;
+}
+
+.assure-works-summary-divider {
+  width: 1px;
+  height: 32px;
+  background: var(--border-color);
+  flex-shrink: 0;
+}
+
+.assure-works-cta {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  background: var(--color-primary);
+  color: #fff;
+  font-family: var(--font-primary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.assure-works-cta:hover { background: var(--color-primary-dark); }
+.assure-works-cta:disabled { opacity: 0.4; cursor: not-allowed; }
+.assure-works-cta .material-symbols-outlined { font-size: 18px !important; }
+
+/* ── Mon Engagement layout ──────────────────────────────────── */
+.assure-engagement-layout {
+  display: flex;
+  gap: 12px;
+  flex: 1;
+  min-height: 0;
+}
+
+.assure-engagement-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.assure-engagement-side {
+  width: 300px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.assure-score-header {
+  padding: 4px 0 2px;
+}
+
+.assure-score-header h3 {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.assure-score-header p {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* Premium impact card */
+.assure-premium-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.assure-premium-card h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.assure-premium-card h4 .material-symbols-outlined {
+  font-size: 16px !important;
+  color: var(--color-primary);
+}
+
+.assure-premium-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--bg-panel);
+  border-radius: var(--border-radius-sm);
+}
+
+.assure-premium-row.accent {
+  background: rgba(16,185,129,0.05);
+  border: 1px solid rgba(16,185,129,0.2);
+}
+
+.dark-mode .assure-premium-row.accent {
+  background: rgba(16,185,129,0.08);
+}
+
+.assure-premium-row-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.assure-premium-row-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.assure-premium-row-value.savings {
+  color: #10b981;
+}
+
+.assure-premium-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+/* Recap chips */
+.assure-recap-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.assure-recap-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  padding: 8px 12px;
+  flex: 1;
+  min-width: 80px;
+}
+
+.assure-recap-chip-label {
+  font-size: 9px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.assure-recap-chip-value {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.assure-recap-chip-value.positive { color: #10b981; }
+.assure-recap-chip-value.negative { color: var(--color-danger); }
+
+/* Engagement terms card */
+.assure-terms-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.assure-terms-card h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.assure-terms-card h4 .material-symbols-outlined {
+  font-size: 16px !important;
+  color: var(--color-primary);
+}
+
+.assure-terms-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.assure-terms-list li {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.assure-terms-list li:last-child { border-bottom: none; }
+
+.assure-terms-list li .material-symbols-outlined {
+  font-size: 16px !important;
+  color: #10b981;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* Works committed list */
+.assure-avenant-works {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.assure-avenant-works-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.assure-avenant-works-item:last-child { border-bottom: none; }
+.assure-avenant-works-item .material-symbols-outlined { font-size: 16px !important; }
+
+/* Sign CTA */
+.assure-sign-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 24px;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  background: var(--color-primary);
+  color: #fff;
+  font-family: var(--font-primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+  box-shadow: 0 4px 14px rgba(197,106,61,0.35);
+}
+
+.assure-sign-cta:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
+}
+
+.assure-sign-cta:active { transform: translateY(0); }
+.assure-sign-cta:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; transform: none; }
+.assure-sign-cta .material-symbols-outlined { font-size: 20px !important; }
+
+.assure-sign-note {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* Policy info card */
+.assure-policy-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.assure-policy-card h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.assure-policy-card h4 .material-symbols-outlined {
+  font-size: 16px !important;
+  color: var(--color-primary);
+}
+
+.assure-policy-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.assure-policy-row:last-child { border-bottom: none; }
+
+.assure-policy-row-label {
+  color: var(--text-muted);
+}
+
+.assure-policy-row-value {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* ── Mon Dossier layout ─────────────────────────────────────── */
+.assure-dossier-layout {
+  display: flex;
+  gap: 12px;
+  flex: 1;
+  min-height: 0;
+}
+
+.assure-dossier-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.assure-dossier-side {
+  width: 300px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Assessment history list */
+.assure-history-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.assure-history-card h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.assure-history-card h4 .material-symbols-outlined {
+  font-size: 16px !important;
+  color: var(--color-primary);
+}
+
+.assure-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.assure-history-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--bg-panel);
+  border-radius: var(--border-radius-sm);
+  transition: background 0.15s ease;
+}
+
+.assure-history-item:hover { background: #f1f5f9; }
+.dark-mode .assure-history-item:hover { background: #0f172a; }
+
+.assure-history-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--border-radius-sm);
+  background: rgba(197,106,61,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.assure-history-icon .material-symbols-outlined {
+  font-size: 18px !important;
+  color: var(--color-primary);
+}
+
+.assure-history-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.assure-history-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.assure-history-meta {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+.assure-history-score {
+  font-size: 18px;
+  font-weight: 300;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+/* Document cards */
+.assure-doc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.assure-doc-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--bg-panel);
+  border-radius: var(--border-radius-sm);
+  transition: background 0.15s ease;
+}
+
+.assure-doc-item:hover { background: #f1f5f9; }
+.dark-mode .assure-doc-item:hover { background: #0f172a; }
+
+.assure-doc-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--border-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.assure-doc-icon .material-symbols-outlined { font-size: 20px !important; }
+
+.assure-doc-info { flex: 1; min-width: 0; }
+
+.assure-doc-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.assure-doc-meta {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+.assure-doc-status {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.assure-doc-status.complete { background: rgba(16,185,129,0.1); color: #059669; }
+.assure-doc-status.pending { background: rgba(245,158,11,0.1); color: #d97706; }
+
+.dark-mode .assure-doc-status.complete { background: rgba(16,185,129,0.15); }
+.dark-mode .assure-doc-status.pending { background: rgba(245,158,11,0.15); }
+
+/* Advisor contact card */
+.assure-advisor-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.assure-advisor-card h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.assure-advisor-card h4 .material-symbols-outlined {
+  font-size: 16px !important;
+  color: var(--color-primary);
+}
+
+.assure-advisor-identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.assure-advisor-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.assure-advisor-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.assure-advisor-role {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.assure-advisor-contact-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  padding: 4px 0;
+}
+
+.assure-advisor-contact-row .material-symbols-outlined {
+  font-size: 16px !important;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* ── Signing modal content ──────────────────────────────────── */
+.assure-sign-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.assure-sign-alert {
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+  background: rgba(197,106,61,0.07);
+  border: 1px solid rgba(197,106,61,0.2);
+  border-radius: var(--border-radius-sm);
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.assure-sign-alert .material-symbols-outlined {
+  font-size: 18px !important;
+  color: var(--color-primary);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.dark-mode .assure-sign-alert {
+  background: rgba(197,106,61,0.1);
+}
+
+/* ── Dark-mode overrides ────────────────────────────────────── */
+.dark-mode .assure-comp-card { background: var(--bg-card); }
+.dark-mode .assure-works-card,
+.dark-mode .assure-premium-card,
+.dark-mode .assure-terms-card,
+.dark-mode .assure-policy-card,
+.dark-mode .assure-history-card,
+.dark-mode .assure-advisor-card { background: var(--bg-card); }
+.dark-mode .assure-3d-card { background: var(--bg-card); }
+
+/* ── Compact score gauges (sourced from assureur.css) ────────── */
+.assur-gauge {
+  width: 80px;
+  height: 80px;
+}
+
+.assur-gauge-val {
+  font-size: 20px;
+}
+
+.assur-gauge-unit {
+  font-size: 9px;
+}
+
+.assur-score-compare {
+  gap: 8px;
+  padding: 10px 14px;
+}
+
+.assur-score-improvement {
+  padding: 6px 12px;
+}
+
+.assur-improve-val {
+  font-size: 18px;
+}
+
+.assur-improve-icon {
+  font-size: 18px;
+}
+
+.assur-score-card {
+  gap: 4px;
+}

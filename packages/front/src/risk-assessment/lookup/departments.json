@@ -1,0 +1,98 @@
+{
+  "description": "Lookup table for DVF (property valuation) data by French department.",
+  "source": "Estimates based on publicly available market data (MeilleursAgents, INSEE) for 2024-2025.",
+  "notes": "DVF: no official REST API (CSV files on data.gouv.fr). Data updated semi-annually.",
+  "lastUpdated": "2026-07-21",
+  "departments": {
+    "75": {
+      "name": "Paris",
+      "region": "Île-de-France",
+      "population": 2160000,
+      "valuation": {
+        "reconstructionValuePerSqm": 2800,
+        "avgMarketPricePerSqm": 10500
+      }
+    },
+    "13": {
+      "name": "Bouches-du-Rhône",
+      "region": "Provence-Alpes-Côte d'Azur",
+      "population": 2040000,
+      "valuation": {
+        "reconstructionValuePerSqm": 2400,
+        "avgMarketPricePerSqm": 3800
+      }
+    },
+    "69": {
+      "name": "Rhône",
+      "region": "Auvergne-Rhône-Alpes",
+      "population": 1890000,
+      "valuation": {
+        "reconstructionValuePerSqm": 2500,
+        "avgMarketPricePerSqm": 4700
+      }
+    },
+    "59": {
+      "name": "Nord",
+      "region": "Hauts-de-France",
+      "population": 2610000,
+      "valuation": {
+        "reconstructionValuePerSqm": 2200,
+        "avgMarketPricePerSqm": 2700
+      }
+    },
+    "92": {
+      "name": "Hauts-de-Seine",
+      "region": "Île-de-France",
+      "population": 1620000,
+      "valuation": {
+        "reconstructionValuePerSqm": 2700,
+        "avgMarketPricePerSqm": 6500
+      }
+    },
+    "93": {
+      "name": "Seine-Saint-Denis",
+      "region": "Île-de-France",
+      "population": 1640000,
+      "valuation": {
+        "reconstructionValuePerSqm": 2400,
+        "avgMarketPricePerSqm": 3800
+      }
+    },
+    "33": {
+      "name": "Gironde",
+      "region": "Nouvelle-Aquitaine",
+      "population": 1650000,
+      "valuation": {
+        "reconstructionValuePerSqm": 2300,
+        "avgMarketPricePerSqm": 4200
+      }
+    },
+    "31": {
+      "name": "Haute-Garonne",
+      "region": "Occitanie",
+      "population": 1430000,
+      "valuation": {
+        "reconstructionValuePerSqm": 2300,
+        "avgMarketPricePerSqm": 3700
+      }
+    },
+    "06": {
+      "name": "Alpes-Maritimes",
+      "region": "Provence-Alpes-Côte d'Azur",
+      "population": 1100000,
+      "valuation": {
+        "reconstructionValuePerSqm": 2500,
+        "avgMarketPricePerSqm": 4800
+      }
+    },
+    "78": {
+      "name": "Yvelines",
+      "region": "Île-de-France",
+      "population": 1450000,
+      "valuation": {
+        "reconstructionValuePerSqm": 2500,
+        "avgMarketPricePerSqm": 4300
+      }
+    }
+  }
+}

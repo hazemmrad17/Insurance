@@ -1,0 +1,14 @@
+/* ═══════════════════════════════════════════════════
+   GLOBAL STYLES IMPORTER
+   Base styles + per-view CSS modules
+   ═══════════════════════════════════════════════════ */
+
+/* Base styles are imported via main.ts: import './base.css' */
+
+/* View-specific styles */
+@import './views/portfolio/portfolio.css';
+@import './views/settings/settings.css';
+@import './views/clients/clients.css';
+@import './views/property-risk/property-risk.css';
+@import './views/climate-map/climate-map.css';
+@import './views/auth/auth.css';

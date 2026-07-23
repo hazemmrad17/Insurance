@@ -1,0 +1,15 @@
+{
+  "name": "previa",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:api": "npm run dev:ts --workspace=packages/api",
+    "dev:front": "npm run dev --workspace=packages/front",
+    "build": "npm run build --workspace=packages/front",
+    "db:push": "npm run db:push --workspace=packages/api",
+    "db:seed": "npm run db:seed --workspace=packages/api"
+  }
+}

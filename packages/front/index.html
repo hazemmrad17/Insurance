@@ -1,0 +1,3325 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prévia — Climate Risk Assessment</title>
+    <!-- Fonts and Material Symbols -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0..1,0" rel="stylesheet">
+    <!-- Mapbox GL CSS -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.9.4/mapbox-gl.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <!-- Left Sidebar / Navigation Rail (Retractable) -->
+      <aside class="sidebar expanded" id="sidebar">
+        <!-- Toggle button for expand/collapse -->
+        <div class="sidebar-header">
+          <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+            <span class="material-symbols-outlined toggle-icon">menu</span>
+          </button>
+          <div class="sidebar-logo">
+            <div class="logo-icon">
+              <span class="material-symbols-outlined">auto_awesome</span>
+            </div>
+            <span class="sidebar-logo-text">Prévia</span>
+          </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+          <!-- Assureur (Advisor / Insurer) Items -->
+          <button class="nav-item nav-role-assureur active" data-view="overview" aria-label="Overview">
+            <span class="material-symbols-outlined">dashboard</span>
+            <span class="nav-label">Overview</span>
+            <md-ripple></md-ripple>
+          </button>
+          <button class="nav-item nav-role-assureur" data-view="property-risk" aria-label="Risk Hub">
+            <span class="material-symbols-outlined">gps_fixed</span>
+            <span class="nav-label">Risk Hub</span>
+            <md-ripple></md-ripple>
+          </button>
+          <button class="nav-item nav-role-assureur" data-view="portfolio" aria-label="Portfolio">
+            <span class="material-symbols-outlined">folder_open</span>
+            <span class="nav-label">Portfolio</span>
+            <md-ripple></md-ripple>
+          </button>
+          <button class="nav-item nav-role-assureur" data-view="clients" aria-label="Clients">
+            <span class="material-symbols-outlined">groups</span>
+            <span class="nav-label">Clients</span>
+            <md-ripple></md-ripple>
+          </button>
+
+          <!-- Assuré (Policyholder / Client) Items -->
+          <button class="nav-item nav-role-assure" data-view="assure-bien" aria-label="Mon Bien" style="display:none;">
+            <span class="material-symbols-outlined">home</span>
+            <span class="nav-label">Mon Bien</span>
+            <md-ripple></md-ripple>
+          </button>
+          <button class="nav-item nav-role-assure" data-view="assure-travaux" aria-label="Mes Travaux" style="display:none;">
+            <span class="material-symbols-outlined">home_repair_service</span>
+            <span class="nav-label">Mes Travaux</span>
+            <md-ripple></md-ripple>
+          </button>
+          <button class="nav-item nav-role-assure" data-view="assure-engagement" aria-label="Mon Engagement" style="display:none;">
+            <span class="material-symbols-outlined">verified</span>
+            <span class="nav-label">Mon Engagement</span>
+            <md-ripple></md-ripple>
+          </button>
+          <button class="nav-item nav-role-assure" data-view="assure-dossier" aria-label="Mon Dossier" style="display:none;">
+            <span class="material-symbols-outlined">folder_open</span>
+            <span class="nav-label">Mon Dossier</span>
+            <md-ripple></md-ripple>
+          </button>
+
+          <!-- Shared Settings -->
+          <button class="nav-item" data-view="settings" aria-label="Settings">
+            <span class="material-symbols-outlined">settings</span>
+            <span class="nav-label">Settings</span>
+            <md-ripple></md-ripple>
+          </button>
+        </nav>
+
+        <div class="sidebar-bottom">
+          <button class="nav-item role-switch-btn" id="roleSwitchBtn" aria-label="Switch User Mode">
+            <span class="material-symbols-outlined">swap_horiz</span>
+            <span class="nav-label" id="roleSwitchText">Mode Assuré</span>
+            <md-ripple></md-ripple>
+          </button>
+          <button class="nav-item logout-btn" data-view="logout" aria-label="Sign out">
+            <span class="material-symbols-outlined">logout</span>
+            <span class="nav-label">Sign out</span>
+            <md-ripple></md-ripple>
+          </button>
+          <span class="touch"></span>
+        </div>
+      </aside>
+
+      <!-- Main Dashboard Panel -->
+      <main class="main-content">
+        <!-- Header -->
+        <header class="app-header">
+          <div class="header-tabs" id="headerTabs">
+            <button class="tab-btn" data-tab="summary">Summary</button>
+            <button class="tab-btn active" data-tab="map">Map</button>
+            <button class="tab-btn" data-tab="alerts">Alerts</button>
+          </div>
+          <div class="header-actions">
+            <button class="header-theme-btn" id="headerThemeToggle" aria-label="Toggle dark mode">
+              <span class="material-symbols-outlined theme-icon-light">light_mode</span>
+              <span class="material-symbols-outlined theme-icon-dark">dark_mode</span>
+            </button>
+            <div class="profile-dropdown" id="profileDropdown">
+              <button class="profile-trigger" id="profileTrigger" aria-label="Profile menu">
+                <span class="material-symbols-outlined">account_circle</span>
+              </button>
+              <div class="profile-menu" id="profileMenu">
+                <div class="profile-menu-header">
+                  <span class="material-symbols-outlined" style="font-size:20px!important;color:var(--color-primary);">person</span>
+                  <div>
+                    <span class="profile-menu-name">Jean Dupont</span>
+                    <span class="profile-menu-email">jean.dupont@previa.fr</span>
+                  </div>
+                </div>
+                <div class="profile-menu-divider"></div>
+                <button class="profile-menu-item" data-action="profile">
+                  <span class="material-symbols-outlined">badge</span>
+                  <span>Profile</span>
+                </button>
+                <button class="profile-menu-item" data-action="settings">
+                  <span class="material-symbols-outlined">settings</span>
+                  <span>Paramètres</span>
+                </button>
+                <button class="profile-menu-item" data-action="billing">
+                  <span class="material-symbols-outlined">credit_card</span>
+                  <span>Plan & Facturation</span>
+                </button>
+                <button class="profile-menu-item" data-action="pricing">
+                  <span class="material-symbols-outlined">sell</span>
+                  <span>Tarifs</span>
+                </button>
+                <button class="profile-menu-item" data-action="faq">
+                  <span class="material-symbols-outlined">help</span>
+                  <span>FAQ</span>
+                </button>
+                <div class="profile-menu-divider"></div>
+                <button class="profile-menu-item logout" data-action="logout">
+                  <span class="material-symbols-outlined">logout</span>
+                  <span>Déconnexion</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- ====== VIEW: Overview ====== -->
+        <section class="view-panel active" id="view-overview">
+          <!-- Banner section -->
+          <section class="banner-section">
+            <div class="banner-card">
+              <!-- Fading carousel of French architecture (very subtle background) -->
+              <div class="banner-gallery">
+                <img class="banner-gallery-slide" src="https://images.unsplash.com/photo-1550340499-a6c60fc8287c?w=1200&q=50" alt="" loading="lazy" />
+                <img class="banner-gallery-slide" src="https://images.unsplash.com/photo-1598965402089-897ce52e8355?w=1200&q=50" alt="" loading="lazy" />
+                <img class="banner-gallery-slide" src="https://images.unsplash.com/photo-1589394815801-7cedad5d2cdc?w=1200&q=50" alt="" loading="lazy" />
+                <img class="banner-gallery-slide" src="https://images.unsplash.com/photo-1485081669829-bacb8c7bb1f3?w=1200&q=50" alt="" loading="lazy" />
+              </div>
+              <!-- Left Info -->
+              <div class="banner-info">
+                <h1>Analyse des<br>Risques Climatiques</h1>
+                <p>Evaluez et gerez les risques climatiques de votre portefeuille immobilier avec les donnees BDNB, Georisques et projections DRIAS.</p>
+                <div class="team-avatars">
+                  <span class="team-avatar-svg" style="background:#c56a3d;">JD</span>
+                  <span class="team-avatar-svg" style="background:#10b981;">MB</span>
+                  <span class="team-avatar-svg" style="background:#3b82f6;">PL</span>
+                  <span class="team-avatar-svg" style="background:#8b5cf6;">SN</span>
+                </div>
+              </div>
+
+              <!-- Floating Komatsu card (glassmorphism) -->
+              <div class="floating-task-card">
+                <div class="floating-task-header">
+                  <div>
+                    <h3>Paris 2e</h3>
+                    <span class="task-date">Evaluation en cours</span>
+                  </div>
+                  <span class="material-symbols-outlined arrow-icon">arrow_forward</span>
+                </div>
+                <div class="floating-task-progress">
+                  <span class="progress-val">66%</span>
+                  <span class="progress-indicator-dot"></span>
+                </div>
+              </div>
+
+              <!-- Right Completion Card (glassmorphic stats & chart) -->
+              <div class="banner-completion-card">
+                <div class="completion-header">
+                  <div>
+                    <span class="completion-label">Score de risque global</span>
+                    <h2>66%</h2>
+                  </div>
+                  <span class="trend-indicator positive">+2.4% ▲</span>
+                </div>
+
+                <!-- Sparkline Line Chart -->
+                <div class="sparkline-chart">
+                  <svg viewBox="0 0 200 80" preserveAspectRatio="none">
+                    <defs>
+                      <linearGradient id="chart-grad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="rgba(255, 255, 255, 0.4)" />
+                        <stop offset="100%" stop-color="rgba(255, 255, 255, 0.0)" />
+                      </linearGradient>
+                    </defs>
+                    <path d="M 0,60 Q 30,55 50,40 T 100,50 T 150,20 T 200,30" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+                    <path d="M 0,60 Q 30,55 50,40 T 100,50 T 150,20 T 200,30 L 200,80 L 0,80 Z" fill="url(#chart-grad)"/>
+                    <circle cx="150" cy="20" r="4" fill="#ffffff" stroke="rgba(255, 255, 255, 0.5)" stroke-width="3"/>
+                  </svg>
+                </div>
+
+                <div class="completion-footer">
+                  <div class="footer-stat">
+                    <span class="footer-stat-label">15 biens</span>
+                  </div>
+                  <div class="segmented-progress">
+                    <span class="seg active"></span>
+                    <span class="seg active"></span>
+                    <span class="seg active"></span>
+                    <span class="seg active"></span>
+                    <span class="seg"></span>
+                  </div>
+                  <div class="footer-stat align-right">
+                    <span class="footer-stat-label">24 biens</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Dashboard Widgets Grid -->
+          <section class="widgets-grid">
+            <div class="grid-column col-span-2">
+              <!-- 2D Cross Section Card -->
+              <div class="dashboard-card cross-section-card">
+                <div class="card-header">
+                  <h3>Repartition des risques</h3>
+                  <span class="material-symbols-outlined action-icon">north_east</span>
+                </div>
+                <div class="card-body">
+                  <div class="card-metric">
+                    <h2>76% <span class="trend positive">+2.4% ▲</span></h2>
+                    <span class="legend-indicator">Z (ft)</span>
+                  </div>
+                  <div class="bar-chart-container">
+                    <div class="chart-bars">
+                      <div class="bar" style="height: 30%"></div>
+                      <div class="bar" style="height: 35%"></div>
+                      <div class="bar" style="height: 40%"></div>
+                      <div class="bar" style="height: 45%"></div>
+                      <div class="bar" style="height: 50%"></div>
+                      <div class="bar highlight" style="height: 60%"></div>
+                      <div class="bar highlight" style="height: 70%"></div>
+                      <div class="bar highlight" style="height: 80%"></div>
+                      <div class="bar highlight" style="height: 85%"></div>
+                      <div class="bar highlight" style="height: 80%"></div>
+                      <div class="bar highlight" style="height: 70%"></div>
+                      <div class="bar highlight" style="height: 60%"></div>
+                      <div class="bar" style="height: 50%"></div>
+                      <div class="bar" style="height: 45%"></div>
+                      <div class="bar" style="height: 40%"></div>
+                      <div class="bar" style="height: 35%"></div>
+                      <div class="bar" style="height: 30%"></div>
+                    </div>
+                    <div class="slider-wrapper">
+                      <md-slider min="0" max="100" value="76" ticks></md-slider>
+                    </div>
+                    <div class="chart-labels">
+                      <span>0</span>
+                      <span>10</span>
+                      <span>20</span>
+                      <span>30</span>
+                      <span>40</span>
+                      <span>50</span>
+                      <span>60</span>
+                      <span>70</span>
+                      <span>80</span>
+                      <span>90</span>
+                      <span>100</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Haut risque Card -->
+              <div class="dashboard-card distance-card">
+                <div class="distance-metric">
+                  <h2>24% <span class="trend negative">-1.9% ▼</span></h2>
+                  <div class="distance-progress-group">
+                    <span class="date-label">Biens a risque</span>
+                    <md-linear-progress value="0.24" class="progress-bar-custom"></md-linear-progress>
+                  </div>
+                  <span class="legend-indicator">Haut risque</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid-column col-span-3">
+              <!-- Circular Progresses Row -->
+              <div class="circular-cards-row">
+                <div class="dashboard-card circ-widget">
+                  <div class="widget-header">
+                    <h3>Risque inondation</h3>
+                    <span class="material-symbols-outlined action-icon">north_east</span>
+                  </div>
+                  <div class="circ-body">
+                    <div class="circ-kpi">
+                      <span class="circ-pct">76%</span>
+                      <span class="circ-trend positive">+2.4% ▲</span>
+                    </div>
+                    <div class="circ-ring">
+                      <svg viewBox="0 0 100 100">
+                        <path d="M 5 50 A 45 45 0 0 1 50 5" fill="none" stroke="#f0efed" stroke-width="10" stroke-linecap="round"/>
+                        <path d="M 5 50 A 45 45 0 0 1 50 5" fill="none" stroke="#c56a3d" stroke-width="10" stroke-linecap="round" stroke-dasharray="70.685" stroke-dashoffset="16.96"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="dashboard-card circ-widget">
+                  <div class="widget-header">
+                    <h3>Retrait argile</h3>
+                    <span class="material-symbols-outlined action-icon">north_east</span>
+                  </div>
+                  <div class="circ-body">
+                    <div class="circ-kpi">
+                      <span class="circ-pct">64%</span>
+                      <span class="circ-trend negative">-1.9% ▼</span>
+                    </div>
+                    <div class="circ-ring">
+                      <svg viewBox="0 0 100 100">
+                        <path d="M 5 50 A 45 45 0 0 1 50 5" fill="none" stroke="#f0efed" stroke-width="10" stroke-linecap="round"/>
+                        <path d="M 5 50 A 45 45 0 0 1 50 5" fill="none" stroke="#f59e0b" stroke-width="10" stroke-linecap="round" stroke-dasharray="70.685" stroke-dashoffset="25.45"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="dashboard-card circ-widget">
+                  <div class="widget-header">
+                    <h3>Risque sismique</h3>
+                    <span class="material-symbols-outlined action-icon">north_east</span>
+                  </div>
+                  <div class="circ-body">
+                    <div class="circ-kpi">
+                      <span class="circ-pct">32%</span>
+                      <span class="circ-trend positive">+8.1% ▲</span>
+                    </div>
+                    <div class="circ-ring">
+                      <svg viewBox="0 0 100 100">
+                        <path d="M 5 50 A 45 45 0 0 1 50 5" fill="none" stroke="#f0efed" stroke-width="10" stroke-linecap="round"/>
+                        <path d="M 5 50 A 45 45 0 0 1 50 5" fill="none" stroke="#c56a3d" stroke-width="10" stroke-linecap="round" stroke-dasharray="70.685" stroke-dashoffset="48.07"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Indicateurs cles Card -->
+              <div class="dashboard-card cut-fill-card">
+                <div class="card-header">
+                  <div>
+                    <h3>Indicateurs cles</h3>
+                    <span class="date-subtitle">Portefeuille - Juillet 2026</span>
+                  </div>
+                  <span class="material-symbols-outlined arrow-down">keyboard_arrow_down</span>
+                </div>
+                <div class="card-body">
+                  <div class="cut-fill-chart">
+                    <div class="cut-fill-bar-col">
+                      <span class="label">-15 ft</span>
+                      <div class="vertical-bar-track">
+                        <div class="bar-fill cut" style="height: 70%;"></div>
+                      </div>
+                      <span class="sub-label">-20 ft</span>
+                    </div>
+                    <div class="cut-fill-bar-col">
+                      <span class="label"></span>
+                      <div class="vertical-bar-track">
+                        <div class="bar-fill cut" style="height: 50%;"></div>
+                      </div>
+                      <span class="sub-label">-15 ft</span>
+                    </div>
+                    <div class="cut-fill-bar-col">
+                      <span class="label">-4.88 ft</span>
+                      <div class="vertical-bar-track">
+                        <div class="bar-fill neutral" style="height: 10%;"></div>
+                      </div>
+                      <span class="sub-label">-9.77 ft</span>
+                    </div>
+                    <div class="cut-fill-bar-col">
+                      <span class="label"></span>
+                      <div class="vertical-bar-track">
+                        <div class="bar-fill neutral" style="height: 8%;"></div>
+                      </div>
+                      <span class="sub-label">-4.88 ft</span>
+                    </div>
+                    <div class="cut-fill-bar-col">
+                      <span class="label">14 ft</span>
+                      <div class="vertical-bar-track">
+                        <div class="bar-fill fill" style="height: 40%;"></div>
+                      </div>
+                      <span class="sub-label">00 ft</span>
+                    </div>
+                    <div class="cut-fill-bar-col">
+                      <span class="label"></span>
+                      <div class="vertical-bar-track">
+                        <div class="bar-fill fill" style="height: 65%;"></div>
+                      </div>
+                      <span class="sub-label">14 ft</span>
+                    </div>
+                  </div>
+                  <div class="indicators-summary">
+                    <h4>Indicators</h4>
+                    <div class="indicators-row">
+                      <div class="indicator-item">
+                        <span class="dot cut"></span>
+                        <span class="name">Inondation:</span>
+                        <span class="value">8 biens</span>
+                      </div>
+                      <div class="indicator-item">
+                        <span class="dot net"></span>
+                        <span class="name">Secheresse:</span>
+                        <span class="value">6 biens</span>
+                      </div>
+                      <div class="indicator-item">
+                        <span class="dot fill"></span>
+                        <span class="name">Sismique:</span>
+                        <span class="value">4 biens</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <!-- ====== VIEW: Property Risk Hub (unified) ====== -->
+        <section class="view-panel" id="view-property-risk">
+          <!-- Step indicator with inline nav buttons -->
+          <div class="risk-steps" id="riskStepsBar">
+            <button class="risk-nav-btn-prev" id="riskNavPrev" aria-label="Previous step">
+              <span class="material-symbols-outlined">chevron_left</span>
+            </button>
+            <div class="risk-step active" data-step="locate">
+              <span class="risk-step-circle">1</span>
+              <div class="risk-step-text">
+                <span class="risk-step-name">Locate</span>
+                <span class="risk-step-desc">Chercher un bien sur la carte</span>
+              </div>
+            </div>
+            <div class="risk-step-line" style="margin-left:12px;"></div>
+            <div class="risk-step" data-step="expert">
+              <span class="risk-step-circle">2</span>
+              <div class="risk-step-text">
+                <span class="risk-step-name">Expert</span>
+                <span class="risk-step-desc">Évaluation sur place</span>
+              </div>
+            </div>
+            <div class="risk-step-line"></div>
+            <div class="risk-step" data-step="inspect">
+              <span class="risk-step-circle">3</span>
+              <div class="risk-step-text">
+                <span class="risk-step-name">Inspect</span>
+                <span class="risk-step-desc">Analyser les composants 3D</span>
+              </div>
+            </div>
+            <div class="risk-step-line"></div>
+            <div class="risk-step" data-step="evaluate">
+              <span class="risk-step-circle">4</span>
+              <div class="risk-step-text">
+                <span class="risk-step-name">Evaluate</span>
+                <span class="risk-step-desc">Score + actuariat + avenant</span>
+              </div>
+            </div>
+            <button class="risk-nav-btn-next" id="riskNavNext" aria-label="Next step">
+              <span class="material-symbols-outlined">chevron_right</span>
+            </button>
+          </div>
+
+          <!-- STEP 1: Locate (BDNB Map + Results Panel) -->
+          <div class="risk-tab-content active" data-content="locate">
+            <div class="bdnb-search-bar">
+              <div class="bdnb-search-input-group">
+                <span class="material-symbols-outlined bdnb-search-icon">search</span>
+                <input type="text" id="bdnbSearchInput" class="bdnb-search-input" placeholder="Search an address in France... (e.g. 8 Rue de la Paix, Paris)" autocomplete="off" />
+                <button class="bdnb-search-clear hidden" id="bdnbSearchClear"><span class="material-symbols-outlined">close</span></button>
+                <button class="bdnb-search-btn" id="bdnbSearchBtn"><span class="material-symbols-outlined">travel_explore</span> Search</button>
+              </div>
+            </div>
+            <div class="risk-locate-layout">
+              <div class="risk-locate-map" id="riskLocateMap">
+                <div class="bdnb-status" id="bdnbStatus"></div>
+                <div id="climateMapContainer" style="width:100%;height:100%;min-height:400px;"></div>
+              </div>
+              <div class="risk-locate-panel" id="riskLocatePanel">
+                <div class="rp-container" id="riskResultsPanel">
+                  <div class="rp-empty-state">
+                    <span class="material-symbols-outlined" style="font-size:40px;color:var(--text-muted);opacity:0.3;">gps_fixed</span>
+                    <p style="font-size:12px;color:var(--text-muted);margin:0;">Recherchez une adresse pour voir l'évaluation complète des risques</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 2: Expert (Send expert, wait for evaluation) -->
+          <div class="risk-tab-content" data-content="expert">
+            <div class="risk-expert-layout">
+              <div class="risk-expert-main">
+                <!-- Status banner -->
+                <div class="risk-expert-banner" id="riskExpertBanner">
+                  <div class="risk-expert-status">
+                    <div class="risk-expert-status-icon">
+                      <span class="material-symbols-outlined" style="font-size:36px;">engineering</span>
+                    </div>
+                    <div class="risk-expert-status-text">
+                      <h3>Expert envoyé sur place</h3>
+                      <p>Un expert technique a été mandaté pour évaluer l'état du bâtiment et recommander les rénovations nécessaires.</p>
+                    </div>
+                    <div class="risk-expert-status-badge" id="riskExpertBadge">
+                      <span class="risk-status-pulse"></span>
+                      En attente du rapport
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Timeline -->
+                <div class="risk-expert-card">
+                  <h4><span class="material-symbols-outlined" style="font-size:16px!important;color:var(--color-primary);">timeline</span> Suivi de la mission</h4>
+                  <div class="risk-expert-timeline">
+                    <div class="risk-expert-timeline-item complete">
+                      <span class="risk-expert-timeline-dot"></span>
+                      <div>
+                        <span class="risk-expert-timeline-title">Localisation du bien</span>
+                        <span class="risk-expert-timeline-time">Adresse identifiée sur la carte</span>
+                      </div>
+                      <span class="risk-expert-timeline-check">✓</span>
+                    </div>
+                    <div class="risk-expert-timeline-item complete">
+                      <span class="risk-expert-timeline-dot"></span>
+                      <div>
+                        <span class="risk-expert-timeline-title">Données risques chargées</span>
+                        <span class="risk-expert-timeline-time">Analyse Géorisques + climat + bâtiment</span>
+                      </div>
+                      <span class="risk-expert-timeline-check">✓</span>
+                    </div>
+                    <div class="risk-expert-timeline-item active">
+                      <span class="risk-expert-timeline-dot"></span>
+                      <div>
+                        <span class="risk-expert-timeline-title">Expert mandaté</span>
+                        <span class="risk-expert-timeline-time">En attente du rapport d'évaluation</span>
+                      </div>
+                      <span class="risk-expert-timeline-loading"></span>
+                    </div>
+                    <div class="risk-expert-timeline-item">
+                      <span class="risk-expert-timeline-dot"></span>
+                      <div>
+                        <span class="risk-expert-timeline-title">Rapport reçu</span>
+                        <span class="risk-expert-timeline-time">Analyse des composants et recommandations</span>
+                      </div>
+                    </div>
+                    <div class="risk-expert-timeline-item">
+                      <span class="risk-expert-timeline-dot"></span>
+                      <div>
+                        <span class="risk-expert-timeline-title">Devis & planification</span>
+                        <span class="risk-expert-timeline-time">Estimation des travaux et priorisation</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Expert info card -->
+                <div class="risk-expert-card" id="riskExpertInfo">
+                  <h4><span class="material-symbols-outlined" style="font-size:16px!important;">badge</span> Expert mandaté</h4>
+                  <div class="risk-expert-info-grid">
+                    <div class="risk-expert-info-item">
+                      <span class="risk-expert-info-label">Nom</span>
+                      <span class="risk-expert-info-value">Thomas Mercier</span>
+                    </div>
+                    <div class="risk-expert-info-item">
+                      <span class="risk-expert-info-label">Société</span>
+                      <span class="risk-expert-info-value">BâtiConseil Expertise</span>
+                    </div>
+                    <div class="risk-expert-info-item">
+                      <span class="risk-expert-info-label">Mobilsation</span>
+                      <span class="risk-expert-info-value" id="riskExpertDate">—</span>
+                    </div>
+                    <div class="risk-expert-info-item">
+                      <span class="risk-expert-info-label">Statut</span>
+                      <span class="risk-expert-info-value"><span class="risk-status-badge pending">En cours</span></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Side: actions card -->
+              <div class="risk-expert-side">
+                <div class="risk-expert-card">
+                  <h4><span class="material-symbols-outlined" style="font-size:16px!important;">assignment</span> Actions</h4>
+                  <div class="risk-expert-actions">
+                    <button class="risk-expert-action-btn" id="riskExpertSimulate">
+                      <span class="material-symbols-outlined">play_arrow</span>
+                      Simuler la réception du rapport
+                    </button>
+                    <button class="risk-expert-action-btn secondary" id="riskExpertContact">
+                      <span class="material-symbols-outlined">phone</span>
+                      Contacter l'expert
+                    </button>
+                    <button class="risk-expert-action-btn secondary" id="riskExpertResend">
+                      <span class="material-symbols-outlined">refresh</span>
+                      Relancer la demande
+                    </button>
+                  </div>
+                  <p class="risk-expert-note">
+                    Le délai moyen d'intervention est de 48 à 72h. Vous serez notifié dès réception du rapport. Une fois reçu, l'onglet Inspect sera débloqué avec les données de l'expert.
+                  </p>
+                </div>
+
+                <div class="risk-expert-card">
+                  <h4><span class="material-symbols-outlined" style="font-size:16px!important;color:#f59e0b;">schedule</span> Délais estimés</h4>
+                  <div class="risk-expert-delays">
+                    <div class="risk-expert-delay-row">
+                      <span>Prise en charge</span>
+                      <span class="risk-expert-delay-val">4-6h</span>
+                    </div>
+                    <div class="risk-expert-delay-row">
+                      <span>Visite sur site</span>
+                      <span class="risk-expert-delay-val">24-48h</span>
+                    </div>
+                    <div class="risk-expert-delay-row">
+                      <span>Rapport préliminaire</span>
+                      <span class="risk-expert-delay-val">48-72h</span>
+                    </div>
+                    <div class="risk-expert-delay-row">
+                      <span>Rapport final</span>
+                      <span class="risk-expert-delay-val">72-96h</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 3: Inspect (3D House + Components) -->
+          <div class="risk-tab-content" data-content="inspect">
+            <div class="risk-inspect-layout">
+              <div class="risk-inspect-3d">
+                <div id="riskHouseContainer" class="house-3d-container"></div>
+              </div>
+              <div class="risk-inspect-panel">
+                <div class="risk-inspect-card" id="riskInspectInfo">
+                  <h4><span class="material-symbols-outlined">touch_app</span>Composant</h4>
+                  <p style="font-size:12px;color:var(--text-muted);line-height:1.5;">
+                    Cliquez sur un composant ci-dessous pour voir ses risques et recommandations.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <!-- Components grid full-width below the 3D/info split -->
+            <div class="risk-inspect-card risk-inspect-card-full">
+              <h4>
+                <span class="material-symbols-outlined" style="color:var(--color-primary);">home</span>
+                Composants du bâtiment
+                <span class="risk-inspect-card-subtitle">Cliquez sur un composant pour inspecter, cochez pour inclure dans les travaux</span>
+              </h4>
+              <div class="risk-inspect-components" id="riskComponentGrid"></div>
+            </div>
+          </div>
+
+          <!-- STEP 3: Evaluate (Score + Actuarial + Avenant) -->
+          <div class="risk-tab-content" data-content="evaluate">
+            <div class="risk-evaluate-layout">
+              <div class="risk-evaluate-main">
+                <!-- Score comparison gauges -->
+                <div class="risk-score-row">
+                  <div class="risk-score-card">
+                    <span class="risk-score-label">Score actuel</span>
+                    <div class="risk-score-gauge">
+                      <svg viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="40" fill="none" stroke="var(--bg-panel)" stroke-width="10" stroke-linecap="round"/>
+                        <circle id="riskGaugeArcCurrent" cx="50" cy="50" r="40" fill="none" stroke="#ef4444" stroke-width="10" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="0" transform="rotate(180 50 50)"/>
+                      </svg>
+                      <span class="risk-score-gauge-val" id="riskGaugeValCurrent">—</span>
+                    </div>
+                    <span class="risk-badge high" id="riskBadgeCurrent">—</span>
+                  </div>
+                  <span class="risk-score-arrow"><span class="material-symbols-outlined">arrow_forward</span></span>
+                  <div class="risk-score-card">
+                    <span class="risk-score-label">Score projeté</span>
+                    <div class="risk-score-gauge">
+                      <svg viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="40" fill="none" stroke="var(--bg-panel)" stroke-width="10" stroke-linecap="round"/>
+                        <circle id="riskGaugeArcProjected" cx="50" cy="50" r="40" fill="none" stroke="#10b981" stroke-width="10" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="0" transform="rotate(180 50 50)"/>
+                      </svg>
+                      <span class="risk-score-gauge-val" id="riskGaugeValProjected">—</span>
+                    </div>
+                    <span class="risk-badge low" id="riskBadgeProjected">—</span>
+                  </div>
+                  <div class="risk-score-improve">
+                    <span class="risk-score-improve-label">Amélioration</span>
+                    <span class="risk-score-improve-val" id="riskImproveVal">—</span>
+                  </div>
+                </div>
+
+                <!-- KPI row -->
+                <div class="risk-kpi-row">
+                  <div class="risk-kpi-card">
+                    <span class="risk-kpi-label">Prime pure actuelle</span>
+                    <span class="risk-kpi-val" id="riskPrimePure">—</span>
+                    <span class="risk-kpi-sub">Loading 28% inclus</span>
+                  </div>
+                  <div class="risk-kpi-card accent">
+                    <span class="risk-kpi-label">Prime pure projetée</span>
+                    <span class="risk-kpi-val" id="riskPrimeProj">—</span>
+                    <span class="risk-kpi-sub">Après travaux</span>
+                  </div>
+                  <div class="risk-kpi-card">
+                    <span class="risk-kpi-label">Ratio S/P actuel</span>
+                    <span class="risk-kpi-val" id="riskSPCurrent">—</span>
+                    <span class="risk-kpi-sub">Sinistres / Primes</span>
+                  </div>
+                  <div class="risk-kpi-card accent">
+                    <span class="risk-kpi-label">Ratio S/P projeté</span>
+                    <span class="risk-kpi-val" id="riskSPProj">—</span>
+                    <span class="risk-kpi-sub">Amélioration attendue</span>
+                  </div>
+                </div>
+
+                <!-- Premium evolution bar -->
+                <div class="risk-premium-bar" id="riskPremiumBarFill">
+                  <h4>Évolution de la prime annuelle</h4>
+                  <div class="risk-premium-bar-track" style="display:flex;gap:2px;">
+                    <div class="risk-premium-bar-fill" style="width:62%;background:#ef4444;">1 240 €</div>
+                    <div class="risk-premium-bar-fill" style="width:30%;background:#10b981;">890 €</div>
+                  </div>
+                  <div class="risk-premium-bar-labels">
+                    <span style="color:#ef4444;">Prime actuelle</span>
+                    <span style="color:#10b981;">Nouvelle prime</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Side: savings recap + avenant -->
+              <div class="risk-evaluate-side">
+                <div class="risk-avenant-card">
+                  <h4><span class="material-symbols-outlined" style="font-size:16px!important;color:#10b981;">savings</span>Économies</h4>
+                  <div class="risk-avenant-row">
+                    <span>Économie annuelle</span>
+                    <span class="risk-avenant-val" style="color:#10b981;" id="riskSavingsTotal">—</span>
+                  </div>
+                  <div class="risk-avenant-row">
+                    <span>Coût total travaux</span>
+                    <span class="risk-avenant-val" id="riskCostTotal">—</span>
+                  </div>
+                  <div class="risk-avenant-row">
+                    <span>Réduction prime</span>
+                    <span class="risk-avenant-val" style="color:#10b981;" id="riskReductionPct">—</span>
+                  </div>
+                </div>
+
+                <div class="risk-avenant-card">
+                  <h4><span class="material-symbols-outlined" style="font-size:16px!important;">description</span>Avenant</h4>
+                  <div class="risk-avenant-row">
+                    <span>Nouvelle prime</span>
+                    <span class="risk-avenant-val" id="riskAvenantPremium">—</span>
+                  </div>
+                  <div class="risk-avenant-row">
+                    <span>Nouvelle franchise</span>
+                    <span class="risk-avenant-val" id="riskAvenantFranchise">—</span>
+                  </div>
+                  <div class="risk-avenant-row">
+                    <span>Économie</span>
+                    <span class="risk-avenant-val" style="color:#10b981;" id="riskAvenantSavings">—</span>
+                  </div>
+                  <div class="risk-avenant-actions">
+                    <button class="risk-btn" id="riskGenAvenant" style="flex:1;">
+                      <span class="material-symbols-outlined" style="font-size:16px!important;">description</span>
+                      Générer
+                    </button>
+                    <button class="risk-btn secondary" id="riskPrintAvenant">
+                      <span class="material-symbols-outlined" style="font-size:16px!important;">visibility</span>
+                    </button>
+                  </div>
+                </div>              </div>
+            </div>
+            <!-- Components grid full-width below the evaluate layout (synced with Inspect) -->
+            <div class="risk-inspect-card risk-inspect-card-full risk-evaluate-components">
+              <h4>
+                <span class="material-symbols-outlined" style="color:var(--color-primary);">home</span>
+                Composants du bâtiment
+                <span class="risk-inspect-card-subtitle">Cliquez sur un composant pour inclure/exclure des travaux</span>
+              </h4>
+              <div class="risk-inspect-components" id="riskEvaluateComponents"></div>
+            </div>
+          </div>
+        </section>
+
+        
+        <!-- ====== VIEW: Portfolio ====== -->
+        <section class="view-panel" id="view-portfolio">
+          <!-- Summary sub-tab -->
+          <div class="portfolio-tab-content active" data-content="summary">
+            <div class="portfolio-kpi-row">
+              <div class="portfolio-kpi"><span class="material-symbols-outlined" style="color:var(--color-primary);">home</span><div><span class="portfolio-kpi-value">24</span><span class="portfolio-kpi-label">Propriétés</span></div></div>
+              <div class="portfolio-kpi"><span class="material-symbols-outlined" style="color:#ef4444;">warning</span><div><span class="portfolio-kpi-value">6</span><span class="portfolio-kpi-label">Haut risque</span></div></div>
+              <div class="portfolio-kpi"><span class="material-symbols-outlined" style="color:#f59e0b;">speed</span><div><span class="portfolio-kpi-value">52</span><span class="portfolio-kpi-label">Score moyen</span></div></div>
+              <div class="portfolio-kpi"><span class="material-symbols-outlined" style="color:#10b981;">euro</span><div><span class="portfolio-kpi-value">−102K€</span><span class="portfolio-kpi-label">Impact annuel</span></div></div>
+              <div class="portfolio-kpi"><span class="material-symbols-outlined" style="color:#3b82f6;">account_balance</span><div><span class="portfolio-kpi-value">8</span><span class="portfolio-kpi-label">Villes couvertes</span></div></div>
+            </div>
+            <div class="portfolio-split">
+              <div class="portfolio-grid">
+                <div class="portfolio-prop high" data-addr="8 Rue de la Paix, 75002 Paris" data-client="Jean Dupont"><div class="portfolio-prop-top"><span class="risk-dot high"></span><span class="portfolio-prop-addr">8 Rue de la Paix, Paris 2e</span><span class="portfolio-prop-client">JD</span></div><div class="portfolio-prop-mid"><span class="portfolio-prop-score">66</span><span class="portfolio-prop-label">Risk Score</span></div><div class="portfolio-prop-btm">Flood: High · DPE: D</div></div>
+                <div class="portfolio-prop medium" data-addr="15 Bd Haussmann, 75009 Paris" data-client="Marie Bernard"><div class="portfolio-prop-top"><span class="risk-dot medium"></span><span class="portfolio-prop-addr">15 Bd Haussmann, Paris 9e</span><span class="portfolio-prop-client">MB</span></div><div class="portfolio-prop-mid"><span class="portfolio-prop-score">48</span><span class="portfolio-prop-label">Risk Score</span></div><div class="portfolio-prop-btm">Heat: Med · DPE: C</div></div>
+                <div class="portfolio-prop low" data-addr="2 Pl. de la Bourse, 69002 Lyon" data-client="Pierre Lefèvre"><div class="portfolio-prop-top"><span class="risk-dot low"></span><span class="portfolio-prop-addr">2 Pl. Bourse, Lyon 2e</span><span class="portfolio-prop-client">PL</span></div><div class="portfolio-prop-mid"><span class="portfolio-prop-score">22</span><span class="portfolio-prop-label">Risk Score</span></div><div class="portfolio-prop-btm">Seismic: Low · DPE: A</div></div>
+                <div class="portfolio-prop high" data-addr="12 Av. Champs-Élysées, 75008 Paris" data-client="Jean Dupont"><div class="portfolio-prop-top"><span class="risk-dot high"></span><span class="portfolio-prop-addr">12 Av. Champs-Élysées, Paris 8e</span><span class="portfolio-prop-client">JD</span></div><div class="portfolio-prop-mid"><span class="portfolio-prop-score">72</span><span class="portfolio-prop-label">Risk Score</span></div><div class="portfolio-prop-btm">Flood: High · DPE: E</div></div>
+                <div class="portfolio-prop medium" data-addr="5 Rue de Rennes, 75006 Paris" data-client="Marie Bernard"><div class="portfolio-prop-top"><span class="risk-dot medium"></span><span class="portfolio-prop-addr">5 Rue de Rennes, Paris 6e</span><span class="portfolio-prop-client">MB</span></div><div class="portfolio-prop-mid"><span class="portfolio-prop-score">44</span><span class="portfolio-prop-label">Risk Score</span></div><div class="portfolio-prop-btm">Argile: Med · DPE: D</div></div>
+                <div class="portfolio-prop high" data-addr="34 Rue de Rivoli, 75004 Paris" data-client="Pierre Lefèvre"><div class="portfolio-prop-top"><span class="risk-dot high"></span><span class="portfolio-prop-addr">34 Rue de Rivoli, Paris 4e</span><span class="portfolio-prop-client">PL</span></div><div class="portfolio-prop-mid"><span class="portfolio-prop-score">81</span><span class="portfolio-prop-label">Risk Score</span></div><div class="portfolio-prop-btm">Inondation: Très élevé</div></div>
+                <div class="portfolio-prop low" data-addr="18 Rue Lafayette, 75009 Paris" data-client="Jean Dupont"><div class="portfolio-prop-top"><span class="risk-dot low"></span><span class="portfolio-prop-addr">18 Rue Lafayette, Paris 9e</span><span class="portfolio-prop-client">JD</span></div><div class="portfolio-prop-mid"><span class="portfolio-prop-score">18</span><span class="portfolio-prop-label">Risk Score</span></div><div class="portfolio-prop-btm">DPE: B · Récent</div></div>
+                <div class="portfolio-prop medium" data-addr="7 Rue du Bac, 75007 Paris" data-client="Marie Bernard"><div class="portfolio-prop-top"><span class="risk-dot medium"></span><span class="portfolio-prop-addr">7 Rue du Bac, Paris 7e</span><span class="portfolio-prop-client">MB</span></div><div class="portfolio-prop-mid"><span class="portfolio-prop-score">53</span><span class="portfolio-prop-label">Risk Score</span></div><div class="portfolio-prop-btm">Canicule: Med · DPE: D</div></div>
+              </div>
+              <div class="portfolio-dist-card">
+                <div class="card-header"><h3>Répartition des risques</h3></div>
+                <div class="portfolio-dist-chart">
+                  <div class="portfolio-dist-ring">
+                    <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="48" fill="none" stroke="#f1f5f9" stroke-width="18"/><circle cx="60" cy="60" r="48" fill="none" stroke="#ef4444" stroke-width="18" stroke-dasharray="100" stroke-dashoffset="50" transform="rotate(-90 60 60)"/><circle cx="60" cy="60" r="48" fill="none" stroke="#f59e0b" stroke-width="18" stroke-dasharray="80" stroke-dashoffset="150" transform="rotate(-90 60 60)"/><circle cx="60" cy="60" r="48" fill="none" stroke="#10b981" stroke-width="18" stroke-dasharray="60" stroke-dashoffset="230" transform="rotate(-90 60 60)"/></svg>
+                    <div class="portfolio-dist-center"><span class="portfolio-dist-pct">24</span><span class="portfolio-dist-unit">total</span></div>
+                  </div>
+                  <div class="portfolio-dist-legend">
+                    <div class="portfolio-dist-item"><span class="portfolio-dist-dot" style="background:#ef4444;"></span><span>Haut risque</span><span class="portfolio-dist-count">6</span></div>
+                    <div class="portfolio-dist-item"><span class="portfolio-dist-dot" style="background:#f59e0b;"></span><span>Risque moyen</span><span class="portfolio-dist-count">10</span></div>
+                    <div class="portfolio-dist-item"><span class="portfolio-dist-dot" style="background:#10b981;"></span><span>Faible risque</span><span class="portfolio-dist-count">8</span></div>
+                  </div>
+                </div>
+                <div class="portfolio-dist-cities">
+                  <span class="portfolio-dist-city-label">Villes couvertes</span>
+                  <div class="portfolio-dist-city-list"><span>Paris</span><span>Lyon</span><span>Marseille</span><span>Bordeaux</span><span>Lille</span><span>Strasbourg</span><span>Toulouse</span><span>Nantes</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Map sub-tab -->
+          <div class="portfolio-tab-content" data-content="map">
+            <div class="portfolio-map-full" id="portfolioMapContainer"></div>
+          </div>
+
+          <!-- Trends sub-tab -->
+          <div class="portfolio-tab-content" data-content="trends">
+            <div class="portfolio-trends">
+              <!-- Main line chart card -->
+              <div class="trend-chart-card">
+                <div class="trend-chart-header">
+                  <div>
+                    <span class="trend-chart-title">Évolution du score de risque moyen</span>
+                    <span class="trend-chart-period">Janvier — Décembre 2025</span>
+                  </div>
+                  <div class="trend-chart-legend">
+                    <span class="trend-legend-item"><span class="trend-legend-dot" style="background:var(--color-primary);"></span>Score moyen</span>
+                    <span class="trend-legend-item"><span class="trend-legend-dot" style="background:#94a3b8;"></span>Seuil haut risque</span>
+                  </div>
+                </div>
+                <div class="trend-chart-body">
+                  <svg class="trend-line-svg" viewBox="0 0 600 200" preserveAspectRatio="none">
+                    <defs>
+                      <linearGradient id="trendGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="var(--color-primary)" stop-opacity="0.25"/>
+                        <stop offset="100%" stop-color="var(--color-primary)" stop-opacity="0.02"/>
+                      </linearGradient>
+
+                    </defs>
+                    <!-- Grid lines -->
+                    <line x1="0" y1="30" x2="600" y2="30" stroke="var(--border-color)" stroke-width="1" stroke-dasharray="4,4"/>
+                    <line x1="0" y1="72" x2="600" y2="72" stroke="var(--border-color)" stroke-width="1" stroke-dasharray="4,4"/>
+                    <line x1="0" y1="115" x2="600" y2="115" stroke="var(--border-color)" stroke-width="1" stroke-dasharray="4,4"/>
+                    <line x1="0" y1="157" x2="600" y2="157" stroke="var(--border-color)" stroke-width="1" stroke-dasharray="4,4"/>
+                    <line x1="0" y1="200" x2="600" y2="200" stroke="var(--border-color)" stroke-width="1"/>
+                    <!-- High-risk threshold line -->
+                    <line x1="0" y1="72" x2="600" y2="72" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="8,4" opacity="0.6"/>
+                    <text x="592" y="68" font-size="8" fill="#94a3b8" text-anchor="end">Seuil 60</text>
+                    <!-- Area fill -->
+                    <path class="trend-area" d="M 0,185 L 50,170 L 100,155 L 150,140 L 200,130 L 250,118 L 300,105 L 350,95 L 400,85 L 450,78 L 500,72 L 550,65 L 600,60 L 600,200 L 0,200 Z" fill="url(#trendGrad)"/>
+                    <!-- Line -->
+                    <path class="trend-line" d="M 0,185 Q 25,177 50,170 T 100,155 T 150,140 T 200,130 T 250,118 T 300,105 T 350,95 T 400,85 T 450,78 T 500,72 T 550,65 T 600,60" fill="none" stroke="var(--color-primary)" stroke-width="3" stroke-linecap="round"/>
+                    <!-- Data points -->
+                    <circle class="trend-dot" cx="0" cy="185" r="3.5" fill="var(--color-primary)" stroke="var(--bg-card)" stroke-width="2"/>
+                    <circle class="trend-dot" cx="50" cy="170" r="3.5" fill="var(--color-primary)" stroke="var(--bg-card)" stroke-width="2"/>
+                    <circle class="trend-dot" cx="100" cy="155" r="3.5" fill="var(--color-primary)" stroke="var(--bg-card)" stroke-width="2"/>
+                    <circle class="trend-dot" cx="150" cy="140" r="3.5" fill="var(--color-primary)" stroke="var(--bg-card)" stroke-width="2"/>
+                    <circle class="trend-dot" cx="200" cy="130" r="3.5" fill="var(--color-primary)" stroke="var(--bg-card)" stroke-width="2"/>
+                    <circle class="trend-dot" cx="250" cy="118" r="3.5" fill="var(--color-primary)" stroke="var(--bg-card)" stroke-width="2"/>
+                    <circle class="trend-dot" cx="300" cy="105" r="3.5" fill="var(--color-primary)" stroke="var(--bg-card)" stroke-width="2"/>
+                    <circle class="trend-dot" cx="350" cy="95" r="3.5" fill="var(--color-primary)" stroke="var(--bg-card)" stroke-width="2"/>
+                    <circle class="trend-dot" cx="400" cy="85" r="3.5" fill="var(--color-primary)" stroke="var(--bg-card)" stroke-width="2"/>
+                    <circle class="trend-dot" cx="450" cy="78" r="3.5" fill="var(--color-primary)" stroke="var(--bg-card)" stroke-width="2"/>
+                    <circle class="trend-dot" cx="500" cy="72" r="3.5" fill="var(--color-primary)" stroke="var(--bg-card)" stroke-width="2"/>
+                    <circle class="trend-dot" cx="550" cy="65" r="3.5" fill="var(--color-primary)" stroke="var(--bg-card)" stroke-width="2"/>
+                    <circle class="trend-dot" cx="600" cy="60" r="3.5" fill="var(--color-primary)" stroke="var(--bg-card)" stroke-width="2"/>
+                    <!-- X-axis labels -->
+                    <text x="0" y="214" font-size="9" fill="var(--text-muted)" text-anchor="middle">Jan</text>
+                    <text x="100" y="214" font-size="9" fill="var(--text-muted)" text-anchor="middle">Fév</text>
+                    <text x="200" y="214" font-size="9" fill="var(--text-muted)" text-anchor="middle">Mar</text>
+                    <text x="300" y="214" font-size="9" fill="var(--text-muted)" text-anchor="middle">Avr</text>
+                    <text x="400" y="214" font-size="9" fill="var(--text-muted)" text-anchor="middle">Mai</text>
+                    <text x="500" y="214" font-size="9" fill="var(--text-muted)" text-anchor="middle">Juin</text>
+                    <text x="600" y="214" font-size="9" fill="var(--text-primary)" text-anchor="middle" font-weight="600">Juil</text>
+                    <!-- Y-axis labels -->
+                    <text x="-8" y="34" font-size="9" fill="var(--text-muted)" text-anchor="end">80</text>
+                    <text x="-8" y="119" font-size="9" fill="var(--text-muted)" text-anchor="end">50</text>
+                    <text x="-8" y="204" font-size="9" fill="var(--text-muted)" text-anchor="end">20</text>
+                  </svg>
+                </div>
+                <div class="trend-chart-footer">
+                  <span class="trend-footer-stat">
+                    <span class="trend-footer-val">52</span>
+                    <span class="trend-footer-label">Score actuel</span>
+                  </span>
+                  <span class="trend-footer-stat trend-down">
+                    <span class="trend-footer-val">−8 pts</span>
+                    <span class="trend-footer-label">vs janvier 2025</span>
+                  </span>
+                  <span class="trend-footer-stat trend-up">
+                    <span class="trend-footer-val">−12 %</span>
+                    <span class="trend-footer-label">Réduction du risque</span>
+                  </span>
+                </div>
+              </div>
+
+              <!-- KPI Row -->
+              <div class="trend-kpi-row">
+                <div class="trend-kpi-card">
+                  <div class="trend-kpi-top">
+                    <span class="trend-kpi-icon" style="background:rgba(197,106,61,0.1);color:var(--color-primary);">
+                      <span class="material-symbols-outlined">trending_down</span>
+                    </span>
+                    <span class="trend-kpi-val">52</span>
+                  </div>
+                  <span class="trend-kpi-label">Score de risque moyen</span>
+                  <span class="trend-kpi-change positive">−8 pts cette année</span>
+                </div>
+                <div class="trend-kpi-card">
+                  <div class="trend-kpi-top">
+                    <span class="trend-kpi-icon" style="background:rgba(16,185,129,0.1);color:#10b981;">
+                      <span class="material-symbols-outlined">savings</span>
+                    </span>
+                    <span class="trend-kpi-val">−102 400 €</span>
+                  </div>
+                  <span class="trend-kpi-label">Économies annuelles cumulées</span>
+                  <span class="trend-kpi-change positive">+3 200 € vs trimestre dernier</span>
+                </div>
+                <div class="trend-kpi-card">
+                  <div class="trend-kpi-top">
+                    <span class="trend-kpi-icon" style="background:rgba(59,130,246,0.1);color:#3b82f6;">
+                      <span class="material-symbols-outlined">add_home</span>
+                    </span>
+                    <span class="trend-kpi-val">+8</span>
+                  </div>
+                  <span class="trend-kpi-label">Propriétés ajoutées</span>
+                  <span class="trend-kpi-change positive">+3 ce trimestre</span>
+                </div>
+                <div class="trend-kpi-card">
+                  <div class="trend-kpi-top">
+                    <span class="trend-kpi-icon" style="background:rgba(245,158,11,0.1);color:#f59e0b;">
+                      <span class="material-symbols-outlined">assessment</span>
+                    </span>
+                    <span class="trend-kpi-val">6</span>
+                  </div>
+                  <span class="trend-kpi-label">Évaluations ce mois</span>
+                  <span class="trend-kpi-change negative">−2 vs mois dernier</span>
+                </div>
+              </div>
+
+              <!-- Stacked distribution bars -->
+              <div class="trend-stacked-card">
+                <div class="trend-chart-header">
+                  <div>
+                    <span class="trend-chart-title">Répartition des niveaux de risque</span>
+                    <span class="trend-chart-period">Évolution trimestrielle</span>
+                  </div>
+                  <div class="trend-chart-legend">
+                    <span class="trend-legend-item"><span class="trend-legend-dot" style="background:#ef4444;"></span>Haut</span>
+                    <span class="trend-legend-item"><span class="trend-legend-dot" style="background:#f59e0b;"></span>Moyen</span>
+                    <span class="trend-legend-item"><span class="trend-legend-dot" style="background:#10b981;"></span>Faible</span>
+                  </div>
+                </div>
+                <div class="trend-stacked-body">
+                  <div class="trend-stacked-col">
+                    <span class="trend-stacked-label">T1 2025</span>
+                    <div class="trend-stacked-bar">
+                      <div class="trend-stacked-seg" style="height:38%;background:#ef4444;"></div>
+                      <div class="trend-stacked-seg" style="height:37%;background:#f59e0b;"></div>
+                      <div class="trend-stacked-seg" style="height:25%;background:#10b981;"></div>
+                    </div>
+                    <div class="trend-stacked-meta">
+                      <span style="color:#ef4444;">38%</span>
+                      <span style="color:#f59e0b;">37%</span>
+                      <span style="color:#10b981;">25%</span>
+                    </div>
+                  </div>
+                  <div class="trend-stacked-col">
+                    <span class="trend-stacked-label">T2 2025</span>
+                    <div class="trend-stacked-bar">
+                      <div class="trend-stacked-seg" style="height:32%;background:#ef4444;"></div>
+                      <div class="trend-stacked-seg" style="height:40%;background:#f59e0b;"></div>
+                      <div class="trend-stacked-seg" style="height:28%;background:#10b981;"></div>
+                    </div>
+                    <div class="trend-stacked-meta">
+                      <span style="color:#ef4444;">32%</span>
+                      <span style="color:#f59e0b;">40%</span>
+                      <span style="color:#10b981;">28%</span>
+                    </div>
+                  </div>
+                  <div class="trend-stacked-col">
+                    <span class="trend-stacked-label">T3 2025</span>
+                    <div class="trend-stacked-bar">
+                      <div class="trend-stacked-seg" style="height:28%;background:#ef4444;"></div>
+                      <div class="trend-stacked-seg" style="height:38%;background:#f59e0b;"></div>
+                      <div class="trend-stacked-seg" style="height:34%;background:#10b981;"></div>
+                    </div>
+                    <div class="trend-stacked-meta">
+                      <span style="color:#ef4444;">28%</span>
+                      <span style="color:#f59e0b;">38%</span>
+                      <span style="color:#10b981;">34%</span>
+                    </div>
+                  </div>
+                  <div class="trend-stacked-col">
+                    <span class="trend-stacked-label">T4 2025</span>
+                    <div class="trend-stacked-bar">
+                      <div class="trend-stacked-seg" style="height:25%;background:#ef4444;"></div>
+                      <div class="trend-stacked-seg" style="height:35%;background:#f59e0b;"></div>
+                      <div class="trend-stacked-seg" style="height:40%;background:#10b981;"></div>
+                    </div>
+                    <div class="trend-stacked-meta">
+                      <span style="color:#ef4444;">25%</span>
+                      <span style="color:#f59e0b;">35%</span>
+                      <span style="color:#10b981;">40%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ====== VIEW: Clients ====== -->
+        <section class="view-panel" id="view-clients">
+          <!-- INFO sub-tab (default active) -->
+          <div class="clients-tab-content active" data-content="info">
+            <!-- Header with search + add new -->
+            <div class="clients-header">
+              <div>
+                <h3>Clients</h3>
+                <p>Gestion des clients et des polices d'assurance</p>
+              </div>
+              <div class="clients-header-actions">
+                <div class="clients-search-box">
+                  <span class="material-symbols-outlined clients-search-icon">search</span>
+                  <input type="text" class="clients-search-input" id="clientsSearch" placeholder="Rechercher un client..." />
+                </div>
+                <button class="clients-add-btn" id="clientsAddBtn">
+                  <span class="material-symbols-outlined" style="font-size:16px!important;">add</span>
+                  Nouveau client
+                </button>
+              </div>
+            </div>
+
+            <!-- Stats row -->
+            <div class="clients-stats-row">
+              <div class="clients-stat-card">
+                <span class="clients-stat-value">24</span>
+                <span class="clients-stat-label">Total clients</span>
+                <span class="clients-stat-trend positive">+3 ce mois</span>
+              </div>
+              <div class="clients-stat-card">
+                <span class="clients-stat-value">31</span>
+                <span class="clients-stat-label">Contrats actifs</span>
+                <span class="clients-stat-trend positive">+2 ce mois</span>
+              </div>
+              <div class="clients-stat-card">
+                <span class="clients-stat-value">6</span>
+                <span class="clients-stat-label">En attente</span>
+                <span class="clients-stat-trend negative">-1 ce mois</span>
+              </div>
+              <div class="clients-stat-card">
+                <span class="clients-stat-value">18</span>
+                <span class="clients-stat-label">Propriétés liées</span>
+                <span class="clients-stat-trend positive">+5 ce mois</span>
+              </div>
+              <div class="clients-stat-card">
+                <span class="clients-stat-value">€48.2K</span>
+                <span class="clients-stat-label">Primes annuelles</span>
+                <span class="clients-stat-trend positive">+€2.1K</span>
+              </div>
+            </div>
+
+            <!-- Clients Data Table -->
+            <div class="clients-table-wrapper">
+              <table class="clients-table" id="clientsTable">
+                <thead>
+                  <tr>
+                    <th class="col-client">Client</th>
+                    <th class="col-ref">Référence</th>
+                    <th class="col-contact">Contact</th>
+                    <th class="col-type">Type de contrat</th>
+                    <th class="col-premium">Prime annuelle</th>
+                    <th class="col-status">Statut</th>
+                    <th class="col-actions">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="clientsTableBody">
+                  <tr class="clients-table-row" data-client="1">
+                    <td class="col-client">
+                      <div class="clients-table-client">
+                        <span class="clients-table-avatar">JD</span>
+                        <div class="clients-table-client-info">
+                          <span class="clients-table-name">Jean Dupont</span>
+                          <span class="clients-table-email">jean.dupont@email.fr</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="col-ref"><span class="clients-table-ref">CLT-2026-001</span></td>
+                    <td class="col-contact">
+                      <div class="clients-table-contact">
+                        <span>+33 6 12 34 56 78</span>
+                        <span class="clients-table-city">Paris 2e</span>
+                      </div>
+                    </td>
+                    <td class="col-type"><span class="clients-table-type">Multirisque habitation</span></td>
+                    <td class="col-premium"><span class="clients-table-premium">1 240 €</span></td>
+                    <td class="col-status"><span class="clients-table-status active">Actif</span></td>
+                    <td class="col-actions">
+                      <div class="clients-table-actions">
+                        <button class="clients-action-btn" data-action="view" title="Voir le détail">
+                          <span class="material-symbols-outlined">visibility</span>
+                        </button>
+                        <button class="clients-action-btn" data-action="edit" title="Modifier">
+                          <span class="material-symbols-outlined">edit</span>
+                        </button>
+                        <button class="clients-action-btn" data-action="more" title="Plus d'options">
+                          <span class="material-symbols-outlined">more_vert</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="clients-table-row" data-client="2">
+                    <td class="col-client">
+                      <div class="clients-table-client">
+                        <span class="clients-table-avatar" style="background:rgba(16,185,129,0.15);color:#10b981;">MB</span>
+                        <div class="clients-table-client-info">
+                          <span class="clients-table-name">Marie Bernard</span>
+                          <span class="clients-table-email">marie.bernard@email.fr</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="col-ref"><span class="clients-table-ref">CLT-2026-002</span></td>
+                    <td class="col-contact">
+                      <div class="clients-table-contact">
+                        <span>+33 6 98 76 54 32</span>
+                        <span class="clients-table-city">Lyon 3e</span>
+                      </div>
+                    </td>
+                    <td class="col-type"><span class="clients-table-type">Automobile</span></td>
+                    <td class="col-premium"><span class="clients-table-premium">680 €</span></td>
+                    <td class="col-status"><span class="clients-table-status active">Actif</span></td>
+                    <td class="col-actions">
+                      <div class="clients-table-actions">
+                        <button class="clients-action-btn" data-action="view" title="Voir le détail">
+                          <span class="material-symbols-outlined">visibility</span>
+                        </button>
+                        <button class="clients-action-btn" data-action="edit" title="Modifier">
+                          <span class="material-symbols-outlined">edit</span>
+                        </button>
+                        <button class="clients-action-btn" data-action="more" title="Plus d'options">
+                          <span class="material-symbols-outlined">more_vert</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="clients-table-row" data-client="3">
+                    <td class="col-client">
+                      <div class="clients-table-client">
+                        <span class="clients-table-avatar" style="background:rgba(245,158,11,0.15);color:#f59e0b;">PL</span>
+                        <div class="clients-table-client-info">
+                          <span class="clients-table-name">Pierre Lefèvre</span>
+                          <span class="clients-table-email">pierre.lefevre@email.fr</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="col-ref"><span class="clients-table-ref">CLT-2026-003</span></td>
+                    <td class="col-contact">
+                      <div class="clients-table-contact">
+                        <span>+33 6 45 67 89 01</span>
+                        <span class="clients-table-city">Marseille 6e</span>
+                      </div>
+                    </td>
+                    <td class="col-type"><span class="clients-table-type">Professionnelle</span></td>
+                    <td class="col-premium"><span class="clients-table-premium">2 450 €</span></td>
+                    <td class="col-status"><span class="clients-table-status pending">En attente</span></td>
+                    <td class="col-actions">
+                      <div class="clients-table-actions">
+                        <button class="clients-action-btn" data-action="view" title="Voir le détail">
+                          <span class="material-symbols-outlined">visibility</span>
+                        </button>
+                        <button class="clients-action-btn" data-action="edit" title="Modifier">
+                          <span class="material-symbols-outlined">edit</span>
+                        </button>
+                        <button class="clients-action-btn" data-action="more" title="Plus d'options">
+                          <span class="material-symbols-outlined">more_vert</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="clients-table-row" data-client="4">
+                    <td class="col-client">
+                      <div class="clients-table-client">
+                        <span class="clients-table-avatar" style="background:rgba(139,92,246,0.15);color:#8b5cf6;">SN</span>
+                        <div class="clients-table-client-info">
+                          <span class="clients-table-name">Sophie Nguyen</span>
+                          <span class="clients-table-email">sophie.nguyen@email.fr</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="col-ref"><span class="clients-table-ref">CLT-2026-004</span></td>
+                    <td class="col-contact">
+                      <div class="clients-table-contact">
+                        <span>+33 6 23 45 67 89</span>
+                        <span class="clients-table-city">Bordeaux</span>
+                      </div>
+                    </td>
+                    <td class="col-type"><span class="clients-table-type">Santé</span></td>
+                    <td class="col-premium"><span class="clients-table-premium">1 890 €</span></td>
+                    <td class="col-status"><span class="clients-table-status active">Actif</span></td>
+                    <td class="col-actions">
+                      <div class="clients-table-actions">
+                        <button class="clients-action-btn" data-action="view" title="Voir le détail">
+                          <span class="material-symbols-outlined">visibility</span>
+                        </button>
+                        <button class="clients-action-btn" data-action="edit" title="Modifier">
+                          <span class="material-symbols-outlined">edit</span>
+                        </button>
+                        <button class="clients-action-btn" data-action="more" title="Plus d'options">
+                          <span class="material-symbols-outlined">more_vert</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="clients-table-row" data-client="5">
+                    <td class="col-client">
+                      <div class="clients-table-client">
+                        <span class="clients-table-avatar" style="background:rgba(236,72,153,0.15);color:#ec4899;">LR</span>
+                        <div class="clients-table-client-info">
+                          <span class="clients-table-name">Lucas Richard</span>
+                          <span class="clients-table-email">lucas.richard@email.fr</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="col-ref"><span class="clients-table-ref">CLT-2026-005</span></td>
+                    <td class="col-contact">
+                      <div class="clients-table-contact">
+                        <span>+33 6 34 56 78 90</span>
+                        <span class="clients-table-city">Toulouse</span>
+                      </div>
+                    </td>
+                    <td class="col-type"><span class="clients-table-type">Multirisque habitation</span></td>
+                    <td class="col-premium"><span class="clients-table-premium">950 €</span></td>
+                    <td class="col-status"><span class="clients-table-status suspended">Suspendu</span></td>
+                    <td class="col-actions">
+                      <div class="clients-table-actions">
+                        <button class="clients-action-btn" data-action="view" title="Voir le détail">
+                          <span class="material-symbols-outlined">visibility</span>
+                        </button>
+                        <button class="clients-action-btn" data-action="edit" title="Modifier">
+                          <span class="material-symbols-outlined">edit</span>
+                        </button>
+                        <button class="clients-action-btn" data-action="more" title="Plus d'options">
+                          <span class="material-symbols-outlined">more_vert</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="clients-table-row" data-client="6">
+                    <td class="col-client">
+                      <div class="clients-table-client">
+                        <span class="clients-table-avatar" style="background:rgba(59,130,246,0.15);color:#3b82f6;">CP</span>
+                        <div class="clients-table-client-info">
+                          <span class="clients-table-name">Claire Petit</span>
+                          <span class="clients-table-email">claire.petit@email.fr</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="col-ref"><span class="clients-table-ref">CLT-2026-006</span></td>
+                    <td class="col-contact">
+                      <div class="clients-table-contact">
+                        <span>+33 6 56 78 90 12</span>
+                        <span class="clients-table-city">Lille</span>
+                      </div>
+                    </td>
+                    <td class="col-type"><span class="clients-table-type">Prévoyance / Vie</span></td>
+                    <td class="col-premium"><span class="clients-table-premium">3 200 €</span></td>
+                    <td class="col-status"><span class="clients-table-status pending">En attente</span></td>
+                    <td class="col-actions">
+                      <div class="clients-table-actions">
+                        <button class="clients-action-btn" data-action="view" title="Voir le détail">
+                          <span class="material-symbols-outlined">visibility</span>
+                        </button>
+                        <button class="clients-action-btn" data-action="edit" title="Modifier">
+                          <span class="material-symbols-outlined">edit</span>
+                        </button>
+                        <button class="clients-action-btn" data-action="more" title="Plus d'options">
+                          <span class="material-symbols-outlined">more_vert</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </section>
+          <!-- ====== CLIENT DETAIL PANEL ====== -->
+          <div class="clients-detail-panel" id="clientsDetailPanel">
+            <!-- Back button -->
+            <div class="cdp-back-row">
+              <button class="cdp-back-btn" id="cdpBackBtn">
+                <span class="material-symbols-outlined" style="font-size:18px!important;">arrow_back</span>
+                Retour à la liste
+              </button>
+            </div>
+
+            <!-- Profile header card -->
+            <div class="cdp-profile-card">
+              <div class="cdp-profile-top">
+                <div class="cdp-profile-left">
+                  <span class="cdp-avatar" id="cdpAvatar">JD</span>
+                  <div class="cdp-profile-info">
+                    <h2 id="cdpName">Jean Dupont</h2>
+                    <div class="cdp-profile-meta">
+                      <span class="cdp-ref" id="cdpRef">CLT-2026-001</span>
+                      <span class="cdp-status active" id="cdpStatus">Actif</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="cdp-profile-actions">
+                  <button class="cdp-btn cdp-btn-outline" id="cdpEditToggle">
+                    <span class="material-symbols-outlined" style="font-size:16px!important;">edit</span>
+                    Modifier
+                  </button>
+                  <button class="cdp-btn cdp-btn-outline" style="color:#ef4444;border-color:rgba(239,68,68,0.3);">
+                    <span class="material-symbols-outlined" style="font-size:16px!important;">more_vert</span>
+                  </button>
+                </div>
+              </div>
+              <!-- Detail tabs inside profile card (full width) -->
+              <div class="cdp-tab-bar">
+                <button class="cdp-tab active" data-cdp-tab="overview">
+                  <span class="material-symbols-outlined" style="font-size:16px!important;">space_dashboard</span>
+                  Vue d'ensemble
+                </button>
+                <button class="cdp-tab" data-cdp-tab="info">
+                  <span class="material-symbols-outlined" style="font-size:16px!important;">person</span>
+                  Info
+                </button>
+                <button class="cdp-tab" data-cdp-tab="history">
+                  <span class="material-symbols-outlined" style="font-size:16px!important;">receipt</span>
+                  Historique
+                </button>
+                <button class="cdp-tab" data-cdp-tab="contracts">
+                  <span class="material-symbols-outlined" style="font-size:16px!important;">description</span>
+                  Contrats
+                </button>
+              </div>
+            </div>
+
+            <!-- Stats row -->
+            <div class="cdp-stats-row">
+              <div class="cdp-stat">
+                <span class="cdp-stat-value" id="cdpStatContracts">—</span>
+                <span class="cdp-stat-label">Contrats</span>
+              </div>
+              <div class="cdp-stat">
+                <span class="cdp-stat-value" id="cdpStatActive">—</span>
+                <span class="cdp-stat-label">Actifs</span>
+              </div>
+              <div class="cdp-stat">
+                <span class="cdp-stat-value" id="cdpStatPending">—</span>
+                <span class="cdp-stat-label">En attente</span>
+              </div>
+              <div class="cdp-stat">
+                <span class="cdp-stat-value" id="cdpStatPremium">—</span>
+                <span class="cdp-stat-label">Primes annuelles</span>
+              </div>
+            </div>
+
+
+
+            <!-- Tab: Overview (summary dashboard) -->
+            <div class="cdp-tab-content active" data-cdp-content="overview">
+              <div class="cdp-overview-grid">
+                <!-- Client info card -->
+                <div class="cdp-card cdp-overview-card">
+                  <div class="cdp-card-header">
+                    <h4><span class="material-symbols-outlined" style="font-size:16px!important;color:var(--color-primary);">badge</span> Identité</h4>
+                  </div>
+                  <div class="cdp-overview-id">
+                    <div class="cdp-overview-row">
+                      <span class="cdp-overview-label">Civilité</span>
+                      <span class="cdp-overview-value" id="cdpOvCivility">—</span>
+                    </div>
+                    <div class="cdp-overview-row">
+                      <span class="cdp-overview-label">Nom complet</span>
+                      <span class="cdp-overview-value" id="cdpOvName">—</span>
+                    </div>
+                    <div class="cdp-overview-row">
+                      <span class="cdp-overview-label">Email</span>
+                      <span class="cdp-overview-value" id="cdpOvEmail">—</span>
+                    </div>
+                    <div class="cdp-overview-row">
+                      <span class="cdp-overview-label">Téléphone</span>
+                      <span class="cdp-overview-value" id="cdpOvPhone">—</span>
+                    </div>
+                    <div class="cdp-overview-row">
+                      <span class="cdp-overview-label">Adresse</span>
+                      <span class="cdp-overview-value" id="cdpOvAddress">—</span>
+                    </div>
+                    <div class="cdp-overview-row">
+                      <span class="cdp-overview-label">Statut</span>
+                      <span class="cdp-overview-value" id="cdpOvStatus">—</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Contracts summary -->
+                <div class="cdp-card cdp-overview-card">
+                  <div class="cdp-card-header">
+                    <h4><span class="material-symbols-outlined" style="font-size:16px!important;color:#10b981;">description</span> Contrats</h4>
+                  </div>
+                  <div class="cdp-overview-stats">
+                    <div class="cdp-overview-stat">
+                      <span class="cdp-overview-stat-value" id="cdpOvTotalContracts">—</span>
+                      <span class="cdp-overview-stat-label">Total</span>
+                    </div>
+                    <div class="cdp-overview-stat">
+                      <span class="cdp-overview-stat-value" id="cdpOvActiveContracts" style="color:#059669;">—</span>
+                      <span class="cdp-overview-stat-label">Actifs</span>
+                    </div>
+                    <div class="cdp-overview-stat">
+                      <span class="cdp-overview-stat-value" id="cdpOvPendingContracts" style="color:#d97706;">—</span>
+                      <span class="cdp-overview-stat-label">En attente</span>
+                    </div>
+                    <div class="cdp-overview-stat">
+                      <span class="cdp-overview-stat-value" id="cdpOvAnnualPremium" style="color:var(--color-primary);">—</span>
+                      <span class="cdp-overview-stat-label">Primes/an</span>
+                    </div>
+                  </div>
+                  <div class="cdp-overview-contracts-list" id="cdpOvContractsList">
+                    <p style="font-size:11px;color:var(--text-muted);margin:0;">Aucun contrat</p>
+                  </div>
+                </div>
+
+                <!-- Recent payments -->
+                <div class="cdp-card cdp-overview-card">
+                  <div class="cdp-card-header">
+                    <h4><span class="material-symbols-outlined" style="font-size:16px!important;color:#f59e0b;">receipt</span> Derniers paiements</h4>
+                  </div>
+                  <div class="cdp-overview-payments" id="cdpOvPaymentsList">
+                    <p style="font-size:11px;color:var(--text-muted);margin:0;">Aucun paiement</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab: Info (editable form) -->
+            <div class="cdp-tab-content" data-cdp-content="info">
+              <div class="cdp-card">
+                <div class="cdp-card-header">
+                  <h4>Informations personnelles</h4>
+                  <span class="cdp-card-hint">Les champs marqués * sont obligatoires</span>
+                </div>
+                <div class="cdp-form-grid" id="cdpInfoForm">
+                  <div class="cdp-field">
+                    <label class="cdp-field-label">Civilité</label>
+                    <select class="cdp-input cdp-select" id="cdpFieldCivility">
+                      <option value="M.">M.</option>
+                      <option value="Mme">Mme</option>
+                    </select>
+                  </div>
+                  <div class="cdp-field">
+                    <label class="cdp-field-label">Date de naissance</label>
+                    <input type="date" class="cdp-input" id="cdpFieldDob" />
+                  </div>
+                  <div class="cdp-field">
+                    <label class="cdp-field-label">Prénom *</label>
+                    <input type="text" class="cdp-input" id="cdpFieldFirstname" placeholder="Prénom" />
+                  </div>
+                  <div class="cdp-field">
+                    <label class="cdp-field-label">Nom *</label>
+                    <input type="text" class="cdp-input" id="cdpFieldLastname" placeholder="Nom" />
+                  </div>
+                  <div class="cdp-field">
+                    <label class="cdp-field-label">Email *</label>
+                    <input type="email" class="cdp-input" id="cdpFieldEmail" placeholder="email@exemple.fr" />
+                  </div>
+                  <div class="cdp-field">
+                    <label class="cdp-field-label">Téléphone *</label>
+                    <input type="tel" class="cdp-input" id="cdpFieldPhone" placeholder="+33 X XX XX XX XX" />
+                  </div>
+                  <div class="cdp-field cdp-field-span-2">
+                    <label class="cdp-field-label">Adresse</label>
+                    <input type="text" class="cdp-input" id="cdpFieldAddress" placeholder="Numéro et rue" />
+                  </div>
+                  <div class="cdp-field">
+                    <label class="cdp-field-label">Code postal</label>
+                    <input type="text" class="cdp-input" id="cdpFieldCp" placeholder="75002" maxlength="5" />
+                  </div>
+                  <div class="cdp-field">
+                    <label class="cdp-field-label">Ville</label>
+                    <input type="text" class="cdp-input" id="cdpFieldCity" placeholder="Ville" />
+                  </div>
+                  <div class="cdp-field">
+                    <label class="cdp-field-label">Nationalité</label>
+                    <select class="cdp-input cdp-select" id="cdpFieldNationality">
+                      <option value="Française">Française</option>
+                      <option value="Belge">Belge</option>
+                      <option value="Suisse">Suisse</option>
+                      <option value="Allemande">Allemande</option>
+                      <option value="Italienne">Italienne</option>
+                      <option value="Espagnole">Espagnole</option>
+                    </select>
+                  </div>
+                  <div class="cdp-field">
+                    <label class="cdp-field-label">Profession</label>
+                    <input type="text" class="cdp-input" id="cdpFieldProfession" placeholder="Profession" />
+                  </div>
+                </div>
+                <div class="cdp-form-actions" id="cdpFormActions" style="display:none;">
+                  <button class="cdp-btn cdp-btn-primary" id="cdpSaveBtn">
+                    <span class="material-symbols-outlined" style="font-size:16px!important;">check</span>
+                    Enregistrer
+                  </button>
+                  <button class="cdp-btn" id="cdpCancelBtn">Annuler</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab: History (invoices & payments) -->
+            <div class="cdp-tab-content" data-cdp-content="history">
+              <div class="cdp-card">
+                <div class="cdp-card-header">
+                  <h4>Historique des paiements</h4>
+                  <span class="cdp-card-hint">Factures et échéances</span>
+                </div>
+                <div class="cdp-table-wrapper">
+                  <table class="cdp-table">
+                    <thead>
+                      <tr>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Contrat</th>
+                        <th>Montant</th>
+                        <th>Statut</th>
+                      </tr>
+                    </thead>
+                    <tbody id="cdpHistoryBody">
+                      <!-- Filled by JS -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab: Contracts -->
+            <div class="cdp-tab-content" data-cdp-content="contracts">
+              <div class="cdp-card">
+                <div class="cdp-card-header">
+                  <h4>Contrats du client</h4>
+                  <span class="cdp-card-hint">Polices d'assurance actives et passées</span>
+                </div>
+                <div class="cdp-contracts-list" id="cdpContractsList">
+                  <!-- Filled by JS -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+
+        <!-- ====== VIEW: Settings ====== -->
+        <section class="view-panel" id="view-settings">
+          <!-- ACCOUNT sub-tab - Matching reference layout -->
+          <div class="settings-tab-content active" data-content="account">
+            <!-- Profile Card -->
+            <div class="settings-card">
+              <div class="settings-card-body">
+                <!-- Avatar Upload Section (reference style) -->
+                <div class="settings-avatar-row">
+                  <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80" alt="user-avatar" class="settings-avatar-img" id="settingsAvatar">
+                  <div class="settings-avatar-actions">
+                    <label for="settingsAvatarInput" class="settings-btn settings-btn-primary" tabindex="0">
+                      <span class="material-symbols-outlined" style="font-size:16px!important;">upload</span>
+                      <span>Télécharger une photo</span>
+                      <input type="file" id="settingsAvatarInput" class="settings-hidden-input" accept="image/*">
+                    </label>
+                    <button type="button" class="settings-btn settings-btn-secondary" id="settingsAvatarReset">
+                      <span class="material-symbols-outlined" style="font-size:16px!important;">refresh</span>
+                      <span>Réinitialiser</span>
+                    </button>
+                    <div class="settings-avatar-hint">Formats JPG, GIF ou PNG. Taille max 800K</div>
+                  </div>
+                </div>
+
+                <!-- Form Grid (2-column, reference style) -->
+                <form id="settingsAccountForm" class="settings-form-grid">
+                  <div class="settings-form-group">
+                    <label class="settings-form-label">Prénom</label>
+                    <input type="text" class="settings-form-input" value="Jean" placeholder="Jean">
+                  </div>
+                  <div class="settings-form-group">
+                    <label class="settings-form-label">Nom</label>
+                    <input type="text" class="settings-form-input" value="Dupont" placeholder="Dupont">
+                  </div>
+                  <div class="settings-form-group">
+                    <label class="settings-form-label">Email</label>
+                    <input type="email" class="settings-form-input" value="jean.dupont@previa.fr" placeholder="jean.dupont@previa.fr">
+                  </div>
+                  <div class="settings-form-group">
+                    <label class="settings-form-label">Organisation</label>
+                    <input type="text" class="settings-form-input" value="Prévia SAS" placeholder="Prévia SAS">
+                  </div>
+                  <div class="settings-form-group">
+                    <label class="settings-form-label">Téléphone</label>
+                    <div class="settings-input-phone">
+                      <span class="settings-phone-prefix">FR (+33)</span>
+                      <input type="tel" class="settings-form-input" value="6 12 34 56 78" placeholder="6 12 34 56 78">
+                    </div>
+                  </div>
+                  <div class="settings-form-group">
+                    <label class="settings-form-label">Adresse</label>
+                    <input type="text" class="settings-form-input" value="15 Rue de la Paix" placeholder="Adresse">
+                  </div>
+                  <div class="settings-form-group">
+                    <label class="settings-form-label">Ville</label>
+                    <input type="text" class="settings-form-input" value="Paris" placeholder="Paris">
+                  </div>
+                  <div class="settings-form-group">
+                    <label class="settings-form-label">Code Postal</label>
+                    <input type="text" class="settings-form-input" value="75002" placeholder="75002" maxlength="6">
+                  </div>
+                  <div class="settings-form-group">
+                    <label class="settings-form-label">Pays</label>
+                    <select class="settings-form-select">
+                      <option value="FR" selected>France</option>
+                      <option value="BE">Belgique</option>
+                      <option value="CH">Suisse</option>
+                      <option value="LU">Luxembourg</option>
+                      <option value="MC">Monaco</option>
+                      <option value="DE">Allemagne</option>
+                      <option value="IT">Italie</option>
+                      <option value="ES">Espagne</option>
+                    </select>
+                  </div>
+                  <div class="settings-form-group">
+                    <label class="settings-form-label">Langue</label>
+                    <select class="settings-form-select">
+                      <option value="fr" selected>Français</option>
+                      <option value="en">English</option>
+                      <option value="de">Deutsch</option>
+                    </select>
+                  </div>
+                  <div class="settings-form-group">
+                    <label class="settings-form-label">Fuseau horaire</label>
+                    <select class="settings-form-select">
+                      <option value="paris" selected>(UTC+1) Paris</option>
+                      <option value="bruxelles">(UTC+1) Bruxelles</option>
+                      <option value="london">(UTC+0) Londres</option>
+                      <option value="berlin">(UTC+1) Berlin</option>
+                    </select>
+                  </div>
+                  <div class="settings-form-group">
+                    <label class="settings-form-label">Devise</label>
+                    <select class="settings-form-select">
+                      <option value="eur" selected>EUR — Euro</option>
+                      <option value="usd">USD — Dollar</option>
+                      <option value="chf">CHF — Franc suisse</option>
+                      <option value="gbp">GBP — Livre sterling</option>
+                    </select>
+                  </div>
+                  <div class="settings-form-actions">
+                    <button type="submit" class="settings-btn settings-btn-primary" id="settingsAccountSave">
+                      <span class="material-symbols-outlined" style="font-size:16px!important;">check</span>
+                      Enregistrer les modifications
+                    </button>
+                    <button type="reset" class="settings-btn settings-btn-secondary" id="settingsAccountCancel">Annuler</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <!-- Delete Account Card (reference style) -->
+            <div class="settings-card">
+              <h5 class="settings-card-header">Supprimer le compte</h5>
+              <div class="settings-card-body">
+                <div class="settings-alert settings-alert-warning">
+                  <h5 class="settings-alert-title">Êtes-vous sûr de vouloir supprimer votre compte ?</h5>
+                  <p class="settings-alert-text">Une fois votre compte supprimé, cette action est irréversible. Veuillez être certain.</p>
+                </div>
+                <label class="settings-checkbox-row">
+                  <input type="checkbox" class="settings-checkbox-input" id="settingsDeleteConfirm">
+                  <span class="settings-checkbox-custom"></span>
+                  <span class="settings-checkbox-label">Je confirme la désactivation de mon compte</span>
+                </label>
+                <button class="settings-btn settings-btn-danger" id="settingsDeleteAccount" disabled>
+                  <span class="material-symbols-outlined" style="font-size:16px!important;">delete_forever</span>
+                  Désactiver le compte
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECURITY sub-tab -->
+          <div class="settings-tab-content" data-content="security">
+            <!-- Change Password Card -->
+            <div class="settings-card">
+              <h5 class="settings-card-header">Changer le mot de passe</h5>
+              <div class="settings-card-body">
+                <div class="settings-form-grid settings-form-grid-thirds">
+                  <div class="settings-form-group">
+                    <label class="settings-form-label">Mot de passe actuel</label>
+                    <input type="password" class="settings-form-input" placeholder="••••••••••">
+                  </div>
+                  <div class="settings-form-group">
+                    <label class="settings-form-label">Nouveau mot de passe</label>
+                    <input type="password" class="settings-form-input" placeholder="••••••••••">
+                  </div>
+                  <div class="settings-form-group">
+                    <label class="settings-form-label">Confirmer le mot de passe</label>
+                    <input type="password" class="settings-form-input" placeholder="••••••••••">
+                  </div>
+                </div>
+                <button class="settings-btn settings-btn-primary" style="margin-top:10px;">
+                  <span class="material-symbols-outlined" style="font-size:16px!important;">lock</span>
+                  Mettre à jour
+                </button>
+              </div>
+            </div>
+
+            <!-- 2FA & Security Options Card -->
+            <div class="settings-card">
+              <h5 class="settings-card-header">Sécurité du compte</h5>
+              <div class="settings-card-body">
+                <div class="settings-toggle-row">
+                  <div>
+                    <span class="settings-toggle-label">Authentification à deux facteurs (2FA)</span>
+                    <span class="settings-toggle-desc">Protection renforcée par code SMS ou application</span>
+                  </div>
+                  <label class="settings-switch"><input type="checkbox" id="settings2fa" checked><span class="settings-slider"></span></label>
+                </div>
+                <div class="settings-toggle-row">
+                  <div>
+                    <span class="settings-toggle-label">Notifications de connexion</span>
+                    <span class="settings-toggle-desc">Alerte email à chaque nouvelle connexion</span>
+                  </div>
+                  <label class="settings-switch"><input type="checkbox"><span class="settings-slider"></span></label>
+                </div>
+                <div class="settings-divider"></div>
+                <div class="settings-security-sessions">
+                  <span class="settings-section-subtitle" style="padding:0;margin-bottom:8px;">Sessions actives</span>
+                  <div class="settings-session-item">
+                    <span class="material-symbols-outlined" style="font-size:18px!important;">laptop</span>
+                    <div><span class="settings-session-name">Windows — Chrome 126</span><span class="settings-session-meta">IP : 86.74.xx.xxx · Paris · Actif maintenant</span></div>
+                    <span class="settings-session-badge settings-session-badge-current">Actuelle</span>
+                  </div>
+                  <div class="settings-session-item">
+                    <span class="material-symbols-outlined" style="font-size:18px!important;">smartphone</span>
+                    <div><span class="settings-session-name">iPhone 15 — Safari</span><span class="settings-session-meta">IP : 92.154.xx.xxx · Paris · Il y a 2 heures</span></div>
+                    <span class="settings-session-btn">Révoquer</span>
+                  </div>
+                  <div class="settings-session-item">
+                    <span class="material-symbols-outlined" style="font-size:18px!important;">tablet</span>
+                    <div><span class="settings-session-name">iPad — Safari</span><span class="settings-session-meta">IP : 78.214.xx.xxx · Lyon · Il y a 3 jours</span></div>
+                    <span class="settings-session-btn">Révoquer</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- BILLING & PLANS sub-tab -->
+          <div class="settings-tab-content" data-content="billing">
+            <div class="settings-card">
+              <h5 class="settings-card-header">Plan actuel</h5>
+              <div class="settings-card-body">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+                  <div>
+                    <span style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.3px;font-weight:600;">Enterprise</span>
+                    <div style="font-size:28px;font-weight:600;color:var(--text-primary);margin-top:4px;">299 €<span style="font-size:14px;font-weight:400;color:var(--text-muted);"> / mois</span></div>
+                  </div>
+                  <span class="settings-source-status connected" style="font-size:11px;">Actif</span>
+                </div>
+                <div class="settings-divider"></div>
+                <div class="settings-section-subtitle" style="padding:0;margin-bottom:8px;margin-top:12px;">Ce qui est inclus</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:13px;color:var(--text-secondary);">
+                  <div style="display:flex;align-items:center;gap:6px;"><span class="material-symbols-outlined" style="font-size:16px!important;color:#10b981;">check_circle</span> Jusqu'à 50 propriétés</div>
+                  <div style="display:flex;align-items:center;gap:6px;"><span class="material-symbols-outlined" style="font-size:16px!important;color:#10b981;">check_circle</span> Analyse multi-risque complète</div>
+                  <div style="display:flex;align-items:center;gap:6px;"><span class="material-symbols-outlined" style="font-size:16px!important;color:#10b981;">check_circle</span> Projections DRIAS 2030-2100</div>
+                  <div style="display:flex;align-items:center;gap:6px;"><span class="material-symbols-outlined" style="font-size:16px!important;color:#10b981;">check_circle</span> API access prioritaire</div>
+                  <div style="display:flex;align-items:center;gap:6px;"><span class="material-symbols-outlined" style="font-size:16px!important;color:#10b981;">check_circle</span> Rapports PDF personnalisés</div>
+                  <div style="display:flex;align-items:center;gap:6px;"><span class="material-symbols-outlined" style="font-size:16px!important;color:#10b981;">check_circle</span> Support prioritaire 24/7</div>
+                </div>
+              </div>
+            </div>
+            <div class="settings-card">
+              <h5 class="settings-card-header">Utilisation</h5>
+              <div class="settings-card-body">
+                <div class="settings-rate-limit">
+                  <div class="settings-rate-item"><span>Propriétés actives</span><div class="settings-rate-bar"><div class="settings-rate-fill" style="width:48%;background:var(--color-primary);"></div></div><span>48% (24 / 50)</span></div>
+                  <div class="settings-rate-item"><span>API requêtes ce mois</span><div class="settings-rate-bar"><div class="settings-rate-fill" style="width:28%;background:#10b981;"></div></div><span>28% (8 540 / 30 000)</span></div>
+                  <div class="settings-rate-item"><span>Stockage rapports</span><div class="settings-rate-bar"><div class="settings-rate-fill" style="width:15%;background:#3b82f6;"></div></div><span>15% (2,1 Go / 15 Go)</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="settings-card">
+              <h5 class="settings-card-header">Historique des factures</h5>
+              <div class="settings-card-body">
+                <div style="display:flex;flex-direction:column;gap:0;">
+                  <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border-color);">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <span class="material-symbols-outlined" style="font-size:18px!important;color:var(--text-muted);">description</span>
+                      <span style="font-size:13px;font-weight:500;">Facture juillet 2026</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                      <span style="font-size:13px;font-weight:600;">299 €</span>
+                      <span class="settings-source-status connected" style="font-size:10px;">Payée</span>
+                    </div>
+                  </div>
+                  <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border-color);">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <span class="material-symbols-outlined" style="font-size:18px!important;color:var(--text-muted);">description</span>
+                      <span style="font-size:13px;font-weight:500;">Facture juin 2026</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                      <span style="font-size:13px;font-weight:600;">299 €</span>
+                      <span class="settings-source-status connected" style="font-size:10px;">Payée</span>
+                    </div>
+                  </div>
+                  <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border-color);">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <span class="material-symbols-outlined" style="font-size:18px!important;color:var(--text-muted);">description</span>
+                      <span style="font-size:13px;font-weight:500;">Facture mai 2026</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                      <span style="font-size:13px;font-weight:600;">299 €</span>
+                      <span class="settings-source-status connected" style="font-size:10px;">Payée</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- NOTIFICATIONS sub-tab -->
+          <div class="settings-tab-content" data-content="notifications">
+            <div class="settings-card">
+              <h5 class="settings-card-header">Notifications email</h5>
+              <div class="settings-card-body">
+                <div class="settings-toggle-row">
+                  <div>
+                    <span class="settings-toggle-label">Rapports hebdomadaires</span>
+                    <span class="settings-toggle-desc">Synthèse des évolutions de risque chaque lundi</span>
+                  </div>
+                  <label class="settings-switch"><input type="checkbox" checked><span class="settings-slider"></span></label>
+                </div>
+                <div class="settings-toggle-row">
+                  <div>
+                    <span class="settings-toggle-label">Alertes risques élevés (score > 70)</span>
+                    <span class="settings-toggle-desc">Notification immédiate pour les biens à haut risque</span>
+                  </div>
+                  <label class="settings-switch"><input type="checkbox" checked><span class="settings-slider"></span></label>
+                </div>
+                <div class="settings-toggle-row">
+                  <div>
+                    <span class="settings-toggle-label">Mise à jour DRIAS automatique</span>
+                    <span class="settings-toggle-desc">Projections climatiques en arrière-plan</span>
+                  </div>
+                  <label class="settings-switch"><input type="checkbox"><span class="settings-slider"></span></label>
+                </div>
+                <div class="settings-toggle-row">
+                  <div>
+                    <span class="settings-toggle-label">Rappels d'échéance</span>
+                    <span class="settings-toggle-desc">Relance pour l'expiration des diagnostics</span>
+                  </div>
+                  <label class="settings-switch"><input type="checkbox" checked><span class="settings-slider"></span></label>
+                </div>
+              </div>
+            </div>
+            <div class="settings-card">
+              <h5 class="settings-card-header">Préférences d'interface</h5>
+              <div class="settings-card-body">
+                <div class="settings-toggle-row">
+                  <div>
+                    <span class="settings-toggle-label">Mode sombre</span>
+                    <span class="settings-toggle-desc">Interface sombre pour réduire la fatigue oculaire</span>
+                  </div>
+                  <label class="settings-switch"><input type="checkbox" id="settingsDarkMode"><span class="settings-slider"></span></label>
+                </div>
+                <div class="settings-divider"></div>
+                <div class="settings-form-grid">
+                  <div class="settings-form-group">
+                    <label class="settings-form-label">Vue par défaut</label>
+                    <select class="settings-form-select">
+                      <option>Overview — Tableau de bord</option>
+                      <option>Map — Carte interactive</option>
+                      <option>Portfolio — Vue d'ensemble</option>
+                    </select>
+                  </div>
+                  <div class="settings-form-group">
+                    <label class="settings-form-label">Format de date</label>
+                    <select class="settings-form-select">
+                      <option>JJ/MM/AAAA (français)</option>
+                      <option>MM/JJ/AAAA (anglais)</option>
+                      <option>AAAA-MM-JJ (ISO)</option>
+                    </select>
+                  </div>
+                  <div class="settings-form-group">
+                    <label class="settings-form-label">Fournisseur de tuiles</label>
+                    <select class="settings-form-select">
+                      <option>OpenStreetMap</option>
+                      <option>MapTiler Satellite</option>
+                      <option>IGN France</option>
+                    </select>
+                  </div>
+                  <div class="settings-form-group">
+                    <label class="settings-form-label">Projection climatique</label>
+                    <select class="settings-form-select">
+                      <option>DRIAS 2030 (+2°C)</option>
+                      <option>DRIAS 2050 (+2.7°C)</option>
+                      <option>DRIAS 2100 (+4°C)</option>
+                    </select>
+                  </div>
+                </div>
+                <button class="settings-btn settings-btn-primary" id="settingsPrefsSave" style="margin-top:10px;">
+                  <span class="material-symbols-outlined" style="font-size:16px!important;">save</span>
+                  Enregistrer les préférences
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- CONNECTIONS sub-tab -->
+          <div class="settings-tab-content" data-content="connections">
+            <!-- Data Sources Card -->
+            <div class="settings-card">
+              <h5 class="settings-card-header">Sources de données connectées</h5>
+              <div class="settings-card-body">
+                <div class="settings-source-grid">
+                  <div class="settings-source">
+                    <div class="settings-source-head">
+                      <div class="settings-source-info">
+                        <span class="material-symbols-outlined" style="font-size:20px!important;color:#3b82f6;">database</span>
+                        <div><span class="settings-source-name">BDNB</span><span class="settings-source-desc">Base de Données Nationale des Bâtiments</span></div>
+                      </div>
+                      <span class="settings-source-status connected">Connecté</span>
+                    </div>
+                    <div class="settings-source-meta"><span>Dernier sync : 17/07/2026</span><span>Taux : 98.2%</span><button class="settings-source-test">Test</button></div>
+                  </div>
+                  <div class="settings-source">
+                    <div class="settings-source-head">
+                      <div class="settings-source-info">
+                        <span class="material-symbols-outlined" style="font-size:20px!important;color:#10b981;">terrain</span>
+                        <div><span class="settings-source-name">Géorisques</span><span class="settings-source-desc">Risques naturels — BRGM</span></div>
+                      </div>
+                      <span class="settings-source-status connected">Connecté</span>
+                    </div>
+                    <div class="settings-source-meta"><span>Dernier sync : 17/07/2026</span><span>Taux : 99.1%</span><button class="settings-source-test">Test</button></div>
+                  </div>
+                  <div class="settings-source">
+                    <div class="settings-source-head">
+                      <div class="settings-source-info">
+                        <span class="material-symbols-outlined" style="font-size:20px!important;color:#f59e0b;">thermostat</span>
+                        <div><span class="settings-source-name">DRIAS</span><span class="settings-source-desc">Projections climatiques — Météo France</span></div>
+                      </div>
+                      <span class="settings-source-status connected">Connecté</span>
+                    </div>
+                    <div class="settings-source-meta"><span>Dernier sync : 16/07/2026</span><span>Taux : 100%</span><button class="settings-source-test">Test</button></div>
+                  </div>
+                  <div class="settings-source">
+                    <div class="settings-source-head">
+                      <div class="settings-source-info">
+                        <span class="material-symbols-outlined" style="font-size:20px!important;color:#8b5cf6;">satellite_alt</span>
+                        <div><span class="settings-source-name">NASA POWER</span><span class="settings-source-desc">Données météorologiques satellitaires</span></div>
+                      </div>
+                      <span class="settings-source-status connected">Connecté</span>
+                    </div>
+                    <div class="settings-source-meta"><span>Dernier sync : 17/07/2026</span><span>Taux : 97.8%</span><button class="settings-source-test">Test</button></div>
+                  </div>
+                  <div class="settings-source">
+                    <div class="settings-source-head">
+                      <div class="settings-source-info">
+                        <span class="material-symbols-outlined" style="font-size:20px!important;color:#ef4444;">water</span>
+                        <div><span class="settings-source-name">Copernicus EMS</span><span class="settings-source-desc">Cartographie inondations — UE</span></div>
+                      </div>
+                      <span class="settings-source-status error">Erreur</span>
+                    </div>
+                    <div class="settings-source-meta"><span>Dernier sync : 14/07/2026</span><span>Taux : 0%</span><button class="settings-source-test reconnect">Reconnecter</button></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- API Keys Card -->
+            <div class="settings-card">
+              <h5 class="settings-card-header">Clés API & Intégrations</h5>
+              <div class="settings-card-body">
+                <div class="settings-api-key-card">
+                  <div class="settings-api-key-head">
+                    <div><span class="settings-api-key-name">Production — Clé API principale</span><span class="settings-api-key-tag active">Actif</span></div>
+                    <div class="settings-api-key-actions">
+                      <button class="settings-api-btn" data-action="show"><span class="material-symbols-outlined" style="font-size:16px!important;">visibility</span></button>
+                      <button class="settings-api-btn" data-action="copy"><span class="material-symbols-outlined" style="font-size:16px!important;">content_copy</span></button>
+                      <button class="settings-api-btn" data-action="regenerate" style="color:#dc2626;"><span class="material-symbols-outlined" style="font-size:16px!important;">refresh</span></button>
+                    </div>
+                  </div>
+                  <div class="settings-api-key-value">
+                    <code class="settings-api-key-code" id="apiKeyDisplay">pv_sk_••••••••••••••••a3f8c2</code>
+                    <span class="settings-api-key-created">Créée le 15/01/2026 · Dernière utilisation : 17/07/2026</span>
+                  </div>
+                </div>
+                <div class="settings-api-key-card">
+                  <div class="settings-api-key-head">
+                    <div><span class="settings-api-key-name">Développement — Sandbox</span><span class="settings-api-key-tag">Test</span></div>
+                    <div class="settings-api-key-actions">
+                      <button class="settings-api-btn" data-action="show"><span class="material-symbols-outlined" style="font-size:16px!important;">visibility</span></button>
+                      <button class="settings-api-btn" data-action="copy"><span class="material-symbols-outlined" style="font-size:16px!important;">content_copy</span></button>
+                      <button class="settings-api-btn" data-action="regenerate" style="color:#dc2626;"><span class="material-symbols-outlined" style="font-size:16px!important;">refresh</span></button>
+                    </div>
+                  </div>
+                  <div class="settings-api-key-value">
+                    <code class="settings-api-key-code" id="apiSandboxDisplay">pv_sk_••••••••••••••••b7e3d1</code>
+                    <span class="settings-api-key-created">Créée le 03/03/2026 · Dernière utilisation : 15/07/2026</span>
+                  </div>
+                </div>
+
+                <div class="settings-divider" style="margin:12px 0;"></div>
+                <div class="settings-section-subtitle" style="padding:0;margin-bottom:8px;">Webhooks</div>
+                <div class="settings-webhook">
+                  <div class="settings-webhook-item">
+                    <div><span class="settings-webhook-name">Rapports automatiques</span><span class="settings-webhook-url">https://hooks.previa.ai/reports/completed</span></div>
+                    <span class="settings-source-status connected">Actif</span>
+                  </div>
+                  <div class="settings-webhook-item">
+                    <div><span class="settings-webhook-name">Alertes risque élevé</span><span class="settings-webhook-url">https://hooks.previa.ai/alerts/high-risk</span></div>
+                    <span class="settings-source-status connected">Actif</span>
+                  </div>
+                </div>
+
+                <div class="settings-divider" style="margin:12px 0;"></div>
+                <div class="settings-section-subtitle" style="padding:0;margin-bottom:8px;">Limites de taux</div>
+                <div class="settings-rate-limit">
+                  <div class="settings-rate-item"><span>API / jour</span><div class="settings-rate-bar"><div class="settings-rate-fill" style="width:34%;background:var(--color-primary);"></div></div><span>34% (1 020 / 3 000)</span></div>
+                  <div class="settings-rate-item"><span>Webhooks / heure</span><div class="settings-rate-bar"><div class="settings-rate-fill" style="width:8%;background:#10b981;"></div></div><span>8% (24 / 300)</span></div>
+                  <div class="settings-rate-item"><span>Requêtes simultanées</span><div class="settings-rate-bar"><div class="settings-rate-fill" style="width:12%;background:#10b981;"></div></div><span>12% (6 / 50)</span></div>
+                </div>
+
+                <button class="settings-btn settings-btn-primary" style="margin-top:12px;">
+                  <span class="material-symbols-outlined" style="font-size:16px!important;">add</span>
+                  Créer une nouvelle clé API
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ====== VIEW: Espace Assuré — Mon Bien ====== -->
+        <section class="view-panel" id="view-assure-bien">
+          <!-- Overview-Style Cover Banner Section -->
+          <section class="banner-section">
+            <div class="banner-card">
+              <!-- Fading carousel of French architecture background -->
+              <div class="banner-gallery">
+                <img class="banner-gallery-slide" src="https://images.unsplash.com/photo-1550340499-a6c60fc8287c?w=1200&q=50" alt="" loading="lazy" />
+                <img class="banner-gallery-slide" src="https://images.unsplash.com/photo-1598965402089-897ce52e8355?w=1200&q=50" alt="" loading="lazy" />
+                <img class="banner-gallery-slide" src="https://images.unsplash.com/photo-1589394815801-7cedad5d2cdc?w=1200&q=50" alt="" loading="lazy" />
+                <img class="banner-gallery-slide" src="https://images.unsplash.com/photo-1485081669829-bacb8c7bb1f3?w=1200&q=50" alt="" loading="lazy" />
+              </div>
+              
+              <!-- Left Info -->
+              <div class="banner-info">
+                <h1>Mon Bien &<br>Risques Climatiques</h1>
+                <p id="assureBannerAddress">8 Rue de la Paix, Paris 75002 · Contrat MRH N° POL-2026-00428-FR</p>
+                <div class="team-avatars">
+                  <span class="team-avatar-svg" style="background:#c56a3d;">JD</span>
+                  <span class="team-avatar-svg" style="background:#10b981;">MB</span>
+                  <span class="team-avatar-svg" style="background:#3b82f6;">PL</span>
+                  <span class="team-avatar-svg" style="background:#8b5cf6;" id="assureBannerPolicyTag">MRH</span>
+                </div>
+              </div>
+
+              <!-- Floating Glassmorphism Property Card -->
+              <div class="floating-task-card">
+                <div class="floating-task-header">
+                  <div>
+                    <h3 id="assureBannerName">Jean Dupont</h3>
+                    <span class="task-date" id="assureBannerRisk">Evaluation 3D en cours</span>
+                  </div>
+                  <span class="material-symbols-outlined arrow-icon">arrow_forward</span>
+                </div>
+                <div class="floating-task-progress">
+                  <span class="progress-val" id="assureStatScore">65</span>
+                  <span class="progress-indicator-dot"></span>
+                </div>
+              </div>
+
+              <!-- Right Completion Card (Glassmorphic Stats & Chart) -->
+              <div class="banner-completion-card">
+                <div class="completion-header">
+                  <div>
+                    <span class="completion-label">Score de risque global</span>
+                    <h2 id="assureBannerScore">65</h2>
+                  </div>
+                  <span class="trend-indicator positive" id="assureBienImprove">-15 pts ▲</span>
+                </div>
+
+                <!-- Sparkline Line Chart -->
+                <div class="sparkline-chart">
+                  <svg viewBox="0 0 200 80" preserveAspectRatio="none">
+                    <defs>
+                      <linearGradient id="chart-grad-bien" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="rgba(255, 255, 255, 0.4)" />
+                        <stop offset="100%" stop-color="rgba(255, 255, 255, 0.0)" />
+                      </linearGradient>
+                    </defs>
+                    <path d="M 0,65 Q 30,55 60,40 T 120,50 T 160,25 T 200,35" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+                    <path d="M 0,65 Q 30,55 60,40 T 120,50 T 160,25 T 200,35 L 200,80 L 0,80 Z" fill="url(#chart-grad-bien)"/>
+                    <circle cx="160" cy="25" r="4" fill="#ffffff" stroke="rgba(255, 255, 255, 0.5)" stroke-width="3"/>
+                  </svg>
+                </div>
+
+                <div class="completion-footer">
+                  <div class="footer-stat">
+                    <span class="footer-stat-label">15 elements</span>
+                  </div>
+                  <div class="segmented-progress">
+                    <span class="seg active"></span>
+                    <span class="seg active"></span>
+                    <span class="seg active"></span>
+                    <span class="seg active"></span>
+                    <span class="seg"></span>
+                  </div>
+                  <div class="footer-stat align-right">
+                    <span class="footer-stat-label">24 securises</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Dashboard Widgets Grid -->
+          <section class="widgets-grid">
+            <div class="grid-column col-span-2">
+              <!-- Vulnerability Distribution Card -->
+              <div class="dashboard-card cross-section-card">
+                <div class="card-header">
+                  <h3>Analyse des vulnerabilites</h3>
+                  <span class="material-symbols-outlined action-icon">north_east</span>
+                </div>
+                <div class="card-body">
+                  <div class="card-metric">
+                    <h2 id="assurePropScore">65% <span class="trend positive" id="assurePropRisk">Risque Modéré</span></h2>
+                    <span class="legend-indicator">Exposition climats (BDNB / Georisques)</span>
+                  </div>
+                  <div class="bar-chart-container">
+                    <div class="chart-bars">
+                      <div class="bar" style="height: 30%"></div>
+                      <div class="bar" style="height: 35%"></div>
+                      <div class="bar" style="height: 40%"></div>
+                      <div class="bar" style="height: 45%"></div>
+                      <div class="bar" style="height: 50%"></div>
+                      <div class="bar highlight" style="height: 60%"></div>
+                      <div class="bar highlight" style="height: 70%"></div>
+                      <div class="bar highlight" style="height: 80%"></div>
+                      <div class="bar highlight" style="height: 85%"></div>
+                      <div class="bar highlight" style="height: 80%"></div>
+                      <div class="bar highlight" style="height: 70%"></div>
+                      <div class="bar highlight" style="height: 60%"></div>
+                      <div class="bar" style="height: 50%"></div>
+                      <div class="bar" style="height: 45%"></div>
+                      <div class="bar" style="height: 40%"></div>
+                      <div class="bar" style="height: 35%"></div>
+                      <div class="bar" style="height: 30%"></div>
+                    </div>
+                    <div class="slider-wrapper">
+                      <md-slider min="0" max="100" value="65" ticks></md-slider>
+                    </div>
+                    <div class="chart-labels">
+                      <span>0</span>
+                      <span>10</span>
+                      <span>20</span>
+                      <span>30</span>
+                      <span>40</span>
+                      <span>50</span>
+                      <span>60</span>
+                      <span>70</span>
+                      <span>80</span>
+                      <span>90</span>
+                      <span>100</span>
+                    </div>
+                  </div>
+                  <div class="assure-prop-grid" style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border-color);">
+                    <div class="assure-prop-item">
+                      <span class="assure-prop-label">Adresse</span>
+                      <span class="assure-prop-value" id="assurePropAddress">8 Rue de la Paix</span>
+                    </div>
+                    <div class="assure-prop-item">
+                      <span class="assure-prop-label">Ville</span>
+                      <span class="assure-prop-value" id="assurePropCity">Paris 75002</span>
+                    </div>
+                    <div class="assure-prop-item">
+                      <span class="assure-prop-label">DPE Bâtiment</span>
+                      <span class="assure-prop-value" id="assurePropDpe">D</span>
+                    </div>
+                    <div class="assure-prop-item">
+                      <span class="assure-prop-label">Année Construction</span>
+                      <span class="assure-prop-value" id="assurePropYear">1978</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Savings Potential Card -->
+              <div class="dashboard-card distance-card">
+                <div class="distance-metric">
+                  <h2 id="assureStatSavings">3 720 €/an <span class="trend positive">-30% ▼</span></h2>
+                  <div class="distance-progress-group">
+                    <span class="date-label">Economies potentielles (Bonus 10 ans)</span>
+                    <md-linear-progress value="0.30" class="progress-bar-custom"></md-linear-progress>
+                  </div>
+                  <span class="legend-indicator" id="assureStatEngagement">En attente de signature</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid-column col-span-3">
+              <!-- Circular Progresses Row -->
+              <div class="circular-cards-row">
+                <!-- Flood -->
+                <div class="dashboard-card circ-widget">
+                  <div class="widget-header">
+                    <h3>Risque inondation</h3>
+                    <span class="material-symbols-outlined action-icon">north_east</span>
+                  </div>
+                  <div class="circ-body">
+                    <div class="circ-kpi">
+                      <span class="circ-pct" id="assurGaugeBienFloodVal">76%</span>
+                      <span class="circ-trend negative">Elevé</span>
+                    </div>
+                    <div class="circ-ring">
+                      <svg viewBox="0 0 100 100">
+                        <path d="M 5 50 A 45 45 0 0 1 50 5" fill="none" stroke="var(--border-color)" stroke-width="10" stroke-linecap="round"/>
+                        <path id="assurGaugeBienFlood" d="M 5 50 A 45 45 0 0 1 50 5" fill="none" stroke="#ef4444" stroke-width="10" stroke-linecap="round" stroke-dasharray="70.685" stroke-dashoffset="16.96"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Clay -->
+                <div class="dashboard-card circ-widget">
+                  <div class="widget-header">
+                    <h3>Retrait argile</h3>
+                    <span class="material-symbols-outlined action-icon">north_east</span>
+                  </div>
+                  <div class="circ-body">
+                    <div class="circ-kpi">
+                      <span class="circ-pct" id="assurGaugeBienClayVal">58%</span>
+                      <span class="circ-trend positive">Modéré</span>
+                    </div>
+                    <div class="circ-ring">
+                      <svg viewBox="0 0 100 100">
+                        <path d="M 5 50 A 45 45 0 0 1 50 5" fill="none" stroke="var(--border-color)" stroke-width="10" stroke-linecap="round"/>
+                        <path id="assurGaugeBienClay" d="M 5 50 A 45 45 0 0 1 50 5" fill="none" stroke="#f59e0b" stroke-width="10" stroke-linecap="round" stroke-dasharray="70.685" stroke-dashoffset="25.45"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Seismic -->
+                <div class="dashboard-card circ-widget">
+                  <div class="widget-header">
+                    <h3>Risque sismique</h3>
+                    <span class="material-symbols-outlined action-icon">north_east</span>
+                  </div>
+                  <div class="circ-body">
+                    <div class="circ-kpi">
+                      <span class="circ-pct" id="assurGaugeBienSeismicVal">36%</span>
+                      <span class="circ-trend positive">Faible</span>
+                    </div>
+                    <div class="circ-ring">
+                      <svg viewBox="0 0 100 100">
+                        <path d="M 5 50 A 45 45 0 0 1 50 5" fill="none" stroke="var(--border-color)" stroke-width="10" stroke-linecap="round"/>
+                        <path id="assurGaugeBienSeismic" d="M 5 50 A 45 45 0 0 1 50 5" fill="none" stroke="#3b82f6" stroke-width="10" stroke-linecap="round" stroke-dasharray="70.685" stroke-dashoffset="40"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Recommendation Card -->
+              <div class="dashboard-card">
+                <div class="card-header">
+                  <h3>Plan de prévention recommande</h3>
+                  <span class="material-symbols-outlined action-icon">north_east</span>
+                </div>
+                <div class="card-body">
+                  <div style="display:flex;flex-direction:column;gap:10px;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg-panel);border-radius:var(--border-radius-sm);">
+                      <div style="display:flex;align-items:center;gap:10px;">
+                        <span class="material-symbols-outlined" style="color:#ef4444;">roofing</span>
+                        <div>
+                          <div style="font-size:13px;font-weight:600;color:var(--text-primary);">Rénovation toiture & évacuations</div>
+                          <div style="font-size:11px;color:var(--text-muted);">Protection contre infiltrations & tempêtes</div>
+                        </div>
+                      </div>
+                      <span style="font-size:12px;font-weight:600;color:#10b981;">Éco. 200 €/an</span>
+                    </div>
+
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg-panel);border-radius:var(--border-radius-sm);">
+                      <div style="display:flex;align-items:center;gap:10px;">
+                        <span class="material-symbols-outlined" style="color:#f59e0b;">foundation</span>
+                        <div>
+                          <div style="font-size:13px;font-weight:600;color:var(--text-primary);">Drainage périphérique & fondations</div>
+                          <div style="font-size:11px;color:var(--text-muted);">Prévention du retrait des argiles</div>
+                        </div>
+                      </div>
+                      <span style="font-size:12px;font-weight:600;color:#10b981;">Éco. 150 €/an</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <!-- ====== VIEW: Espace Assuré — Mes Travaux ====== -->
+        <section class="view-panel" id="view-assure-travaux">
+          <div class="assure-travaux-layout">
+            <div class="assure-travaux-main">
+              <!-- 3D viewer -->
+              <div class="assure-3d-card dashboard-card" style="padding:0;">
+                <span class="assure-3d-label">Vue 3D — cliquez un composant pour détailler</span>
+                <div id="assureHouseContainer" class="assure-3d-container"></div>
+              </div>
+              <!-- Component grid -->
+              <div class="dashboard-card" style="flex:1;">
+                <div class="card-header">
+                  <h3><span class="material-symbols-outlined" style="font-size:18px!important;vertical-align:middle;color:var(--color-primary);margin-right:4px;">home_repair_service</span>Composants de votre bien</h3>
+                  <span style="font-size:11px;color:var(--text-muted);">Cochez les travaux à réaliser</span>
+                </div>
+                <div class="assure-comp-grid" id="assureCompGrid"></div>
+              </div>
+            </div>
+            <!-- Side: selected works -->
+            <div class="assure-travaux-side">
+              <div class="assure-works-card">
+                <h4><span class="material-symbols-outlined">checklist</span>Travaux sélectionnés</h4>
+                <div class="assure-works-list" id="assureWorksList">
+                  <span class="assure-works-empty">Cochez des composants pour voir les travaux recommandés.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Summary bar -->
+          <div class="assure-works-summary">
+            <div class="assure-works-summary-item">
+              <span class="assure-works-summary-label">Coût total</span>
+              <span class="assure-works-summary-value" id="assureTravauxCost">—</span>
+            </div>
+            <div class="assure-works-summary-divider"></div>
+            <div class="assure-works-summary-item">
+              <span class="assure-works-summary-label">Économie annuelle</span>
+              <span class="assure-works-summary-value savings" id="assureTravauxSavings">—</span>
+            </div>
+            <div class="assure-works-summary-divider"></div>
+            <div class="assure-works-summary-item">
+              <span class="assure-works-summary-label">Nouvelle prime</span>
+              <span class="assure-works-summary-value" id="assureTravauxPremium">—</span>
+            </div>
+            <button class="assure-works-cta" id="assureTravauxNextBtn">
+              <span class="material-symbols-outlined">arrow_forward</span>
+              Voir mon engagement
+            </button>
+          </div>
+        </section>
+
+        <!-- ====== VIEW: Espace Assuré — Mon Engagement ====== -->
+        <section class="view-panel" id="view-assure-engagement">
+          <div class="assure-engagement-layout">
+            <div class="assure-engagement-main">
+              <!-- Score comparison -->
+              <div class="assure-score-header">
+                <h3>Mon score de risque</h3>
+                <p>Avant et après réalisation des travaux sélectionnés</p>
+              </div>
+              <div class="assur-score-compare" style="background:var(--bg-card);border-radius:var(--border-radius-md);">
+                <div class="assur-score-card">
+                  <span class="assur-score-label">Score actuel</span>
+                  <div class="assur-gauge">
+                    <svg class="assur-gauge-svg" viewBox="0 0 120 120">
+                      <circle cx="60" cy="60" r="50" fill="none" stroke="var(--border-color)" stroke-width="10"/>
+                      <circle id="assureGaugeArcCurrent" cx="60" cy="60" r="50" fill="none" stroke="#f59e0b" stroke-width="10"
+                        stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="110"
+                        transform="rotate(-90 60 60)"/>
+                      <text id="assureGaugeValCurrent" x="60" y="57" text-anchor="middle" class="assur-gauge-val">65</text>
+                      <text x="60" y="72" text-anchor="middle" class="assur-gauge-unit">/100</text>
+                    </svg>
+                  </div>
+                </div>
+                <div class="assur-score-improvement">
+                  <span class="material-symbols-outlined assur-improve-icon">trending_down</span>
+                  <span class="assur-improve-val" id="assureImproveVal">—</span>
+                  <span class="assur-improve-label">Amélioration</span>
+                </div>
+                <div class="assur-score-card">
+                  <span class="assur-score-label">Score projeté</span>
+                  <div class="assur-gauge">
+                    <svg class="assur-gauge-svg" viewBox="0 0 120 120">
+                      <circle cx="60" cy="60" r="50" fill="none" stroke="var(--border-color)" stroke-width="10"/>
+                      <circle id="assureGaugeArcProjected" cx="60" cy="60" r="50" fill="none" stroke="#10b981" stroke-width="10"
+                        stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="204"
+                        transform="rotate(-90 60 60)"/>
+                      <text id="assureGaugeValProjected" x="60" y="57" text-anchor="middle" class="assur-gauge-val">29</text>
+                      <text x="60" y="72" text-anchor="middle" class="assur-gauge-unit">/100</text>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Premium impact -->
+              <div class="assure-premium-card">
+                <h4><span class="material-symbols-outlined">payments</span>Impact sur votre prime</h4>
+                <div class="assure-premium-row">
+                  <span class="assure-premium-row-label">Prime actuelle</span>
+                  <span class="assure-premium-row-value" id="assureEngPremiumCurrent">1 240 €/an</span>
+                </div>
+                <div class="assure-premium-arrow">
+                  <span class="material-symbols-outlined" style="color:#10b981;">arrow_downward</span>
+                </div>
+                <div class="assure-premium-row accent">
+                  <span class="assure-premium-row-label">Nouvelle prime après travaux</span>
+                  <span class="assure-premium-row-value" id="assureEngPremiumNew">940 €/an</span>
+                </div>
+                <div class="assure-premium-row">
+                  <span class="assure-premium-row-label">Économie annuelle</span>
+                  <span class="assure-premium-row-value savings" id="assureEngPremiumSaving">—</span>
+                </div>
+              </div>
+
+              <!-- Recap chips -->
+              <div class="assure-recap-chips">
+                <div class="assure-recap-chip">
+                  <span class="assure-recap-chip-label">Réduction prime</span>
+                  <span class="assure-recap-chip-value positive" id="assureRecapReduc">—</span>
+                </div>
+                <div class="assure-recap-chip">
+                  <span class="assure-recap-chip-label">Amélioration score</span>
+                  <span class="assure-recap-chip-value positive" id="assureRecapImprov">—</span>
+                </div>
+                <div class="assure-recap-chip">
+                  <span class="assure-recap-chip-label">Retour sur investissement</span>
+                  <span class="assure-recap-chip-value" id="assureRecapPayback">—</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Side: engagement terms + sign CTA -->
+            <div class="assure-engagement-side">
+              <!-- Policy info -->
+              <div class="assure-policy-card">
+                <h4><span class="material-symbols-outlined">description</span>Mon contrat</h4>
+                <div class="assure-policy-row">
+                  <span class="assure-policy-row-label">N° police</span>
+                  <span class="assure-policy-row-value" id="assurePolNumber">—</span>
+                </div>
+                <div class="assure-policy-row">
+                  <span class="assure-policy-row-label">Assuré</span>
+                  <span class="assure-policy-row-value" id="assurePolClient">—</span>
+                </div>
+                <div class="assure-policy-row">
+                  <span class="assure-policy-row-label">Bien assuré</span>
+                  <span class="assure-policy-row-value" id="assurePolProperty">—</span>
+                </div>
+                <div class="assure-policy-row">
+                  <span class="assure-policy-row-label">Prime actuelle</span>
+                  <span class="assure-policy-row-value" id="assurePolPremiumCurrent">—</span>
+                </div>
+                <div class="assure-policy-row">
+                  <span class="assure-policy-row-label">Nouvelle prime</span>
+                  <span class="assure-policy-row-value" style="color:#10b981;" id="assurePolPremiumNew">—</span>
+                </div>
+              </div>
+
+              <!-- Terms -->
+              <div class="assure-terms-card">
+                <h4><span class="material-symbols-outlined">gavel</span>Conditions de l'engagement</h4>
+                <ul class="assure-terms-list">
+                  <li><span class="material-symbols-outlined">check_circle</span>Durée d'engagement : <strong>10 ans</strong></li>
+                  <li><span class="material-symbols-outlined">check_circle</span>Bonus maintenu si les travaux sont réalisés dans les <strong>24 mois</strong></li>
+                  <li><span class="material-symbols-outlined">check_circle</span>Clause de non-résiliation pour la période d'engagement</li>
+                  <li><span class="material-symbols-outlined">check_circle</span>Franchise réduite en proportion de l'amélioration du score</li>
+                </ul>
+              </div>
+
+              <!-- Works committed -->
+              <div class="assure-terms-card">
+                <h4><span class="material-symbols-outlined">build</span>Travaux engagés</h4>
+                <div class="assure-avenant-works" id="assureAvenantWorks">
+                  <p style="font-size:12px;color:var(--text-muted);">Aucun travail sélectionné.</p>
+                </div>
+              </div>
+
+              <!-- Sign CTA -->
+              <div id="assureEngagementPill" class="assure-engagement-status none">
+                <span class="material-symbols-outlined" style="font-size:14px!important;">pending</span>
+                <span id="assureEngagementStatusLabel">Engagement non signé</span>
+              </div>
+              <button class="assure-sign-cta" id="assureSignBtn" disabled>
+                <span class="material-symbols-outlined">draw</span>
+                Signer mon engagement
+              </button>
+              <p class="assure-sign-note">En signant, vous vous engagez à réaliser les travaux listés dans un délai de 24 mois. Votre assureur confirmera la réduction de prime par avenant.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ====== VIEW: Espace Assuré — Mon Dossier ====== -->
+        <section class="view-panel" id="view-assure-dossier">
+          <div class="assure-dossier-layout">
+            <div class="assure-dossier-main">
+              <!-- Assessment history -->
+              <div class="assure-history-card">
+                <h4><span class="material-symbols-outlined">history</span>Historique des évaluations</h4>
+                <div class="assure-history-list" id="assureHistoryList"></div>
+              </div>
+              <!-- Documents -->
+              <div class="assure-history-card">
+                <h4><span class="material-symbols-outlined">folder_open</span>Mes documents</h4>
+                <div class="assure-doc-list" id="assureDocList"></div>
+              </div>
+            </div>
+
+            <!-- Side: advisor + contract info -->
+            <div class="assure-dossier-side">
+              <!-- Advisor contact -->
+              <div class="assure-advisor-card">
+                <h4><span class="material-symbols-outlined">support_agent</span>Mon conseiller</h4>
+                <div class="assure-advisor-identity">
+                  <div class="assure-advisor-avatar">JD</div>
+                  <div>
+                    <div class="assure-advisor-name" id="assureAdvisorName">Jean Dupont</div>
+                    <div class="assure-advisor-role">Conseiller en assurance</div>
+                  </div>
+                </div>
+                <div class="assure-advisor-contact-row">
+                  <span class="material-symbols-outlined">mail</span>
+                  <span id="assureAdvisorEmail">jean.dupont@previa.fr</span>
+                </div>
+                <div class="assure-advisor-contact-row">
+                  <span class="material-symbols-outlined">phone</span>
+                  <span id="assureAdvisorPhone">—</span>
+                </div>
+                <div class="assure-advisor-contact-row">
+                  <span class="material-symbols-outlined">badge</span>
+                  <span id="assureAdvisorRef">—</span>
+                </div>
+              </div>
+
+              <!-- Contract summary -->
+              <div class="assure-policy-card">
+                <h4><span class="material-symbols-outlined">description</span>Mon contrat</h4>
+                <div class="assure-policy-row">
+                  <span class="assure-policy-row-label">N° police</span>
+                  <span class="assure-policy-row-value" id="assureDossierPolicy">—</span>
+                </div>
+                <div class="assure-policy-row">
+                  <span class="assure-policy-row-label">Type</span>
+                  <span class="assure-policy-row-value" id="assureDossierType">—</span>
+                </div>
+                <div class="assure-policy-row">
+                  <span class="assure-policy-row-label">Prime annuelle</span>
+                  <span class="assure-policy-row-value" id="assureDossierPremium">—</span>
+                </div>
+                <div class="assure-policy-row">
+                  <span class="assure-policy-row-label">Expiration</span>
+                  <span class="assure-policy-row-value" id="assureDossierExpiry">—</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="modal-overlay" id="clientWizardModal">
+      <div class="modal-content wizard-modal">
+        <div class="modal-header">
+          <span class="material-symbols-outlined" style="color:var(--color-primary);">person_add</span>
+          <div class="modal-header-info">
+            <span class="modal-header-title">Nouveau client</span>
+            <span class="modal-header-meta">Renseignez les informations du client en 5 étapes</span>
+          </div>
+          <button class="modal-close-btn" id="wizardClose">
+            <span class="material-symbols-outlined" style="font-size:18px!important;">close</span>
+          </button>
+        </div>
+
+        <!-- Wizard Steps -->
+        <div class="wizard-steps">
+          <div class="wizard-step active" data-step="1">
+            <div class="wizard-step-icon">
+              <span class="material-symbols-outlined">badge</span>
+            </div>
+            <div class="wizard-step-info">
+              <span class="wizard-step-label">Étape 1</span>
+              <span class="wizard-step-title">Identité</span>
+            </div>
+            <div class="wizard-step-connector"></div>
+          </div>
+          <div class="wizard-step" data-step="2">
+            <div class="wizard-step-icon">
+              <span class="material-symbols-outlined">contact_mail</span>
+            </div>
+            <div class="wizard-step-info">
+              <span class="wizard-step-label">Étape 2</span>
+              <span class="wizard-step-title">Contact</span>
+            </div>
+            <div class="wizard-step-connector"></div>
+          </div>
+          <div class="wizard-step" data-step="3">
+            <div class="wizard-step-icon">
+              <span class="material-symbols-outlined">home_pin</span>
+            </div>
+            <div class="wizard-step-info">
+              <span class="wizard-step-label">Étape 3</span>
+              <span class="wizard-step-title">Bien</span>
+            </div>
+            <div class="wizard-step-connector"></div>
+          </div>
+          <div class="wizard-step" data-step="4">
+            <div class="wizard-step-icon">
+              <span class="material-symbols-outlined">description</span>
+            </div>
+            <div class="wizard-step-info">
+              <span class="wizard-step-label">Étape 4</span>
+              <span class="wizard-step-title">Contrat</span>
+            </div>
+            <div class="wizard-step-connector"></div>
+          </div>
+          <div class="wizard-step" data-step="5">
+            <div class="wizard-step-icon">
+              <span class="material-symbols-outlined">upload_file</span>
+            </div>
+            <div class="wizard-step-info">
+              <span class="wizard-step-label">Étape 5</span>
+              <span class="wizard-step-title">Documents</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Wizard Body -->
+        <form id="clientWizardForm" class="wizard-body" onsubmit="return false">
+          <!-- Step 1: Identity -->
+          <div class="wizard-panel active" data-panel="1">
+            <div class="wizard-panel-header">
+              <h4>Identité du client</h4>
+              <p>Informations personnelles et état civil</p>
+            </div>
+            <div class="wizard-field-row">
+              <div class="wizard-field">
+                <label class="wizard-field-label">Civilité</label>
+                <select class="wizard-select" id="wiz-civility">
+                  <option value="M.">M.</option>
+                  <option value="Mme">Mme</option>
+                </select>
+              </div>
+              <div class="wizard-field">
+                <label class="wizard-field-label">Date de naissance</label>
+                <input type="date" class="wizard-input" id="wiz-dob" placeholder="JJ/MM/AAAA" />
+              </div>
+            </div>
+            <div class="wizard-field-row">
+              <div class="wizard-field">
+                <label class="wizard-field-label">Prénom *</label>
+                <input type="text" class="wizard-input" id="wiz-firstname" placeholder="Prénom" required />
+              </div>
+              <div class="wizard-field">
+                <label class="wizard-field-label">Nom *</label>
+                <input type="text" class="wizard-input" id="wiz-lastname" placeholder="Nom" required />
+              </div>
+            </div>
+            <div class="wizard-field-row">
+              <div class="wizard-field">
+                <label class="wizard-field-label">Nationalité</label>
+                <select class="wizard-select" id="wiz-nationality">
+                  <option value="FR">Française</option>
+                  <option value="BE">Belge</option>
+                  <option value="CH">Suisse</option>
+                  <option value="LU">Luxembourgeoise</option>
+                  <option value="DE">Allemande</option>
+                  <option value="IT">Italienne</option>
+                  <option value="ES">Espagnole</option>
+                  <option value="PT">Portugaise</option>
+                </select>
+              </div>
+              <div class="wizard-field">
+                <label class="wizard-field-label">Profession</label>
+                <input type="text" class="wizard-input" id="wiz-profession" placeholder="Profession" />
+              </div>
+            </div>
+            <div class="wizard-nav">
+              <span></span>
+              <button type="button" class="wizard-btn wizard-next" data-next="2">
+                Suivant
+                <span class="material-symbols-outlined" style="font-size:16px!important;">arrow_forward</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Step 2: Contact -->
+          <div class="wizard-panel" data-panel="2">
+            <div class="wizard-panel-header">
+              <h4>Coordonnées</h4>
+              <p>Email, téléphone et adresses</p>
+            </div>
+            <div class="wizard-field-row">
+              <div class="wizard-field">
+                <label class="wizard-field-label">Email *</label>
+                <input type="email" class="wizard-input" id="wiz-email" placeholder="email@exemple.fr" required />
+              </div>
+              <div class="wizard-field">
+                <label class="wizard-field-label">Téléphone *</label>
+                <input type="tel" class="wizard-input" id="wiz-phone" placeholder="+33 X XX XX XX XX" required />
+              </div>
+            </div>
+            <div class="wizard-subsection">Adresse du bien assuré</div>
+            <div class="wizard-field">
+              <label class="wizard-field-label">Adresse *</label>
+              <input type="text" class="wizard-input" id="wiz-insured-addr" placeholder="Numéro et rue" required />
+            </div>
+            <div class="wizard-field">
+              <label class="wizard-field-label">Complément</label>
+              <input type="text" class="wizard-input" id="wiz-insured-addr2" placeholder="Appartement, étage, bâtiment" />
+            </div>
+            <div class="wizard-field-row">
+              <div class="wizard-field">
+                <label class="wizard-field-label">Code postal *</label>
+                <input type="text" class="wizard-input" id="wiz-insured-cp" placeholder="75002" maxlength="5" required />
+              </div>
+              <div class="wizard-field">
+                <label class="wizard-field-label">Ville *</label>
+                <input type="text" class="wizard-input" id="wiz-insured-city" placeholder="Ville" required />
+              </div>
+            </div>
+            <div class="wizard-nav">
+              <button type="button" class="wizard-btn wizard-prev" data-prev="1">
+                <span class="material-symbols-outlined" style="font-size:16px!important;">arrow_back</span>
+                Précédent
+              </button>
+              <button type="button" class="wizard-btn wizard-next" data-next="3">
+                Suivant
+                <span class="material-symbols-outlined" style="font-size:16px!important;">arrow_forward</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Step 3: Property -->
+          <div class="wizard-panel" data-panel="3">
+            <div class="wizard-panel-header">
+              <h4>Informations sur le bien</h4>
+              <p>Détails de la propriété à assurer</p>
+            </div>
+            <div class="wizard-field-row">
+              <div class="wizard-field">
+                <label class="wizard-field-label">Adresse de correspondance</label>
+                <input type="text" class="wizard-input" id="wiz-corr-addr" placeholder="Numéro et rue" />
+              </div>
+            </div>
+            <div class="wizard-field-row">
+              <div class="wizard-field">
+                <label class="wizard-field-label">Code postal</label>
+                <input type="text" class="wizard-input" id="wiz-corr-cp" placeholder="75002" maxlength="5" />
+              </div>
+              <div class="wizard-field">
+                <label class="wizard-field-label">Ville</label>
+                <input type="text" class="wizard-input" id="wiz-corr-city" placeholder="Ville" />
+              </div>
+            </div>
+            <div class="wizard-field">
+              <label class="wizard-field-label">Type de bien</label>
+              <div class="wizard-radio-group">
+                <label class="wizard-radio"><input type="radio" name="property-type" value="house" checked /><span>Maison</span></label>
+                <label class="wizard-radio"><input type="radio" name="property-type" value="apartment" /><span>Appartement</span></label>
+                <label class="wizard-radio"><input type="radio" name="property-type" value="commercial" /><span>Local commercial</span></label>
+              </div>
+            </div>
+            <div class="wizard-field-row">
+              <div class="wizard-field">
+                <label class="wizard-field-label">Surface (m²)</label>
+                <input type="number" class="wizard-input" id="wiz-surface" placeholder="Surface" />
+              </div>
+              <div class="wizard-field">
+                <label class="wizard-field-label">Année de construction</label>
+                <input type="number" class="wizard-input" id="wiz-year" placeholder="Ex: 1990" />
+              </div>
+            </div>
+            <div class="wizard-nav">
+              <button type="button" class="wizard-btn wizard-prev" data-prev="2">
+                <span class="material-symbols-outlined" style="font-size:16px!important;">arrow_back</span>
+                Précédent
+              </button>
+              <button type="button" class="wizard-btn wizard-next" data-next="4">
+                Suivant
+                <span class="material-symbols-outlined" style="font-size:16px!important;">arrow_forward</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Step 4: Contract -->
+          <div class="wizard-panel" data-panel="4">
+            <div class="wizard-panel-header">
+              <h4>Contrat & Paiement</h4>
+              <p>Type de contrat, prime et modalités de paiement</p>
+            </div>
+            <div class="wizard-field-row">
+              <div class="wizard-field">
+                <label class="wizard-field-label">Type de contrat</label>
+                <select class="wizard-select" id="wiz-contract-type">
+                  <option value="mrh">Multirisque habitation</option>
+                  <option value="auto">Automobile</option>
+                  <option value="pro">Professionnelle</option>
+                  <option value="vie">Prévoyance / Vie</option>
+                  <option value="sante">Santé</option>
+                </select>
+              </div>
+              <div class="wizard-field">
+                <label class="wizard-field-label">Statut</label>
+                <select class="wizard-select" id="wiz-status">
+                  <option value="active">Actif</option>
+                  <option value="pending">En attente</option>
+                </select>
+              </div>
+            </div>
+            <div class="wizard-field-row">
+              <div class="wizard-field">
+                <label class="wizard-field-label">Prime annuelle (€)</label>
+                <input type="number" class="wizard-input" id="wiz-premium" placeholder="0" step="0.01" />
+              </div>
+              <div class="wizard-field">
+                <label class="wizard-field-label">Fréquence de paiement</label>
+                <select class="wizard-select" id="wiz-frequency">
+                  <option value="annuel">Annuel</option>
+                  <option value="semestriel">Semestriel</option>
+                  <option value="trimestriel">Trimestriel</option>
+                  <option value="mensuel">Mensuel</option>
+                </select>
+              </div>
+            </div>
+            <div class="wizard-field-row">
+              <div class="wizard-field">
+                <label class="wizard-field-label">Date d'effet</label>
+                <input type="date" class="wizard-input" id="wiz-effective" />
+              </div>
+              <div class="wizard-field">
+                <label class="wizard-field-label">Date d'échéance</label>
+                <input type="date" class="wizard-input" id="wiz-expiry" />
+              </div>
+            </div>
+            <div class="wizard-field-row">
+              <div class="wizard-field">
+                <label class="wizard-field-label">Mode de paiement</label>
+                <select class="wizard-select" id="wiz-payment">
+                  <option value="prelevement">Prélèvement automatique</option>
+                  <option value="virement">Virement bancaire</option>
+                  <option value="cheque">Chèque</option>
+                  <option value="carte">Carte bancaire</option>
+                </select>
+              </div>
+              <div class="wizard-field">
+                <label class="wizard-field-label">Dépôt de garantie (€)</label>
+                <input type="number" class="wizard-input" id="wiz-deposit" placeholder="0" step="0.01" />
+              </div>
+            </div>
+            <div class="wizard-nav">
+              <button type="button" class="wizard-btn wizard-prev" data-prev="3">
+                <span class="material-symbols-outlined" style="font-size:16px!important;">arrow_back</span>
+                Précédent
+              </button>
+              <button type="button" class="wizard-btn wizard-next" data-next="5">
+                Suivant
+                <span class="material-symbols-outlined" style="font-size:16px!important;">arrow_forward</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Step 5: Documents -->
+          <div class="wizard-panel" data-panel="5">
+            <div class="wizard-panel-header">
+              <h4>Documents & Pièces</h4>
+              <p>Déposez les documents obligatoires</p>
+            </div>
+            <div class="wizard-docs-list">
+              <div class="wizard-doc-upload" data-doc="id">
+                <div class="wizard-doc-icon" style="background:rgba(239,68,68,0.1);color:#ef4444;">
+                  <span class="material-symbols-outlined">badge</span>
+                </div>
+                <div class="wizard-doc-body">
+                  <span class="wizard-doc-name">Pièce d'identité</span>
+                  <span class="wizard-doc-desc">CNI ou passeport en cours de validité</span>
+                </div>
+                <button type="button" class="wizard-doc-btn" data-action="upload-id">
+                  <span class="material-symbols-outlined" style="font-size:16px!important;">upload</span>
+                  Déposer
+                </button>
+              </div>
+              <div class="wizard-doc-upload" data-doc="rib">
+                <div class="wizard-doc-icon" style="background:rgba(59,130,246,0.1);color:#3b82f6;">
+                  <span class="material-symbols-outlined">account_balance</span>
+                </div>
+                <div class="wizard-doc-body">
+                  <span class="wizard-doc-name">RIB</span>
+                  <span class="wizard-doc-desc">Relevé d'identité bancaire</span>
+                </div>
+                <button type="button" class="wizard-doc-btn" data-action="upload-rib">
+                  <span class="material-symbols-outlined" style="font-size:16px!important;">upload</span>
+                  Déposer
+                </button>
+              </div>
+              <div class="wizard-doc-upload" data-doc="contract">
+                <div class="wizard-doc-icon" style="background:rgba(16,185,129,0.1);color:#10b981;">
+                  <span class="material-symbols-outlined">description</span>
+                </div>
+                <div class="wizard-doc-body">
+                  <span class="wizard-doc-name">Contrat signé</span>
+                  <span class="wizard-doc-desc">Contrat d'assurance signé par le client</span>
+                </div>
+                <button type="button" class="wizard-doc-btn" data-action="upload-contract">
+                  <span class="material-symbols-outlined" style="font-size:16px!important;">upload</span>
+                  Déposer
+                </button>
+              </div>
+              <div class="wizard-doc-upload" data-doc="sepa">
+                <div class="wizard-doc-icon" style="background:rgba(245,158,11,0.1);color:#f59e0b;">
+                  <span class="material-symbols-outlined">receipt_long</span>
+                </div>
+                <div class="wizard-doc-body">
+                  <span class="wizard-doc-name">Mandat SEPA</span>
+                  <span class="wizard-doc-desc">Autorisation de prélèvement</span>
+                </div>
+                <button type="button" class="wizard-doc-btn" data-action="upload-sepa">
+                  <span class="material-symbols-outlined" style="font-size:16px!important;">upload</span>
+                  Déposer
+                </button>
+              </div>
+            </div>
+            <div class="wizard-nav">
+              <button type="button" class="wizard-btn wizard-prev" data-prev="4">
+                <span class="material-symbols-outlined" style="font-size:16px!important;">arrow_back</span>
+                Précédent
+              </button>
+              <button type="button" class="wizard-btn wizard-submit" id="wizardSubmit">
+                <span class="material-symbols-outlined" style="font-size:16px!important;">check_circle</span>
+                Créer le client
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Script entry point -->
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
+
+    <!-- ═══════════════════════════════════════════════════════
+         AUTH VIEWS — Cover style (outside dashboard shell)
+         ═══════════════════════════════════════════════════════ -->
+
+    <!-- ====== MODAL: Signature de l'engagement ====== -->
+    <div class="modal-overlay" id="assureSignModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <span class="material-symbols-outlined" style="color:var(--color-primary);">draw</span>
+          <div class="modal-header-info">
+            <span class="modal-header-title">Signature de l'engagement</span>
+            <span class="modal-header-meta" id="assureModalPolRef">—</span>
+          </div>
+          <button class="modal-close-btn" id="assureSignModalClose" aria-label="Fermer">
+            <span class="material-symbols-outlined" style="font-size:18px!important;">close</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="assure-sign-summary">
+            <div class="assure-sign-alert">
+              <span class="material-symbols-outlined">info</span>
+              <span>En signant cet engagement, vous confirmez votre intention de réaliser les travaux listés ci-dessous dans un délai de 24 mois. La réduction de prime sera effective dès la signature de l'avenant par votre assureur.</span>
+            </div>
+            <div class="report-property">
+              <div class="report-property-item">
+                <span class="label">Assuré</span>
+                <span class="value" id="assureModalClient">—</span>
+              </div>
+              <div class="report-property-item">
+                <span class="label">N° police</span>
+                <span class="value" id="assureModalPolRefBody">—</span>
+              </div>
+              <div class="report-property-item">
+                <span class="label">Nouvelle prime</span>
+                <span class="value" id="assureModalNewPremium">—</span>
+              </div>
+              <div class="report-property-item">
+                <span class="label">Économie</span>
+                <span class="value" id="assureModalSavings">—</span>
+              </div>
+              <div class="report-property-item">
+                <span class="label">Coût travaux</span>
+                <span class="value" id="assureModalTotalCost">—</span>
+              </div>
+              <div class="report-property-item">
+                <span class="label">Fin d'engagement</span>
+                <span class="value" id="assureModalExpiry">—</span>
+              </div>
+            </div>
+            <div class="report-section-title">Travaux engagés</div>
+            <div class="assure-avenant-works" id="assureModalWorks"></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="modal-footer-btn" onclick="document.getElementById('assureSignModal').classList.remove('open')">Annuler</button>
+          <button class="modal-footer-btn primary" id="assureSignConfirm">
+            <span class="material-symbols-outlined" style="font-size:16px!important;vertical-align:middle;">draw</span>
+            Confirmer la signature
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== AUTH: Sign In ====== -->
+    <section class="auth-view" id="auth-sign-in">
+      <div class="auth-cover-layout">
+        <div class="auth-cover-panel">
+          <div class="auth-cover-brand">
+            <div class="logo-icon"><span class="material-symbols-outlined">auto_awesome</span></div>
+            <span>Previa</span>
+          </div>
+          <div class="auth-cover-content">
+            <div class="auth-cover-illustration">
+              <div class="ring-1"></div>
+              <div class="ring-2"></div>
+              <span class="material-symbols-outlined">verified</span>
+            </div>
+            <h2>Bienvenue sur Previa</h2>
+            <p>Plateforme d'evaluation des risques climatiques pour l'immobilier. Donnees BDNB, Georisques et projections climatiques.</p>
+          </div>
+        </div>
+        <div class="auth-form-panel">
+          <div class="auth-form-card">
+            <div class="auth-form-header">
+              <div class="auth-badge"><span class="material-symbols-outlined">lock</span> Connexion</div>
+              <h3>Connexion a Previa</h3>
+              <p>Entrez vos identifiants pour acceder a votre tableau de bord</p>
+            </div>
+            <form onsubmit="return false">
+              <div class="auth-input-group">
+                <span class="material-symbols-outlined input-icon">email</span>
+                <input type="email" placeholder="Email professionnel" />
+              </div>
+              <div class="auth-input-group">
+                <span class="material-symbols-outlined input-icon">lock</span>
+                <input type="password" placeholder="Mot de passe" />
+                <button type="button" class="input-toggle"><span class="material-symbols-outlined">visibility_off</span></button>
+              </div>
+              <div class="auth-check-row">
+                <label class="auth-check-label">
+                  <input type="checkbox" checked /> Se souvenir de moi
+                </label>
+                <a class="auth-link" data-auth-target="forgot">Mot de passe oublie ?</a>
+              </div>
+              <button type="submit" class="auth-submit-btn">
+                <span class="material-symbols-outlined">login</span> Se connecter
+              </button>
+            </form>
+            <div class="auth-divider">ou continuer avec</div>
+            <div class="auth-social-row">
+              <button class="auth-social-btn">
+                <svg class="social-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                Google
+              </button>
+              <button class="auth-social-btn">
+                <svg class="social-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.167 6.839 9.49.5.09.682-.217.682-.482 0-.237-.009-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.577.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+                GitHub
+              </button>
+            </div>
+            <div class="auth-footer-text">
+              Pas encore de compte ? <a class="auth-link" data-auth-target="sign-up">Creer un compte</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== AUTH: Sign Up ====== -->
+    <section class="auth-view" id="auth-sign-up">
+      <div class="auth-cover-layout">
+        <div class="auth-cover-panel">
+          <div class="auth-cover-brand">
+            <div class="logo-icon"><span class="material-symbols-outlined">auto_awesome</span></div>
+            <span>Previa</span>
+          </div>
+          <div class="auth-cover-content">
+            <div class="auth-cover-illustration">
+              <div class="ring-1"></div>
+              <div class="ring-2"></div>
+              <span class="material-symbols-outlined">how_to_reg</span>
+            </div>
+            <h2>Rejoignez Previa</h2>
+            <p>Creez votre compte et commencez a evaluer les risques climatiques de votre portefeuille immobilier.</p>
+          </div>
+        </div>
+        <div class="auth-form-panel">
+          <div class="auth-form-card">
+            <div class="auth-form-header">
+              <div class="auth-badge"><span class="material-symbols-outlined">person_add</span> Inscription</div>
+              <h3>Creez votre compte</h3>
+              <p>Remplissez les informations ci-dessous pour creer votre compte</p>
+            </div>
+            <form onsubmit="return false">
+              <div class="auth-input-group">
+                <span class="material-symbols-outlined input-icon">person</span>
+                <input type="text" placeholder="Nom complet" />
+              </div>
+              <div class="auth-input-group">
+                <span class="material-symbols-outlined input-icon">business</span>
+                <input type="text" placeholder="Nom de l'entreprise" />
+              </div>
+              <div class="auth-input-group">
+                <span class="material-symbols-outlined input-icon">email</span>
+                <input type="email" placeholder="Email professionnel" />
+              </div>
+              <div class="auth-input-group">
+                <span class="material-symbols-outlined input-icon">lock</span>
+                <input type="password" placeholder="Mot de passe" />
+                <button type="button" class="input-toggle"><span class="material-symbols-outlined">visibility_off</span></button>
+              </div>
+              <div class="auth-input-group">
+                <span class="material-symbols-outlined input-icon">lock</span>
+                <input type="password" placeholder="Confirmer le mot de passe" />
+                <button type="button" class="input-toggle"><span class="material-symbols-outlined">visibility_off</span></button>
+              </div>
+              <div class="auth-check-row">
+                <label class="auth-check-label">
+                  <input type="checkbox" /> J'accepte les <a class="auth-link" style="font-size:13px;">conditions d'utilisation</a>
+                </label>
+              </div>
+              <button type="submit" class="auth-submit-btn">
+                <span class="material-symbols-outlined">person_add</span> Creer le compte
+              </button>
+            </form>
+            <div class="auth-footer-text">
+              Deja un compte ? <a class="auth-link" data-auth-target="sign-in">Se connecter</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== AUTH: Forgot Password ====== -->
+    <section class="auth-view" id="auth-forgot">
+      <div class="auth-cover-layout">
+        <div class="auth-cover-panel">
+          <div class="auth-cover-brand">
+            <div class="logo-icon"><span class="material-symbols-outlined">auto_awesome</span></div>
+            <span>Previa</span>
+          </div>
+          <div class="auth-cover-content">
+            <div class="auth-cover-illustration">
+              <div class="ring-1"></div>
+              <div class="ring-2"></div>
+              <span class="material-symbols-outlined">lock_reset</span>
+            </div>
+            <h2>Mot de passe oublie ?</h2>
+            <p>Pas d'inquietude. Saisissez votre email et nous vous enverrons un lien de reinitialisation.</p>
+          </div>
+        </div>
+        <div class="auth-form-panel">
+          <div class="auth-form-card">
+            <div class="auth-form-header">
+              <div class="auth-badge"><span class="material-symbols-outlined">help</span> Reinitialisation</div>
+              <h3>Mot de passe oublie ?</h3>
+              <p>Entrez votre email professionnel pour recevoir un lien de reinitialisation</p>
+            </div>
+            <form onsubmit="return false">
+              <div class="auth-input-group">
+                <span class="material-symbols-outlined input-icon">email</span>
+                <input type="email" placeholder="Email professionnel" />
+              </div>
+              <button type="submit" class="auth-submit-btn">
+                <span class="material-symbols-outlined">send</span> Envoyer le lien
+              </button>
+            </form>
+            <div class="auth-footer-text">
+              <a class="auth-link" data-auth-target="sign-in"><span class="material-symbols-outlined" style="font-size:14px!important;vertical-align:middle;">arrow_back</span> Retour a la connexion</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== AUTH: Reset Password ====== -->
+    <section class="auth-view" id="auth-reset">
+      <div class="auth-cover-layout">
+        <div class="auth-cover-panel">
+          <div class="auth-cover-brand">
+            <div class="logo-icon"><span class="material-symbols-outlined">auto_awesome</span></div>
+            <span>Previa</span>
+          </div>
+          <div class="auth-cover-content">
+            <div class="auth-cover-illustration">
+              <div class="ring-1"></div>
+              <div class="ring-2"></div>
+              <span class="material-symbols-outlined">password</span>
+            </div>
+            <h2>Nouveau mot de passe</h2>
+            <p>Choisissez un mot de passe securise pour proteger votre compte Previa.</p>
+          </div>
+        </div>
+        <div class="auth-form-panel">
+          <div class="auth-form-card">
+            <div class="auth-form-header">
+              <div class="auth-badge"><span class="material-symbols-outlined">password</span> Nouveau mot de passe</div>
+              <h3>Reinitialiser le mot de passe</h3>
+              <p>Choisissez un nouveau mot de passe pour votre compte</p>
+            </div>
+            <form onsubmit="return false">
+              <div class="auth-input-group">
+                <span class="material-symbols-outlined input-icon">lock</span>
+                <input type="password" placeholder="Nouveau mot de passe" />
+                <button type="button" class="input-toggle"><span class="material-symbols-outlined">visibility_off</span></button>
+              </div>
+              <div class="auth-strength">
+                <span class="auth-strength-bar active weak"></span>
+                <span class="auth-strength-bar"></span>
+                <span class="auth-strength-bar"></span>
+                <span class="auth-strength-bar"></span>
+              </div>
+              <div class="auth-input-group" style="margin-top:18px;">
+                <span class="material-symbols-outlined input-icon">lock</span>
+                <input type="password" placeholder="Confirmer le nouveau mot de passe" />
+                <button type="button" class="input-toggle"><span class="material-symbols-outlined">visibility_off</span></button>
+              </div>
+              <button type="submit" class="auth-submit-btn">
+                <span class="material-symbols-outlined">check_circle</span> Reinitialiser
+              </button>
+            </form>
+            <div class="auth-footer-text">
+              <a class="auth-link" data-auth-target="sign-in"><span class="material-symbols-outlined" style="font-size:14px!important;vertical-align:middle;">arrow_back</span> Retour a la connexion</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== AUTH: Two-Step Verification ====== -->
+    <section class="auth-view" id="auth-two-step">
+      <div class="auth-cover-layout">
+        <div class="auth-cover-panel">
+          <div class="auth-cover-brand">
+            <div class="logo-icon"><span class="material-symbols-outlined">auto_awesome</span></div>
+            <span>Previa</span>
+          </div>
+          <div class="auth-cover-content">
+            <div class="auth-cover-illustration">
+              <div class="ring-1"></div>
+              <div class="ring-2"></div>
+              <span class="material-symbols-outlined">shield</span>
+            </div>
+            <h2>Verification en deux etapes</h2>
+            <p>Un code de verification a ete envoye a votre email. Saisissez-le pour continuer.</p>
+          </div>
+        </div>
+        <div class="auth-form-panel">
+          <div class="auth-form-card">
+            <div class="auth-form-header">
+              <div class="auth-badge"><span class="material-symbols-outlined">verified_user</span> Verification</div>
+              <h3>Code de verification</h3>
+              <p>Entrez le code a 6 chiffres envoye a jean.dupont@previa.fr</p>
+            </div>
+            <form onsubmit="return false">
+              <div class="auth-code-row">
+                <input type="text" class="auth-code-input" maxlength="1" inputmode="numeric" />
+                <input type="text" class="auth-code-input" maxlength="1" inputmode="numeric" />
+                <input type="text" class="auth-code-input" maxlength="1" inputmode="numeric" />
+                <span style="display:flex;align-items:center;color:var(--text-muted);font-size:20px;font-weight:300;">-</span>
+                <input type="text" class="auth-code-input" maxlength="1" inputmode="numeric" />
+                <input type="text" class="auth-code-input" maxlength="1" inputmode="numeric" />
+                <input type="text" class="auth-code-input" maxlength="1" inputmode="numeric" />
+              </div>
+              <button type="submit" class="auth-submit-btn">
+                <span class="material-symbols-outlined">verified</span> Verifier
+              </button>
+              <div class="auth-footer-text" style="margin-top:16px;">
+                <a class="auth-link" data-auth-target="sign-in"><span class="material-symbols-outlined" style="font-size:14px!important;vertical-align:middle;">arrow_back</span> Retour a la connexion</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+</body>
+</html>

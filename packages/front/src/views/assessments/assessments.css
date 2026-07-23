@@ -1,0 +1,170 @@
+.assess-tab-content {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.assess-tab-content.active {
+  display: flex;
+}
+
+.assess-header {
+  padding: 4px 0 8px;
+}
+
+.assess-header h3 {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.assess-header p {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.assess-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.assess-item {
+  background: var(--bg-card);
+  border-radius: var(--border-radius-md);
+  padding: 14px 16px;
+  display: flex;
+  gap: 12px;
+  transition: box-shadow 0.2s ease;
+}
+
+.assess-item:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.assess-status {
+  display: flex;
+  align-items: flex-start;
+  padding-top: 4px;
+  flex-shrink: 0;
+}
+
+.assess-status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: block;
+}
+
+.assess-item.completed .assess-status-dot,
+.assess-status-dot.completed {
+  background: #10b981;
+}
+
+.assess-item.pending .assess-status-dot,
+.assess-status-dot.pending {
+  background: #f59e0b;
+}
+
+.assess-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.assess-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.assess-addr {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.assess-date {
+  font-size: 11px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.assess-client-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.assess-client-badge .clients-selector-avatar {
+  width: 20px;
+  height: 20px;
+  font-size: 8px;
+}
+
+.assess-view-client {
+  font-size: 11px;
+  color: var(--color-primary);
+  font-weight: 500;
+  cursor: pointer;
+  margin-left: 8px;
+  transition: color 0.15s ease;
+}
+
+.assess-view-client:hover {
+  color: var(--color-primary-dark);
+  text-decoration: underline;
+}
+
+.assess-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  flex-wrap: wrap;
+}
+
+.assess-meta .risk-badge {
+  flex-shrink: 0;
+}
+
+.assess-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.assess-view {
+  font-size: 11px;
+  color: var(--color-primary);
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  transition: color 0.15s ease;
+}
+
+.assess-view:hover {
+  color: var(--color-primary-dark);
+  text-decoration: underline;
+}
+
+.dark-mode .assess-view,
+.dark-mode .assess-view-client {
+  color: #d4865e;
+}
+
+.dark-mode .assess-view:hover,
+.dark-mode .assess-view-client:hover {
+  color: #e8a67a;
+}
+

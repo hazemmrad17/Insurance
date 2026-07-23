@@ -1,0 +1,58 @@
+        <!-- ====== MODAL: Signature de l'engagement ====== -->
+        <div class="modal-overlay" id="assureSignModal">
+          <div class="modal-content">
+            <div class="modal-header">
+              <span class="material-symbols-outlined" style="color:var(--color-primary);">draw</span>
+              <div class="modal-header-info">
+                <span class="modal-header-title">Signature de l'engagement</span>
+                <span class="modal-header-meta" id="assureModalPolRef">—</span>
+              </div>
+              <button class="modal-close-btn" id="assureSignModalClose" aria-label="Fermer">
+                <span class="material-symbols-outlined" style="font-size:18px!important;">close</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="assure-sign-summary">
+                <div class="assure-sign-alert">
+                  <span class="material-symbols-outlined">info</span>
+                  <span>En signant cet engagement, vous confirmez votre intention de réaliser les travaux listés ci-dessous dans un délai de 24 mois. La réduction de prime sera effective dès la signature de l'avenant par votre assureur.</span>
+                </div>
+                <div class="report-property">
+                  <div class="report-property-item">
+                    <span class="label">Assuré</span>
+                    <span class="value" id="assureModalClient">—</span>
+                  </div>
+                  <div class="report-property-item">
+                    <span class="label">N° police</span>
+                    <span class="value" id="assureModalPolRefBody">—</span>
+                  </div>
+                  <div class="report-property-item">
+                    <span class="label">Nouvelle prime</span>
+                    <span class="value" id="assureModalNewPremium">—</span>
+                  </div>
+                  <div class="report-property-item">
+                    <span class="label">Économie</span>
+                    <span class="value" id="assureModalSavings">—</span>
+                  </div>
+                  <div class="report-property-item">
+                    <span class="label">Coût travaux</span>
+                    <span class="value" id="assureModalTotalCost">—</span>
+                  </div>
+                  <div class="report-property-item">
+                    <span class="label">Fin d'engagement</span>
+                    <span class="value" id="assureModalExpiry">—</span>
+                  </div>
+                </div>
+                <div class="report-section-title">Travaux engagés</div>
+                <div class="assure-avenant-works" id="assureModalWorks"></div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="modal-footer-btn" onclick="document.getElementById('assureSignModal').classList.remove('open')">Annuler</button>
+              <button class="modal-footer-btn primary" id="assureSignConfirm">
+                <span class="material-symbols-outlined" style="font-size:16px!important;vertical-align:middle;">draw</span>
+                Confirmer la signature
+              </button>
+            </div>
+          </div>
+        </div>

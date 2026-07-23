@@ -1,0 +1,29 @@
+{
+  "date": "2026-07-22T22:15:30.000Z",
+  "adresse": {
+    "query": "12 rue de la Paix, 75002 Paris",
+    "latitude": "48.8696",
+    "longitude": "2.3312"
+  },
+  "superficie": "120",
+  "etages": "1",
+  "etat": "bon",
+  "orientation": "sud",
+  "pieces": {
+    "chambres": "3",
+    "salons": "1",
+    "cuisines": "1",
+    "sdb": "2",
+    "autres": "bureau, buanderie, dressing"
+  },
+  "construction": {
+    "materiaux": ["briques", "pierre", "bois"],
+    "toiture_type": "deux-pans",
+    "toiture_materiau": "tuiles"
+  },
+  "equipements": ["chauffage", "climatisation", "isolation", "internetfibre", "domotique"],
+  "exterieurs": ["jardin", "terrasse", "garage"],
+  "plan": "plan-maison-12-rue-paix.pdf",
+  "photos": "5 fichiers sélectionnés",
+  "notes": "Travaux de rénovation à prévoir dans la salle de bain. Toiture refaite en 2020."
+}

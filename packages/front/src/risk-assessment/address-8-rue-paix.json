@@ -1,0 +1,181 @@
+{
+  "property": {
+    "builtYear": 1850,
+    "constructionPeriod": "<1915",
+    "surfaceUtile": null,
+    "surfaceEmprise": 1506,
+    "levels": 8,
+    "height": 22,
+    "dpeClass": "D",
+    "energyConsumption": null,
+    "emissionGes": null,
+    "wallMaterial": "PIERRE",
+    "roofMaterial": "ZINC ALUMINIUM - AUTRES",
+    "heatingType": null,
+    "usageType": "Résidentiel collectif",
+    "nbLogements": null,
+    "departmentCode": "75",
+    "nbLogementsRnc": 73,
+    "clayExposure": null,
+    "altitudeSolMean": 34,
+    "heatingEnergyType": "reseau de chaleur",
+    "parcelIds": [
+      "75102000AB0048"
+    ],
+    "quartierPrioritaire": null,
+    "zonePatrimoniale": true
+  },
+  "valuation": {
+    "reconstructionValuePerSqm": 2800,
+    "lastTransactionPricePerSqm": 10500,
+    "lastTransactionDate": null,
+    "lastTransactionType": null
+  },
+  "geography": {
+    "parcelId": "75102-000-AB-0047",
+    "altitude": 34.19,
+    "slope": "moderate",
+    "distanceToWaterway": 681,
+    "distanceToForest": null,
+    "distanceFireStation": null,
+    "landUse": "urban"
+  },
+  "risks": {
+    "naturels": {
+      "inondation": {
+        "present": true,
+        "level": null
+      },
+      "remonteeNappe": {
+        "present": true,
+        "level": null
+      },
+      "risqueCotier": {
+        "present": false,
+        "level": null
+      },
+      "seisme": {
+        "present": true,
+        "level": "faible"
+      },
+      "mouvementTerrain": {
+        "present": true,
+        "level": null
+      },
+      "reculTraitCote": {
+        "present": false,
+        "level": null
+      },
+      "retraitGonflementArgile": {
+        "present": true,
+        "level": null
+      },
+      "avalanche": {
+        "present": false,
+        "level": null
+      },
+      "feuForet": {
+        "present": false,
+        "level": null
+      },
+      "eruptionVolcanique": {
+        "present": false,
+        "level": null
+      },
+      "cyclone": {
+        "present": false,
+        "level": null
+      },
+      "radon": {
+        "present": true,
+        "level": "faible"
+      }
+    },
+    "technologiques": {
+      "icpe": {
+        "present": true,
+        "level": null
+      },
+      "nucleaire": {
+        "present": false,
+        "level": null
+      },
+      "canalisationsMatieresDangereuses": {
+        "present": true,
+        "level": null
+      },
+      "pollutionSols": {
+        "present": true,
+        "level": null
+      },
+      "ruptureBarrage": {
+        "present": false,
+        "level": null
+      },
+      "risqueMinier": {
+        "present": false,
+        "level": null
+      }
+    },
+    "commune": "Paris",
+    "communeCode": "75056",
+    "naturalRiskCount": 6,
+    "technoRiskCount": 3,
+    "catnatLast10Years": 0,
+    "pprApproved": true,
+    "enrichment": {
+      "argileExposition": null,
+      "cavitiesNearby": 0,
+      "pollutedSitesNearby": null
+    }
+  },
+  "climate": {
+    "freezeDaysPerYear": null,
+    "stormFrequency": null,
+    "hailRisk": null,
+    "annualPrecipitation": null,
+    "heatwaveDaysPerYear": null,
+    "windZone": null,
+    "snowZone": null,
+    "projectedFreezeDays": null,
+    "projectedHeatwaveDays": null,
+    "projectedPrecipitation": null,
+    "projectedStormFrequency": null,
+    "projectionModel": null,
+    "projectionScenario": null,
+    "meanHumidity": null,
+    "maxHumidity": null,
+    "minHumidity": null,
+    "soilMoisture": null,
+    "projectedSoilMoisture": null,
+    "drias": {
+      "method": "Bias-correction ADAMONT sur SAFRAN (1959-2019). Valeurs médianes multi-modèles (5-7 modèles CMIP6).",
+      "warmingLevel": "+4°C France (TRACC horizon 2050)",
+      "heatwaveDays": 28,
+      "tropicalNights": 22,
+      "summerDays": 60,
+      "heavyPrecipDays": 5,
+      "max5dayPrecip": 48,
+      "consecutiveDryDays": 22,
+      "fireWeatherIndex": 25,
+      "frostDays": 15,
+      "dataSource": "explore2-climat-2022"
+    }
+  },
+  "metadata": {
+    "addressLabel": "8 Rue de la Paix 75002 Paris",
+    "longitude": 2.330992,
+    "latitude": 48.868831,
+    "communeName": "Paris",
+    "communeCode": "75056",
+    "assessmentDate": "2026-07-22",
+    "dataFreshness": {
+      "bdnb": "2026-07-22",
+      "georisques": "2026-07-22",
+      "dvf": "2026-07-22",
+      "ign": "2026-07-22",
+      "openmeteo_climate": "2026-07-22",
+      "drias": "2026-07-22"
+    }
+  }
+}
